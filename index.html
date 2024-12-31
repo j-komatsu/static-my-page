@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="App">
+    <header class="App-header">
+      <h1>My Page</h1>
+      <div class="navigation-links">
+        <a href="project-a.html" class="navigation-link">プロジェクトA</a>
+        <a href="project-b.html" class="navigation-link">プロジェクトB</a>
+        <a href="project-c.html" class="navigation-link">プロジェクトC</a>
+        <a href="project-d.html" class="navigation-link">プロジェクトD</a>
+        <a href="https://www.google.co.jp/" class="navigation-link google-link" target="_blank">
+          <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="section-grid">
+      <!-- 固定で6セクションを作成 -->
+      <div class="section" id="mypage-section1">
+        <div class="section-title">
+          <h2 onclick="editSectionName('mypage-section1')">セクション1</h2>
+          <input type="text" id="mypage-section1-input" class="section-name-input" onblur="saveSectionName('mypage-section1')" />
+        </div>
+        <ul class="link-list">
+          <li><a href="https://example1.com" target="_blank">リンク1-1</a></li>
+          <li><a href="https://example1.com" target="_blank">リンク1-2</a></li>
+        </ul>
+        <button class="edit-button" onclick="editLinks('mypage-section1')">リンクを編集</button>
+      </div>
+      <div class="section" id="mypage-section2">
+        <div class="section-title">
+          <h2 onclick="editSectionName('mypage-section2')">セクション2</h2>
+          <input type="text" id="mypage-section2-input" class="section-name-input" onblur="saveSectionName('mypage-section2')" />
+        </div>
+        <ul class="link-list">
+          <li><a href="https://example2.com" target="_blank">リンク2-1</a></li>
+          <li><a href="https://example2.com" target="_blank">リンク2-2</a></li>
+        </ul>
+        <button class="edit-button" onclick="editLinks('mypage-section2')">リンクを編集</button>
+      </div>
+      <div class="section" id="mypage-section3">
+        <div class="section-title">
+          <h2 onclick="editSectionName('mypage-section3')">セクション3</h2>
+          <input type="text" id="mypage-section3-input" class="section-name-input" onblur="saveSectionName('mypage-section3')" />
+        </div>
+        <ul class="link-list">
+          <li><a href="https://example3.com" target="_blank">リンク3-1</a></li>
+          <li><a href="https://example3.com" target="_blank">リンク3-2</a></li>
+        </ul>
+        <button class="edit-button" onclick="editLinks('section3')">リンクを編集</button>
+      </div>
+      <div class="section" id="mypage-section4">
+        <div class="section-title">
+          <h2 onclick="editSectionName('mypage-section4')">セクション4</h2>
+          <input type="text" id="mypage-section4-input" class="section-name-input" onblur="saveSectionName('mypage-section4')" />
+        </div>
+        <ul class="link-list">
+          <li><a href="https://example4.com" target="_blank">リンク4-1</a></li>
+          <li><a href="https://example4.com" target="_blank">リンク4-2</a></li>
+        </ul>
+        <button class="edit-button" onclick="editLinks('section4')">リンクを編集</button>
+      </div>
+      <div class="section" id="mypage-section5">
+        <div class="section-title">
+          <h2 onclick="editSectionName('mypage-section5')">セクション5</h2>
+          <input type="text" id="mypage-section5-input" class="section-name-input" onblur="saveSectionName('mypage-section5')" />
+        </div>
+        <ul class="link-list">
+          <li><a href="https://example5.com" target="_blank">リンク5-1</a></li>
+          <li><a href="https://example5.com" target="_blank">リンク5-2</a></li>
+        </ul>
+        <button class="edit-button" onclick="editLinks('section5')">リンクを編集</button>
+      </div>
+      <div class="section" id="mypage-section6">
+        <div class="section-title">
+          <h2 onclick="editSectionName('mypage-section6')">セクション6</h2>
+          <input type="text" id="mypage-section6-input" class="section-name-input" onblur="saveSectionName('mypage-section6')" />
+        </div>
+        <ul class="link-list">
+          <li><a href="https://example6.com" target="_blank">リンク6-1</a></li>
+          <li><a href="https://example6.com" target="_blank">リンク6-2</a></li>
+        </ul>
+        <button class="edit-button" onclick="editLinks('section6')">リンクを編集</button>
+      </div>
+    </main>
+
+    <!-- モーダルポップアップ -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <h3>リンクの編集</h3>
+        <ul id="modal-link-list"></ul>
+        <input type="text" id="new-link-text" placeholder="リンクテキスト" />
+        <input type="url" id="new-link-url" placeholder="リンクURL" />
+        <button onclick="addLink()">リンクを追加</button>
+        <button onclick="closeModal()">閉じる</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </div>
+</body>
+<footer class="data-management">
+  <button onclick="exportData()">エクスポート</button>
+  <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)" />
+  <button onclick="document.getElementById('importFile').click()">インポート</button>
+</footer>
+</html>
