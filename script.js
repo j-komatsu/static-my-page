@@ -70,12 +70,16 @@ window.onload = function () {
 function renderLinks() {
   for (const [sectionId, links] of Object.entries(linksData)) {
     const linkList = document.querySelector(`#${sectionId} .link-list`);
-    linkList.innerHTML = ""; // 既存のリンクをクリア
-    links.forEach(({ text, url }) => {
-      const listItem = document.createElement("li");
-      listItem.innerHTML = `<a href="${url}" target="_blank">${text}</a>`;
-      linkList.appendChild(listItem);
-    });
+
+    // リンクリストを一度クリアして再描画
+    if (linkList) {
+      linkList.innerHTML = ""; // 既存のリンクを削除
+      links.forEach(({ text, url }) => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `<a href="${url}" target="_blank">${text}</a>`;
+        linkList.appendChild(listItem);
+      });
+    }
   }
 }
 
@@ -113,31 +117,43 @@ function addLink() {
     return;
   }
 
-  // 現在のセクションのリンクデータを更新
+  // 現在のセクションにリンクを追加
   if (!linksData[currentSectionId]) {
     linksData[currentSectionId] = [];
   }
   linksData[currentSectionId].push({ text, url });
 
-  saveLinks(); // リンクデータを保存
-  editLinks(currentSectionId); // モーダル内を再描画
-  renderLinks(); // 各セクションを再描画
-  document.getElementById("new-link-text").value = "";
-  document.getElementById("new-link-url").value = "";
+  // ローカルストレージに保存
+  saveLinks();
+  renderLinks(); // セクションを再描画
+  editLinks(currentSectionId); // モーダル内のリストも更新
 }
 
 // リンクを削除
-function removeLink(index) {
-  linksData[currentSectionId].splice(index, 1); // 指定したリンクを削除
-  saveLinks(); // リンクデータを保存
-  editLinks(currentSectionId); // モーダル内を再描画
-  renderLinks(); // 各セクションを再描画
+function removeLink(sectionId, index) {
+  if (linksData[sectionId]) {
+    linksData[sectionId].splice(index, 1); // 指定したリンクを削除
+  }
+
+  // ローカルストレージに保存
+  saveLinks();
+  renderLinks(); // セクションを再描画
 }
 
-// リンクデータをローカルストレージに保存
+// ローカルストレージにリンクデータを保存
 function saveLinks() {
   localStorage.setItem(pageKey, JSON.stringify(linksData));
 }
+
+// ページロード時にリンクデータを読み込む
+window.onload = function () {
+  const storedLinks = localStorage.getItem(pageKey);
+  if (storedLinks) {
+    linksData = JSON.parse(storedLinks);
+  }
+
+  renderLinks(); // ページロード時にリンクを描画
+};
 
 // ローカルストレージ設定 ------------------------------------------------------------
 
