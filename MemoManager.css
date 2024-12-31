@@ -1,0 +1,395 @@
+.memo-manager {
+  width: 80vw;              /* ブラウザ幅の80% */
+  height: 80vh;             /* ブラウザ高さの80% */
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #fefefe;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* メモページの見出しスタイル */
+.memo-manager h1 {
+  font-size: 36px;              /* 大きめのフォントサイズ */
+  font-weight: bold;            /* 太字 */
+  color: #ff6347;               /* 明るいオレンジ */
+  text-align: center;           /* 中央揃え */
+  text-transform: uppercase;    /* 大文字変換 */
+  letter-spacing: 4px;          /* 文字間隔を広げる */
+  text-shadow: 3px 3px 6px rgba(255, 99, 71, 0.5); /* ポップな影 */
+  font-family: "Comic Sans MS", cursive, sans-serif; /* 楽しいフォント */
+  margin-bottom: 25px;          /* 下に余白を追加 */
+  /* animation: popEffect 1.5s ease infinite; ポップなアニメーション */
+}
+
+/* ポップなアニメーションの定義 */
+@keyframes popEffect {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);  /* 軽く拡大 */
+  }
+}
+
+.memo-container {
+  display: flex;
+  gap: 20px; /* 間隔を調整 */
+}
+
+.text-area, .canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #007bff;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+canvas {
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  background: #fff;
+}
+
+img {
+  max-width: 100%;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+.export-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.export-button:hover {
+  background-color: #45a049;
+}
+
+/* サムネイル画像のデフォルトサイズ */
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  cursor: pointer;
+  margin: 5px;
+}
+
+/* ポップアップ画像のスタイル */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-image {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+  background: white;
+}
+
+/* メモ一覧の幅調整 */
+.memo-list {
+  width: 300px;            /* 固定幅を指定する場合 */
+  max-width: 400px;        /* 最大幅の指定 (オプション) */
+  padding: 20px;
+  border-right: 3px solid #ff7eb3; /* 境界線 */
+  overflow-y: auto;        /* 内容が多い場合はスクロール */
+}
+
+/* メモ一覧の見出しスタイル */
+.memo-list h2 {
+  font-size: 24px;                /* 大きめのフォントサイズ */
+  font-weight: bold;              /* 太字 */
+  color: #ff7eb3;                 /* 明るいピンク色 */
+  text-align: center;             /* 中央揃え */
+  text-transform: uppercase;      /* 英字を大文字に */
+  letter-spacing: 2px;            /* 文字間隔を広げる */
+  text-shadow: 2px 2px 4px rgba(255, 120, 180, 0.5); /* ポップな影 */
+  font-family: "Comic Sans MS", cursive, sans-serif; /* 遊び心のあるフォント */
+  margin-bottom: 15px;            /* 下に余白を追加 */
+}
+
+/* メモ一覧の項目スタイル */
+.memo-list li {
+  font-size: 14px;         /* メモタイトルの文字サイズを小さく */
+  color: #333;
+  margin: 1px 0;           /* 上下の余白を狭く */
+  padding: 1px 8px;        /* 内側の余白を調整 */
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* メモ項目のテキスト強調 */
+.memo-list li strong {
+  font-size: 12px;         /* タイトルの文字サイズ */
+  font-weight: bold;
+}
+
+/* ホバー時の効果 */
+.memo-list li:hover {
+  background: #ffebf4;
+}
+
+/* メモエディタのスタイル */
+.memo-editor {
+  flex: 1;                /* メモエディタが残りの幅を使用 */
+  padding: 20px;
+}
+
+/* タイトルラベルのポップなスタイル */
+.memo-editor label {
+  font-size: 18px;          /* 大きめのフォント */
+  font-weight: bold;        /* 太字 */
+  color: #ff7eb3;           /* 明るいピンク */
+  text-shadow: 2px 2px 4px rgba(255, 120, 180, 0.5); /* ポップな影 */
+  font-family: "Comic Sans MS", cursive, sans-serif; /* 遊び心のあるフォント */
+  display: block;
+  margin-bottom: 10px;      /* 下に余白を追加 */
+}
+
+/* タイトル入力フィールドのスタイル */
+.memo-editor input[type="text"] {
+  width: 100%;                /* フィールドを全幅に */
+  max-width: 600px;           /* 必要なら最大幅を設定 */
+  padding: 10px;              /* 内側の余白を追加 */
+  font-size: 16px;            /* 読みやすいサイズ */
+  border: 2px solid #ff7eb3;  /* ポップな枠線 */
+  border-radius: 5px;         /* 角を丸める */
+  outline: none;              /* フォーカス時の青枠を削除 */
+  transition: all 0.3s ease;  /* アニメーション効果 */
+}
+
+/* 入力フィールドのフォーカス時のスタイル */
+.memo-editor input[type="text"]:focus {
+  border-color: #ff4b9d;      /* フォーカス時の枠線の色 */
+  box-shadow: 0 0 5px #ff4b9d; /* 軽い影を追加 */
+}
+
+/* テキストエリアのスタイル調整 */
+textarea {
+  width: calc(100% - 20px);  /* 右側にスペースを追加 */
+  margin-right: 20px;        /* マージンで間隔を設定 */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;              /* サイズ変更を無効化 */
+}
+
+
+/* メモページ全体の背景 */
+.memo-manager {
+  width: 90%;            /* 幅を広げる (例: 90%) */
+  max-width: 1400px;     /* 最大幅の調整 (必要なら解除) */
+  margin: 0 auto;        /* 中央揃え */
+  padding: 20px;
+  background-color: #f6e9e9;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  height: 650px;         /* 固定高さを指定 */
+  overflow-y: auto;      /* 必要に応じて縦スクロールを追加 */
+}
+
+.save-button:hover {
+  background: linear-gradient(135deg, #ff6584, #ff3f61);
+  transform: scale(1.1);   /* ホバー時の微妙な拡大 */
+}
+
+.save-button:active {
+  transform: scale(0.9);   /* クリック時の縮小 */
+}
+
+/* ボタングループのスタイル */
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+/* ボタンの共通スタイル */
+.save-button, .delete-button {
+  background-color: #007bff; /* 保存ボタンの色 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;   /* 内側の余白を統一 */
+  font-size: 16px;      /* フォントサイズを統一 */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-button {
+  background-color: #4caf50; /* 緑色の保存ボタン */
+}
+
+.delete-button {
+  background-color: #ff6b6b; /* 赤色の削除ボタン */
+}
+
+/* ホバー時のスタイル */
+.save-button:hover, .delete-button:hover {
+  opacity: 0.8; /* 少し暗く */
+}
+
+.save-button:active, .delete-button:active {
+  transform: scale(0.95); /* クリック時の縮小 */
+}
+
+/* ボタン配置用コンテナ */
+.button-container {
+  display: flex;
+  gap: 10px; /* ボタン間の余白 */
+}
+
+/* 無効化された削除ボタンのスタイル */
+.delete-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* メモ一覧のタイトルに「・」を追加 */
+.memo-list li::before {
+  content: "・";              /* 先頭に「・」を表示 */
+  margin-right: 8px;          /* 文字との間隔 */
+  color: #ff7eb3;             /* ポップな色 */
+  font-size: 18px;            /* サイズを強調 */
+  font-weight: bold;
+}
+
+/* フォルダ関連スタイル */
+.folder-creation input {
+  padding: 8px;
+  font-size: 16px;
+  width: 200px;
+  margin-right: 10px;
+}
+
+.folder-creation button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.folder {
+  padding: 15px;
+  background: #e9f6ff;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.folder h3 {
+  font-size: 18px;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.folder ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.folder li {
+  padding: 8px 12px;
+  background: #f4f4f4;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
+}
+
+.memo-list ul li {
+  cursor: grab;
+}
+
+/* 選択中のメモ項目のスタイル */
+.memo-list li.selected-memo {
+  background-color: #ffe4e1; /* 柔らかいピンク色 */
+  border: 2px solid #ff69b4; /* 鮮やかなピンクのボーダー */
+  font-weight: bold; /* 太字 */
+  color: #ff1493; /* 鮮やかな文字色 */
+  transform: scale(1.05); /* 軽く拡大 */
+  transition: all 0.4s ease; /* なめらかな変化 */
+  position: relative; /* バッジを追加するため */
+}
+
+.memo-list li.selected-memo::after {
+  content: "選択中"; /* 選択中のラベル */
+  position: absolute;
+  top: 50%;
+  left: 200px; /* 左に寄せる */
+  transform: translateY(-50%);
+  background-color: #ff69b4;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* MyPageに戻るボタン  ----------------------------------------------------- */
+
+.back-button {
+  display: inline-block;
+  background-color: #ff69b4; /* 鮮やかなピンク */
+  color: white;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #ff1493; /* ホバー時の濃いピンク */
+  transform: scale(1.05); /* 少し拡大 */
+}
+
+.back-button-link {
+  color: white; /* テキストの色 */
+  text-decoration: none;
+}
+
+.back-button-link:hover {
+  text-decoration: underline; /* ホバー時の下線 */
+}
+
+/* MyPageに戻るボタン  ----------------------------------------------------- */

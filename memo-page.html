@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memo Manager</title>
+  <link rel="stylesheet" href="MemoManager.css">
+</head>
+<body>
+  <div class="memo-manager">
+    <header>
+      <button class="back-button">
+        <a href="index.html" class="back-button-link">MyPageに戻る</a>
+      </button>
+    </header>
+
+    <div class="memo-container">
+      <div class="memo-list">
+        <h2>メモ一覧</h2>
+        <ul id="memo-list">
+          <!-- メモがここに追加される -->
+        </ul>
+      </div>
+
+      <div class="memo-editor">
+        <label for="memo-title">タイトル</label>
+        <input type="text" id="memo-title" />
+        <label for="memo-content">内容</label>
+        <textarea id="memo-content" rows="10"></textarea>
+        <div class="button-group">
+          <button class="save-button" id="save-button">メモを追加</button>
+          <button class="delete-button" id="delete-button" disabled>メモを削除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="MemoManager.js"></script> <!-- 外部ファイルとして読み込み -->
+</body>
+</html>
