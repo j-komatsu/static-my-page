@@ -1,24 +1,5 @@
 let currentSectionId = "";
 
-function editLinks(sectionId) {
-  currentSectionId = sectionId;
-  const linkList = document.querySelector(`#${sectionId} .link-list`);
-  const modalLinkList = document.getElementById("modal-link-list");
-  modalLinkList.innerHTML = "";
-
-  linkList.querySelectorAll("li").forEach((li, index) => {
-    const text = li.querySelector("a").textContent;
-    const url = li.querySelector("a").href;
-    const listItem = document.createElement("li");
-    listItem.innerHTML = `
-      ${text} - <a href="${url}" target="_blank">${url}</a>
-      <button onclick="removeLink(${index})">削除</button>
-    `;
-    modalLinkList.appendChild(listItem);
-  });
-
-  document.getElementById("modal").style.display = "flex";
-}
 
 function closeModal() {
   document.getElementById("modal").style.display = "none";
@@ -44,10 +25,23 @@ function addLink() {
 }
 
 function removeLink(index) {
-  const linkList = document.querySelector(`#${currentSectionId} .link-list`);
-  linkList.removeChild(linkList.children[index]);
-  editLinks(currentSectionId);
+  if (!linksData[currentSectionId]) {
+    console.error(`セクション${currentSectionId}のリンクデータが存在しません`);
+    return;
+  }
+
+  // 指定インデックスのリンクを削除
+  linksData[currentSectionId].splice(index, 1);
+
+  // ローカルストレージに保存
+  saveLinks();
+
+  // モーダル内とセクション表示を更新
+  renderLinks();
+  editLinks(currentSectionId); // モーダルも再描画
 }
+
+
 
 
 // ローカルストレージ設定 ------------------------------------------------------------
@@ -57,14 +51,6 @@ const pageKey = `sectionLinks_${document.title.replace(/\s+/g, "_")}`;
 const sectionNamesKey = `sectionNames_${document.title.replace(/\s+/g, "_")}`;
 let linksData = {};
 
-// ページロード時にリンクを読み込む
-window.onload = function () {
-  const storedLinks = localStorage.getItem(pageKey);
-  if (storedLinks) {
-    linksData = JSON.parse(storedLinks); // ローカルストレージからデータを取得
-  }
-  renderLinks(); // 各セクションにリンクを反映
-};
 
 // 各セクションのリンクを描画
 function renderLinks() {
@@ -89,6 +75,10 @@ function editLinks(sectionId) {
   const modalLinkList = document.getElementById("modal-link-list");
   modalLinkList.innerHTML = ""; // モーダル内のリンクリストをクリア
 
+  // 入力フィールドをリセット
+  document.getElementById("new-link-text").value = ""; // リンクテキストをクリア
+  document.getElementById("new-link-url").value = ""; // リンクURLをクリア
+
   // 現在のリンクを表示
   (linksData[sectionId] || []).forEach((link, index) => {
     const listItem = document.createElement("li");
@@ -101,6 +91,7 @@ function editLinks(sectionId) {
 
   document.getElementById("modal").style.display = "flex";
 }
+
 
 // モーダルを閉じる
 function closeModal() {
@@ -129,16 +120,6 @@ function addLink() {
   editLinks(currentSectionId); // モーダル内のリストも更新
 }
 
-// リンクを削除
-function removeLink(sectionId, index) {
-  if (linksData[sectionId]) {
-    linksData[sectionId].splice(index, 1); // 指定したリンクを削除
-  }
-
-  // ローカルストレージに保存
-  saveLinks();
-  renderLinks(); // セクションを再描画
-}
 
 // ローカルストレージにリンクデータを保存
 function saveLinks() {
@@ -147,13 +128,25 @@ function saveLinks() {
 
 // ページロード時にリンクデータを読み込む
 window.onload = function () {
+  // セクション名の読み込み
+  const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
+  for (const [sectionId, name] of Object.entries(storedSectionNames)) {
+    const title = document.querySelector(`#${sectionId} h2`);
+    if (title) {
+      title.textContent = name;
+    }
+  }
+
+  // リンクデータの読み込み
   const storedLinks = localStorage.getItem(pageKey);
   if (storedLinks) {
     linksData = JSON.parse(storedLinks);
   }
 
-  renderLinks(); // ページロード時にリンクを描画
+  // リンクのレンダリング
+  renderLinks();
 };
+
 
 // ローカルストレージ設定 ------------------------------------------------------------
 
@@ -264,24 +257,5 @@ function saveSectionNamesToStorage() {
   });
   localStorage.setItem(sectionNamesKey, JSON.stringify(sectionNames));
 }
-
-// ページロード時にセクション名を読み込む
-window.onload = function () {
-  const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
-  for (const [sectionId, name] of Object.entries(storedSectionNames)) {
-    const title = document.querySelector(`#${sectionId} h2`);
-    if (title) {
-      title.textContent = name;
-    }
-  }
-
-  // 既存のリンクデータを読み込む
-  const storedLinks = localStorage.getItem(pageKey);
-  if (storedLinks) {
-    linksData = JSON.parse(storedLinks);
-  }
-  renderLinks();
-};
-
 
 //セクション名の編集と保存機能を追加 --------------------------------------------------
