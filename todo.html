@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODOリスト</title>
+    <link rel="stylesheet" href="todo-style.css">
+</head>
+<body>
+    <header class="todo-header">
+        <h1>TODOリスト</h1>
+        <button class="todo-back-button" onclick="location.href='index.html'">← メインページに戻る</button>
+    </header>
+    <main class="todo-main">
+        <div class="todo-container">
+            <input type="text" id="todo-new-task" placeholder="新しいタスクを入力" class="todo-input">
+            <button id="todo-add-task-btn" class="todo-button">追加</button>
+            <ul id="todo-task-list" class="todo-list"></ul>
+            <button id="todo-clear-completed" class="todo-button todo-clear-btn">完了タスクをすべて削除</button>
+        </div>
+    </main>
+    <script src="todo-script.js"></script>
+</body>
+</html>
