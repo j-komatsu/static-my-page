@@ -7,6 +7,7 @@ body {
 }
 
 .todo-header {
+    position: relative;
     text-align: center;
     padding: 10px;
     background-color: #444; /* 薄い黒 */
@@ -14,19 +15,27 @@ body {
 }
 
 .todo-back-button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #666; /* 灰色 */
-    color: white;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 10px; /* フォントサイズを少し大きく */
+    font-weight: bold; /* テキストを太字に */
+    padding: 10px 15px; /* パディングを追加してクリック範囲を広げる */
+    background-color: #666; /* 背景色を少し明るく */
+    border-radius: 5px; /* 角を丸く */
     border: none;
-    border-radius: 3px;
+    color: white; /* 白い文字 */
     cursor: pointer;
-    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 影を追加して立体感を出す */
+    transition: background-color 0.3s, box-shadow 0.3s; /* ホバー時の変化を追加 */
 }
 
+
 .todo-back-button:hover {
-    background-color: #555; /* さらに濃い灰色 */
+    background-color: #888; /* ホバー時の背景色 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* ホバー時に影を強調 */
 }
+
 
 .todo-main {
     padding: 20px;
