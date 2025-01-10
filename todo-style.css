@@ -3,20 +3,20 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    background-color: #f5f5f5; /* 背景を明るい灰色に */
 }
 
 .todo-header {
     text-align: center;
     padding: 10px;
-    background-color: #5A9BF6; /* 背景色を弱めた青 */
+    background-color: #444; /* 薄い黒 */
     color: white;
 }
 
 .todo-back-button {
     margin-top: 10px;
     padding: 8px 12px;
-    background-color: #007BFF; /* 色を青に変更 */
+    background-color: #666; /* 灰色 */
     color: white;
     border: none;
     border-radius: 3px;
@@ -25,7 +25,7 @@ body {
 }
 
 .todo-back-button:hover {
-    background-color: #0056b3;
+    background-color: #555; /* さらに濃い灰色 */
 }
 
 .todo-main {
@@ -47,19 +47,21 @@ body {
     margin-right: 10px;
     border: 1px solid #ddd;
     border-radius: 3px;
+    font-size: 14px;
 }
 
 .todo-button {
     padding: 8px 12px;
-    background-color: #007BFF;
+    background-color: #666; /* 灰色 */
     color: white;
     border: none;
     border-radius: 3px;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .todo-button:hover {
-    background-color: #0056b3;
+    background-color: #555; /* さらに濃い灰色 */
 }
 
 .todo-list {
@@ -71,14 +73,18 @@ body {
 .todo-task-item {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* 左寄せ */
-    padding: 8px 15px; /* 最下層枠の幅を広げる */
+    justify-content: flex-start;
+    padding: 8px 15px;
     border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9; /* 明るい灰色 */
 }
 
 .todo-task-item.completed {
     text-decoration: line-through;
-    color: gray;
+    text-decoration-thickness: 3px; /* 線を太く */
+    color: #999; /* 薄い灰色 */
+    background-color: #e6e6e6; /* 完了タスクに薄い背景色を追加 */
+    font-style: italic; /* 完了したタスクを強調 */
 }
 
 .todo-task-checkbox {
@@ -86,15 +92,22 @@ body {
 }
 
 .todo-task-text {
-    flex-grow: 1; /* テキスト部分を左寄せ */
+    flex-grow: 1;
     text-align: left;
+    font-size: 14px;
+    color: #333; /* 濃い灰色 */
 }
 
 .todo-clear-btn {
     margin-top: 15px;
-    background-color: #DC3545;
+    background-color: #888; /* 中間の灰色 */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    cursor: pointer;
 }
 
 .todo-clear-btn:hover {
-    background-color: #a71d2a;
+    background-color: #666; /* 濃い灰色 */
 }

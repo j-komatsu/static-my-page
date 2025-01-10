@@ -22,7 +22,6 @@ function renderMemos() {
 
 // メモを選択
 function selectMemo(id) {
-  // 選択中のメモを取得
   const memo = memos.find((m) => m.id === id);
   if (memo) {
     editingMemoId = id;
@@ -30,21 +29,44 @@ function selectMemo(id) {
     memoContentInput.value = memo.content;
     deleteButton.disabled = false;
 
-    // 既存の選択状態をクリア
     document.querySelectorAll("#memo-list li").forEach((item) => {
-      item.classList.remove("selected-memo");
+      item.classList.remove("selected");
     });
 
-    // 現在選択したメモにクラスを追加
     const selectedItem = [...memoList.children].find(
       (item) => item.textContent === memo.title
     );
     if (selectedItem) {
-      selectedItem.classList.add("selected-memo");
+      selectedItem.classList.add("selected"); // 選択中のクラスを追加
     }
   }
 }
 
+
+// メモを選択
+function selectMemo(id) {
+  const memo = memos.find((m) => m.id === id);
+  if (memo) {
+    editingMemoId = id;
+    memoTitleInput.value = memo.title;
+    memoContentInput.value = memo.content;
+    deleteButton.disabled = false;
+
+    // ボタンのテキストを「更新」に変更
+    saveButton.textContent = "更新";
+
+    document.querySelectorAll("#memo-list li").forEach((item) => {
+      item.classList.remove("selected");
+    });
+
+    const selectedItem = [...memoList.children].find(
+      (item) => item.textContent === memo.title
+    );
+    if (selectedItem) {
+      selectedItem.classList.add("selected"); // 選択中のクラスを追加
+    }
+  }
+}
 
 // メモを追加または更新
 function saveMemo() {
@@ -57,12 +79,14 @@ function saveMemo() {
   }
 
   if (editingMemoId) {
+    // 既存メモの更新
     const memo = memos.find((m) => m.id === editingMemoId);
     if (memo) {
       memo.title = title;
       memo.content = content;
     }
   } else {
+    // 新しいメモの追加
     memos.push({ id: Date.now(), title, content });
   }
 
@@ -70,6 +94,30 @@ function saveMemo() {
   updateLocalStorage();
   renderMemos();
 }
+
+// フォームをリセット
+function resetForm() {
+  editingMemoId = null;
+  memoTitleInput.value = "";
+  memoContentInput.value = "";
+  deleteButton.disabled = true;
+
+  // ボタンのテキストを「メモを追加」に戻す
+  saveButton.textContent = "メモを追加";
+}
+
+
+// フォームをリセット
+function resetForm() {
+  editingMemoId = null;
+  memoTitleInput.value = "";
+  memoContentInput.value = "";
+  deleteButton.disabled = true;
+
+  // ボタンのテキストを「メモを追加」に戻す
+  saveButton.textContent = "メモを追加";
+}
+
 
 // メモを削除
 function deleteMemo() {
