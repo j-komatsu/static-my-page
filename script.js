@@ -82,10 +82,23 @@ function editLinks(sectionId) {
   // 現在のリンクを表示
   (linksData[sectionId] || []).forEach((link, index) => {
     const listItem = document.createElement("li");
+    listItem.draggable = true;
+    listItem.dataset.index = index;
     listItem.innerHTML = `
-      ${link.text} - <a href="${link.url}" target="_blank">${link.url}</a>
+      <div class="drag-handle">⋮⋮</div>
+      <div class="link-content">
+        <span class="link-text">${link.text}</span>
+        <a href="${link.url}" target="_blank" class="link-url">${link.url}</a>
+      </div>
       <button onclick="removeLink(${index})">削除</button>
     `;
+    
+    // ドラッグイベントリスナーを追加
+    listItem.addEventListener('dragstart', handleDragStart);
+    listItem.addEventListener('dragover', handleDragOver);
+    listItem.addEventListener('drop', handleDrop);
+    listItem.addEventListener('dragend', handleDragEnd);
+    
     modalLinkList.appendChild(listItem);
   });
 
@@ -259,3 +272,62 @@ function saveSectionNamesToStorage() {
 }
 
 //セクション名の編集と保存機能を追加 --------------------------------------------------
+
+// ドラッグ&ドロップ機能 --------------------------------------------------
+let draggedElement = null;
+let draggedIndex = null;
+
+function handleDragStart(e) {
+  draggedElement = this;
+  draggedIndex = parseInt(this.dataset.index);
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  
+  // ドロップターゲットのハイライト
+  const targetElement = e.currentTarget;
+  if (targetElement !== draggedElement) {
+    targetElement.classList.add('drag-over');
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const targetElement = e.currentTarget;
+  const targetIndex = parseInt(targetElement.dataset.index);
+  
+  if (draggedElement && draggedIndex !== null && draggedIndex !== targetIndex) {
+    // リンクデータの順番を変更
+    const draggedLink = linksData[currentSectionId][draggedIndex];
+    linksData[currentSectionId].splice(draggedIndex, 1);
+    linksData[currentSectionId].splice(targetIndex, 0, draggedLink);
+    
+    // ローカルストレージに保存
+    saveLinks();
+    
+    // 表示を更新
+    renderLinks();
+    editLinks(currentSectionId);
+  }
+  
+  // クリーンアップ
+  targetElement.classList.remove('drag-over');
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  
+  // すべてのドラッグオーバーのハイライトを削除
+  document.querySelectorAll('#modal-link-list li').forEach(item => {
+    item.classList.remove('drag-over');
+  });
+  
+  draggedElement = null;
+  draggedIndex = null;
+}
+
+// ドラッグ&ドロップ機能 --------------------------------------------------

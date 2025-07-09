@@ -128,11 +128,15 @@ body {
   .modal-content {
     width: 600px;
     max-width: 90%;
+    max-height: 80vh;
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
   
   .modal-content h3 {
@@ -146,6 +150,7 @@ body {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    flex-shrink: 0;
   }
   
   .modal-content button {
@@ -156,6 +161,7 @@ body {
     background-color: #666;
     color: white;
     cursor: pointer;
+    flex-shrink: 0;
   }
   
   .modal-content button:hover {
@@ -233,31 +239,90 @@ body {
     background-color: #d0d0d0;
     transform: scale(1.05);
   }
+
+  .navigation-link.claude-link {
+    background-color: #e0e0e0;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+    display: inline-block;
+  }
+  
+  .navigation-link.claude-link:hover {
+    background-color: #d0d0d0;
+    transform: scale(1.05);
+  }
   
   #modal-link-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 300px;
   }
   
   #modal-link-list li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 10px;
     border-bottom: 1px solid #ddd;
+    cursor: move;
+    transition: background-color 0.2s, opacity 0.2s;
+    border-radius: 4px;
+    margin-bottom: 5px;
   }
-  
-  #modal-link-list li a {
+
+  #modal-link-list li:hover {
+    background-color: #f0f0f0;
+  }
+
+  #modal-link-list li.dragging {
+    opacity: 0.5;
+    background-color: #e8f4f8;
+  }
+
+  #modal-link-list li.drag-over {
+    background-color: #d4edda;
+    border: 2px dashed #28a745;
+  }
+
+  .drag-handle {
+    color: #999;
+    font-size: 16px;
+    cursor: grab;
+    margin-right: 10px;
+    user-select: none;
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .link-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .link-text {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .link-url {
     color: #007bff;
     text-decoration: none;
-    font-weight: bold;
-    flex-grow: 1;
-    max-width: 70%; /* モーダル内に収まるように固定 */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 12px;
+    word-break: break-all;
   }
+  
   
   #modal-link-list li button {
     padding: 5px 10px;
