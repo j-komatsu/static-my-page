@@ -30,8 +30,10 @@ class Dashboard {
         this.updateMemoStats();
         this.updateTodoStats();
         this.updateWorkTimeStats();
+        this.updateCalendarStats();
         this.loadTodayTasks();
         this.loadRecentMemos();
+        this.loadTodayEvents();
     }
 
     // タスク管理の統計を更新
@@ -293,6 +295,145 @@ class Dashboard {
         }
         
         document.getElementById('today-work-time').textContent = `${Math.round(todayTotal / 60)}時間`;
+    }
+
+    // カレンダー統計を更新
+    updateCalendarStats() {
+        const events = JSON.parse(localStorage.getItem('calendar_events')) || [];
+        const today = new Date().toISOString().split('T')[0];
+        
+        // 今日の予定数
+        const todayEvents = events.filter(event => event.date === today);
+        document.getElementById('today-events').textContent = `${todayEvents.length}件`;
+        
+        // 次の祝日を計算
+        this.updateNextHoliday();
+        
+        // 月末までの営業日を計算
+        this.updateBusinessDaysLeft();
+    }
+
+    // 次の祝日を更新
+    updateNextHoliday() {
+        try {
+            // 日本の祝日システムを使用（calendar.jsから）
+            if (typeof holidaySystem !== 'undefined') {
+                const today = new Date();
+                let nextHoliday = null;
+                
+                // 今日から30日後まで祝日を検索
+                for (let i = 0; i <= 30; i++) {
+                    const checkDate = new Date(today);
+                    checkDate.setDate(today.getDate() + i);
+                    const holiday = holidaySystem.isHoliday(checkDate);
+                    
+                    if (holiday) {
+                        const daysFromNow = i === 0 ? '今日' : i === 1 ? '明日' : `${i}日後`;
+                        nextHoliday = `${holiday}（${daysFromNow}）`;
+                        break;
+                    }
+                }
+                
+                document.getElementById('next-holiday').textContent = nextHoliday || '30日以内になし';
+            } else {
+                document.getElementById('next-holiday').textContent = '-';
+            }
+        } catch (error) {
+            document.getElementById('next-holiday').textContent = '-';
+        }
+    }
+
+    // 月末までの営業日を更新
+    updateBusinessDaysLeft() {
+        try {
+            if (typeof holidaySystem !== 'undefined') {
+                const today = new Date();
+                const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                let businessDays = 0;
+                const current = new Date(today);
+                
+                while (current <= endOfMonth) {
+                    if (holidaySystem.isBusinessDay(current)) {
+                        businessDays++;
+                    }
+                    current.setDate(current.getDate() + 1);
+                }
+                
+                document.getElementById('business-days-left').textContent = `${businessDays}日`;
+            } else {
+                document.getElementById('business-days-left').textContent = '-';
+            }
+        } catch (error) {
+            document.getElementById('business-days-left').textContent = '-';
+        }
+    }
+
+    // 今日の予定を読み込み
+    loadTodayEvents() {
+        const events = JSON.parse(localStorage.getItem('calendar_events')) || [];
+        const today = new Date().toISOString().split('T')[0];
+        const todayEvents = events.filter(event => event.date === today);
+        
+        const container = document.getElementById('today-calendar-events');
+        container.innerHTML = '';
+        
+        if (todayEvents.length === 0) {
+            const li = document.createElement('li');
+            li.innerHTML = '<div class="task-title">今日の予定はありません</div>';
+            li.style.color = '#999';
+            li.style.fontStyle = 'italic';
+            container.appendChild(li);
+            return;
+        }
+        
+        // 時刻順でソート
+        todayEvents.sort((a, b) => {
+            if (!a.startTime && !b.startTime) return 0;
+            if (!a.startTime) return 1;
+            if (!b.startTime) return -1;
+            return a.startTime.localeCompare(b.startTime);
+        });
+        
+        todayEvents.forEach(event => {
+            const li = document.createElement('li');
+            const timeStr = event.allDay ? '終日' : `${event.startTime || ''} - ${event.endTime || ''}`;
+            
+            li.innerHTML = `
+                <div class="task-title">${event.title}</div>
+                <div class="task-meta">
+                    <span class="task-time">${timeStr}</span>
+                    <span class="task-category event-${event.category}">${this.getCategoryName(event.category)}</span>
+                </div>
+            `;
+            
+            // 複数日予定の場合は特別なマーク
+            if (event.isMultiDay) {
+                li.classList.add('multi-day-event');
+                if (event.isFirstDay) {
+                    li.querySelector('.task-title').innerHTML = `📅 ${event.title}`;
+                } else if (event.isLastDay) {
+                    li.querySelector('.task-title').innerHTML = `${event.title} 🏁`;
+                } else {
+                    li.querySelector('.task-title').innerHTML = `▶ ${event.title}`;
+                }
+            }
+            
+            container.appendChild(li);
+        });
+    }
+
+    // カテゴリ名を取得
+    getCategoryName(category) {
+        const categories = {
+            meeting: '会議',
+            work: '作業',
+            deadline: '締切',
+            release: 'リリース',
+            personal: '個人',
+            other: 'その他'
+        };
+        return categories[category] || category;
     }
 
     // 作業時間チャートを描画

@@ -96,6 +96,25 @@
                         <button id="stop-work-btn" class="work-btn" disabled>作業終了</button>
                     </div>
                 </div>
+
+                <div class="overview-card calendar-overview">
+                    <h3>カレンダー</h3>
+                    <div class="card-content">
+                        <div class="stat-item">
+                            <span class="stat-label">今日の予定</span>
+                            <span class="stat-value" id="today-events">0件</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">近日の祝日</span>
+                            <span class="stat-value" id="next-holiday">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">営業日残り</span>
+                            <span class="stat-value" id="business-days-left">-</span>
+                        </div>
+                    </div>
+                    <a href="calendar.html" class="card-link">カレンダーを開く</a>
+                </div>
             </section>
 
             <!-- 今日のタスク一覧 -->
@@ -117,6 +136,12 @@
                     <div class="task-column">
                         <h3>進行中タスク</h3>
                         <ul id="progress-tasks" class="task-list">
+                            <!-- 動的に生成 -->
+                        </ul>
+                    </div>
+                    <div class="task-column">
+                        <h3>今日の予定</h3>
+                        <ul id="today-calendar-events" class="task-list">
                             <!-- 動的に生成 -->
                         </ul>
                     </div>
@@ -188,6 +213,7 @@
         </main>
     </div>
 
+    <script src="../js/calendar.js"></script>
     <script src="../js/dashboard.js"></script>
 </body>
 </html>
