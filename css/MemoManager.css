@@ -1,0 +1,460 @@
+  /* メモマネージャースタイル（モノトーン調） */
+  .memo-manager {
+    width: 80vw;
+    height: 80vh;
+    padding: 20px;
+    max-width: 1１200px;
+    margin: 0 auto;
+    background-color: #f8f8f8; /* 明るい灰色 */
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .memo-manager header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 10px;
+  }
+
+  .dashboard-button {
+    padding: 10px 15px;
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+  }
+
+  .dashboard-button:hover {
+    background-color: #357abd;
+  }
+
+  .dashboard-button-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 2px 4px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .dashboard-button-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .memo-manager h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333; /* 濃い灰色 */
+    text-align: center;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .memo-container {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 150px);
+  }
+
+  .memo-sidebar {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
+  .memo-editor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* サイドバーセクションのスタイル */
+  .search-section, .category-section, .template-section, .memo-list-section {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+  }
+
+  .search-section h3, .category-section h3, .template-section h3, .memo-list-section h3 {
+    font-size: 14px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 10px;
+    margin-top: 0;
+  }
+
+  .search-section input, .category-section select, .template-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+  }
+
+  .search-section button, .template-section button {
+    padding: 6px 12px;
+    background-color: #666;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    margin-right: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .search-section button:hover, .template-section button:hover {
+    background-color: #555;
+  }
+
+  /* メモエディター関連 */
+  .memo-editor-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .memo-editor-header label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 2px;
+  }
+
+  .memo-editor-header input, .memo-editor-header select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .editor-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .editor-toggle {
+    padding: 6px 12px;
+    background-color: #777;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: background-color 0.3s;
+  }
+
+  .editor-toggle:hover {
+    background-color: #666;
+  }
+
+  .editor-toggle.active {
+    background-color: #4a90e2;
+  }
+
+  .content-container {
+    position: relative;
+    flex-grow: 1;
+    margin-bottom: 15px;
+  }
+
+  #memo-content {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: vertical;
+    background-color: #ffffff;
+    color: #333;
+    font-family: 'Consolas', 'Monaco', monospace;
+    box-sizing: border-box;
+  }
+
+  .markdown-preview {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #ffffff;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  /* マークダウンプレビューのスタイル */
+  .markdown-preview h1, .markdown-preview h2, .markdown-preview h3 {
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .markdown-preview h1 { font-size: 24px; }
+  .markdown-preview h2 { font-size: 20px; }
+  .markdown-preview h3 { font-size: 16px; }
+
+  .markdown-preview p {
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+
+  .markdown-preview ul, .markdown-preview ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+
+  .markdown-preview code {
+    background-color: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+
+  .markdown-preview pre {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-bottom: 10px;
+  }
+
+  .markdown-preview blockquote {
+    border-left: 4px solid #ddd;
+    margin-left: 0;
+    padding-left: 15px;
+    color: #666;
+  }
+
+  #memo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  #memo-list li {
+    font-size: 12px;
+    color: #333;
+    margin: 5px 0;
+    padding: 8px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    position: relative;
+  }
+
+  #memo-list li .memo-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  #memo-list li .memo-title {
+    font-weight: bold;
+    color: #333;
+  }
+
+  #memo-list li .memo-category {
+    background-color: #6b8ca3;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+  }
+
+  #memo-list li .memo-tags {
+    font-size: 10px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  #memo-list li .memo-preview {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+    max-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .memo-list li.completed {
+    text-decoration: line-through;
+    text-decoration-thickness: 3px; /* 太い取り消し線 */
+    color: #999; /* 中間の灰色 */
+    background-color: #e0e0e0; /* 完了タスクの背景色 */
+  }
+
+  .memo-list li:hover {
+    background: #e8e8e8; /* ホバー時の薄い灰色 */
+  }
+
+  .memo-list li.selected {
+    background: #d3d3d3; /* 選択中のアイテムの背景色（薄い灰色） */
+    border: 2px solid #808080; /* 枠線をダークグレーに */
+    color: #333; /* テキスト色を濃い灰色 */
+    font-weight: bold; /* 太字で強調 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 影を追加して深みを出す */
+    position: relative; /* バッジの位置調整 */
+    transition: all 0.3s ease;
+}
+
+.memo-list li.selected::after {
+    content: "選択中";
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: #808080; /* グレーのバッジ */
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+  .memo-editor label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 5px;
+  }
+
+  .memo-editor input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .save-button, .delete-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .save-button {
+    background-color: #777; /* さらにトーンを下げた灰色 */
+  }
+
+  .save-button:hover {
+    background-color: #555; /* 濃い灰色 */
+  }
+
+  .delete-button {
+    background-color: #aaa; /* トーンを下げた中間の灰色 */
+  }
+
+  .delete-button:hover {
+    background-color: #888; /* さらに濃い中間の灰色 */
+  }
+
+  .delete-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .back-button {
+    padding: 10px 15px;
+    background-color: #666; /* 灰色 */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+  }
+
+  .back-button:hover {
+    background-color: #555; /* 濃い灰色 */
+  }
+
+  .back-button-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 11px; /* フォントサイズを縮小 */
+    padding: 2px 4px; /* パディングを縮小 */
+    border-radius: 5px; /* 角を丸くする */
+    transition: background-color 0.3s;
+}
+
+.back-button-link:hover {
+    background-color: #444; /* ホバー時の背景色 */
+}
+
+/* ドラッグ&ドロップスタイル */
+.memo-list li {
+  position: relative;
+}
+
+.memo-list li .drag-handle {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 12px;
+  cursor: grab;
+  user-select: none;
+}
+
+.memo-list li .drag-handle:active {
+  cursor: grabbing;
+}
+
+.memo-list li.dragging {
+  opacity: 0.5;
+  transform: rotate(3deg);
+  z-index: 1000;
+}
+
+.memo-list li.drag-over {
+  background-color: #d3d3d3;
+  border: 2px dashed #808080;
+  transform: scale(1.02);
+}

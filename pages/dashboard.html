@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダッシュボード</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <button class="back-button">
+                <a href="../index.html" class="back-button-link">MyPageに戻る</a>
+            </button>
+            <h1>ダッシュボード</h1>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- 概要カード -->
+            <section class="overview-cards">
+                <div class="overview-card task-overview">
+                    <h3>タスク管理</h3>
+                    <div class="card-content">
+                        <div class="stat-item">
+                            <span class="stat-label">進行中タスク</span>
+                            <span class="stat-value" id="active-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">完了タスク（今日）</span>
+                            <span class="stat-value" id="completed-today">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">今日の進捗率</span>
+                            <span class="stat-value" id="today-progress">0%</span>
+                        </div>
+                    </div>
+                    <a href="task-manager.html" class="card-link">タスク管理を開く</a>
+                </div>
+
+                <div class="overview-card memo-overview">
+                    <h3>メモ管理</h3>
+                    <div class="card-content">
+                        <div class="stat-item">
+                            <span class="stat-label">総メモ数</span>
+                            <span class="stat-value" id="total-memos">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">今日作成</span>
+                            <span class="stat-value" id="memos-today">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">最新更新</span>
+                            <span class="stat-value" id="last-memo-update">-</span>
+                        </div>
+                    </div>
+                    <a href="memo-page.html" class="card-link">メモ管理を開く</a>
+                </div>
+
+                <div class="overview-card todo-overview">
+                    <h3>TODOリスト</h3>
+                    <div class="card-content">
+                        <div class="stat-item">
+                            <span class="stat-label">未完了TODO</span>
+                            <span class="stat-value" id="pending-todos">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">完了TODO（今日）</span>
+                            <span class="stat-value" id="completed-todos">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">繰り返しタスク</span>
+                            <span class="stat-value" id="recurring-tasks">0</span>
+                        </div>
+                    </div>
+                    <a href="todo.html" class="card-link">TODOリストを開く</a>
+                </div>
+
+                <div class="overview-card work-time-overview">
+                    <h3>作業時間</h3>
+                    <div class="card-content">
+                        <div class="stat-item">
+                            <span class="stat-label">今日の作業時間</span>
+                            <span class="stat-value" id="today-work-time">0時間</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">今週の合計</span>
+                            <span class="stat-value" id="week-work-time">0時間</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">現在の状態</span>
+                            <span class="stat-value" id="current-status">休憩中</span>
+                        </div>
+                    </div>
+                    <div class="work-time-controls">
+                        <button id="start-work-btn" class="work-btn">作業開始</button>
+                        <button id="stop-work-btn" class="work-btn" disabled>作業終了</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 今日のタスク一覧 -->
+            <section class="today-tasks-section">
+                <h2>今日のタスク</h2>
+                <div class="today-tasks-container">
+                    <div class="task-column">
+                        <h3>期限近いタスク</h3>
+                        <ul id="urgent-tasks" class="task-list">
+                            <!-- 動的に生成 -->
+                        </ul>
+                    </div>
+                    <div class="task-column">
+                        <h3>今日のTODO</h3>
+                        <ul id="today-todos" class="task-list">
+                            <!-- 動的に生成 -->
+                        </ul>
+                    </div>
+                    <div class="task-column">
+                        <h3>進行中タスク</h3>
+                        <ul id="progress-tasks" class="task-list">
+                            <!-- 動的に生成 -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 最近のメモ -->
+            <section class="recent-memos-section">
+                <h2>最近のメモ</h2>
+                <div class="recent-memos-container">
+                    <ul id="recent-memos" class="memo-list">
+                        <!-- 動的に生成 -->
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 作業時間統計 -->
+            <section class="work-stats-section">
+                <h2>作業時間統計</h2>
+                <div class="stats-container">
+                    <div class="chart-container">
+                        <canvas id="work-time-chart" width="600" height="300"></canvas>
+                    </div>
+                    <div class="time-summary">
+                        <h3>週間サマリー</h3>
+                        <div class="weekly-stats">
+                            <div class="day-stat">
+                                <span class="day-label">月</span>
+                                <span class="day-time" id="mon-time">0h</span>
+                            </div>
+                            <div class="day-stat">
+                                <span class="day-label">火</span>
+                                <span class="day-time" id="tue-time">0h</span>
+                            </div>
+                            <div class="day-stat">
+                                <span class="day-label">水</span>
+                                <span class="day-time" id="wed-time">0h</span>
+                            </div>
+                            <div class="day-stat">
+                                <span class="day-label">木</span>
+                                <span class="day-time" id="thu-time">0h</span>
+                            </div>
+                            <div class="day-stat">
+                                <span class="day-label">金</span>
+                                <span class="day-time" id="fri-time">0h</span>
+                            </div>
+                            <div class="day-stat">
+                                <span class="day-label">土</span>
+                                <span class="day-time" id="sat-time">0h</span>
+                            </div>
+                            <div class="day-stat">
+                                <span class="day-label">日</span>
+                                <span class="day-time" id="sun-time">0h</span>
+                            </div>
+                        </div>
+                        <div class="total-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">今週合計</span>
+                                <span class="summary-value" id="week-total">0時間</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">平均/日</span>
+                                <span class="summary-value" id="daily-average">0時間</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

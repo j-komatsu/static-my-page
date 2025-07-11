@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODOリスト</title>
+    <link rel="stylesheet" href="../css/todo-style.css">
+</head>
+<body>
+    <header class="todo-header">
+        <div class="header-nav">
+            <button class="todo-back-button" onclick="location.href='../index.html'">← メインページに戻る</button>
+            <button class="todo-dashboard-button" onclick="location.href='dashboard.html'">ダッシュボード</button>
+        </div>
+        <h1>TODOリスト</h1>
+    </header>
+    <main class="todo-main">
+        <div class="todo-container">
+            <!-- タスク追加エリア -->
+            <div class="todo-add-section">
+                <input type="text" id="todo-new-task" placeholder="新しいタスクを入力" class="todo-input">
+                <select id="todo-task-type" class="todo-select">
+                    <option value="single">単発タスク</option>
+                    <option value="daily">日次タスク</option>
+                    <option value="weekly">週次タスク</option>
+                </select>
+                <button id="todo-add-task-btn" class="todo-button">追加</button>
+            </div>
+            
+            <!-- タスク一覧 -->
+            <div class="todo-lists-container">
+                <div class="todo-section">
+                    <h2>通常タスク</h2>
+                    <ul id="todo-task-list" class="todo-list"></ul>
+                </div>
+                
+                <div class="todo-section">
+                    <h2>繰り返しタスク</h2>
+                    <ul id="todo-recurring-list" class="todo-list"></ul>
+                </div>
+            </div>
+            
+            <!-- 統計エリア -->
+            <div class="todo-stats-section">
+                <h2>完了統計</h2>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-label">今日の完了率</span>
+                        <span class="stat-value" id="today-completion">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">今週の完了率</span>
+                        <span class="stat-value" id="week-completion">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">今月の完了率</span>
+                        <span class="stat-value" id="month-completion">0%</span>
+                    </div>
+                </div>
+                <canvas id="completion-chart" width="400" height="200"></canvas>
+            </div>
+            
+            <div class="todo-actions">
+                <button id="todo-clear-completed" class="todo-button todo-clear-btn">完了タスクをすべて削除</button>
+            </div>
+        </div>
+    </main>
+    <script src="../js/todo-script.js"></script>
+</body>
+</html>

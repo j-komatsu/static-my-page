@@ -4,96 +4,120 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Page</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="App">
-    <header class="App-header">
-      <h1>My Page</h1>
-      <div class="navigation-links">
-        <a href="project-a.html" class="navigation-link">プロジェクトA</a>
-        <a href="project-b.html" class="navigation-link">プロジェクトB</a>
-        <a href="project-c.html" class="navigation-link">プロジェクトC</a>
-        <a href="project-d.html" class="navigation-link">プロジェクトD</a>
-        <a href="todo.html" class="navigation-link">TODOリスト</a>
-        <a href="memo-page.html" class="navigation-link">メモ管理</a>
-        <a href="https://www.google.co.jp/" class="navigation-link google-link" target="_blank">
-          <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-        </a>
-        <a href="https://claude.ai/" class="navigation-link claude-link" target="_blank">
-          <span>C</span><span>l</span><span>a</span><span>u</span><span>d</span><span>e</span>
-        </a>
+    <!-- ヘッダー部分 -->
+    <header class="main-header">
+      <!-- ページタイトル -->
+      <div class="title-section">
+        <h1 id="main-title" onclick="editMainTitle()">My Page</h1>
+        <input type="text" id="main-title-input" class="title-input" onblur="saveMainTitle()" onkeypress="handleMainTitleKeypress(event)" />
       </div>
+      
+      <!-- ナビゲーションボタン群 -->
+      <nav class="header-navigation">
+        <!-- 固定ボタン群 -->
+        <div class="fixed-buttons-group">
+          <a href="https://www.google.co.jp/" class="navigation-link google-link" target="_blank">
+            <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+          </a>
+          <a href="https://claude.ai/" class="navigation-link claude-link" target="_blank">
+            <span>C</span><span>l</span><span>a</span><span>u</span><span>d</span><span>e</span>
+          </a>
+          <a href="pages/dashboard.html" class="navigation-link internal-link">ダッシュボード</a>
+          <a href="pages/task-manager.html" class="navigation-link internal-link">タスク管理</a>
+          <a href="pages/memo-page.html" class="navigation-link internal-link">メモ管理</a>
+          <a href="pages/todo.html" class="navigation-link internal-link">TODOリスト</a>
+          <a href="pages/bookmarks.html" class="navigation-link internal-link">ブックマーク</a>
+        </div>
+        
+        <!-- 動的プロジェクトボタン群 -->
+        <div class="dynamic-buttons-group">
+          <div id="project-links">
+            <!-- プロジェクトタブは動的に生成されます -->
+          </div>
+        </div>
+      </nav>
     </header>
 
-    <main class="section-grid">
-      <!-- 固定で6セクションを作成 -->
-      <div class="section" id="mypage-section1">
-        <div class="section-title">
-          <h2 onclick="editSectionName('mypage-section1')">セクション1</h2>
-          <input type="text" id="mypage-section1-input" class="section-name-input" onblur="saveSectionName('mypage-section1')" />
+    <main id="main-content">
+      <!-- Main View -->
+      <div id="main-view" class="view active">
+        <div class="section-grid">
+          <!-- 固定で6セクションを作成 -->
+          <div class="section" id="mypage-section1">
+            <div class="section-title">
+              <h2 onclick="editSectionName('mypage-section1')">セクション1</h2>
+              <input type="text" id="mypage-section1-input" class="section-name-input" onblur="saveSectionName('mypage-section1')" />
+            </div>
+            <ul class="link-list">
+              <li><a href="https://example1.com" target="_blank">リンク1-1</a></li>
+              <li><a href="https://example1.com" target="_blank">リンク1-2</a></li>
+            </ul>
+            <button class="edit-button" onclick="editLinks('mypage-section1')">リンクを編集</button>
+          </div>
+          <div class="section" id="mypage-section2">
+            <div class="section-title">
+              <h2 onclick="editSectionName('mypage-section2')">セクション2</h2>
+              <input type="text" id="mypage-section2-input" class="section-name-input" onblur="saveSectionName('mypage-section2')" />
+            </div>
+            <ul class="link-list">
+              <li><a href="https://example2.com" target="_blank">リンク2-1</a></li>
+              <li><a href="https://example2.com" target="_blank">リンク2-2</a></li>
+            </ul>
+            <button class="edit-button" onclick="editLinks('mypage-section2')">リンクを編集</button>
+          </div>
+          <div class="section" id="mypage-section3">
+            <div class="section-title">
+              <h2 onclick="editSectionName('mypage-section3')">セクション3</h2>
+              <input type="text" id="mypage-section3-input" class="section-name-input" onblur="saveSectionName('mypage-section3')" />
+            </div>
+            <ul class="link-list">
+              <li><a href="https://example3.com" target="_blank">リンク3-1</a></li>
+              <li><a href="https://example3.com" target="_blank">リンク3-2</a></li>
+            </ul>
+            <button class="edit-button" onclick="editLinks('mypage-section3')">リンクを編集</button>
+          </div>
+          <div class="section" id="mypage-section4">
+            <div class="section-title">
+              <h2 onclick="editSectionName('mypage-section4')">セクション4</h2>
+              <input type="text" id="mypage-section4-input" class="section-name-input" onblur="saveSectionName('mypage-section4')" />
+            </div>
+            <ul class="link-list">
+              <li><a href="https://example4.com" target="_blank">リンク4-1</a></li>
+              <li><a href="https://example4.com" target="_blank">リンク4-2</a></li>
+            </ul>
+            <button class="edit-button" onclick="editLinks('mypage-section4')">リンクを編集</button>
+          </div>
+          <div class="section" id="mypage-section5">
+            <div class="section-title">
+              <h2 onclick="editSectionName('mypage-section5')">セクション5</h2>
+              <input type="text" id="mypage-section5-input" class="section-name-input" onblur="saveSectionName('mypage-section5')" />
+            </div>
+            <ul class="link-list">
+              <li><a href="https://example5.com" target="_blank">リンク5-1</a></li>
+              <li><a href="https://example5.com" target="_blank">リンク5-2</a></li>
+            </ul>
+            <button class="edit-button" onclick="editLinks('mypage-section5')">リンクを編集</button>
+          </div>
+          <div class="section" id="mypage-section6">
+            <div class="section-title">
+              <h2 onclick="editSectionName('mypage-section6')">セクション6</h2>
+              <input type="text" id="mypage-section6-input" class="section-name-input" onblur="saveSectionName('mypage-section6')" />
+            </div>
+            <ul class="link-list">
+              <li><a href="https://example6.com" target="_blank">リンク6-1</a></li>
+              <li><a href="https://example6.com" target="_blank">リンク6-2</a></li>
+            </ul>
+            <button class="edit-button" onclick="editLinks('mypage-section6')">リンクを編集</button>
+          </div>
         </div>
-        <ul class="link-list">
-          <li><a href="https://example1.com" target="_blank">リンク1-1</a></li>
-          <li><a href="https://example1.com" target="_blank">リンク1-2</a></li>
-        </ul>
-        <button class="edit-button" onclick="editLinks('mypage-section1')">リンクを編集</button>
       </div>
-      <div class="section" id="mypage-section2">
-        <div class="section-title">
-          <h2 onclick="editSectionName('mypage-section2')">セクション2</h2>
-          <input type="text" id="mypage-section2-input" class="section-name-input" onblur="saveSectionName('mypage-section2')" />
-        </div>
-        <ul class="link-list">
-          <li><a href="https://example2.com" target="_blank">リンク2-1</a></li>
-          <li><a href="https://example2.com" target="_blank">リンク2-2</a></li>
-        </ul>
-        <button class="edit-button" onclick="editLinks('mypage-section2')">リンクを編集</button>
-      </div>
-      <div class="section" id="mypage-section3">
-        <div class="section-title">
-          <h2 onclick="editSectionName('mypage-section3')">セクション3</h2>
-          <input type="text" id="mypage-section3-input" class="section-name-input" onblur="saveSectionName('mypage-section3')" />
-        </div>
-        <ul class="link-list">
-          <li><a href="https://example3.com" target="_blank">リンク3-1</a></li>
-          <li><a href="https://example3.com" target="_blank">リンク3-2</a></li>
-        </ul>
-        <button class="edit-button" onclick="editLinks('mypage-section3')">リンクを編集</button>
-      </div>
-      <div class="section" id="mypage-section4">
-        <div class="section-title">
-          <h2 onclick="editSectionName('mypage-section4')">セクション4</h2>
-          <input type="text" id="mypage-section4-input" class="section-name-input" onblur="saveSectionName('mypage-section4')" />
-        </div>
-        <ul class="link-list">
-          <li><a href="https://example4.com" target="_blank">リンク4-1</a></li>
-          <li><a href="https://example4.com" target="_blank">リンク4-2</a></li>
-        </ul>
-        <button class="edit-button" onclick="editLinks('mypage-section4')">リンクを編集</button>
-      </div>
-      <div class="section" id="mypage-section5">
-        <div class="section-title">
-          <h2 onclick="editSectionName('mypage-section5')">セクション5</h2>
-          <input type="text" id="mypage-section5-input" class="section-name-input" onblur="saveSectionName('mypage-section5')" />
-        </div>
-        <ul class="link-list">
-          <li><a href="https://example5.com" target="_blank">リンク5-1</a></li>
-          <li><a href="https://example5.com" target="_blank">リンク5-2</a></li>
-        </ul>
-        <button class="edit-button" onclick="editLinks('mypage-section5')">リンクを編集</button>
-      </div>
-      <div class="section" id="mypage-section6">
-        <div class="section-title">
-          <h2 onclick="editSectionName('mypage-section6')">セクション6</h2>
-          <input type="text" id="mypage-section6-input" class="section-name-input" onblur="saveSectionName('mypage-section6')" />
-        </div>
-        <ul class="link-list">
-          <li><a href="https://example6.com" target="_blank">リンク6-1</a></li>
-          <li><a href="https://example6.com" target="_blank">リンク6-2</a></li>
-        </ul>
-        <button class="edit-button" onclick="editLinks('mypage-section6')">リンクを編集</button>
-      </div>
+
+      <!-- Project Views -->
+      <div id="project-views"></div>
     </main>
 
     <!-- モーダルポップアップ -->
@@ -108,12 +132,14 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
   </div>
 </body>
 <footer class="data-management">
   <button onclick="exportData()">エクスポート</button>
   <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)" />
   <button onclick="document.getElementById('importFile').click()">インポート</button>
+  <button onclick="addNewProject()" class="add-project-footer-btn">ページ追加</button>
+  <button onclick="showDeleteProjectDialog()" class="delete-project-footer-btn">ページ削除</button>
 </footer>
 </html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="../css/TaskManager.css">
+</head>
+<body>
+  <div class="task-manager">
+    <header>
+      <div class="header-nav">
+        <button class="back-button">
+          <a href="../index.html" class="back-button-link">MyPageに戻る</a>
+        </button>
+        <button class="dashboard-button">
+          <a href="dashboard.html" class="dashboard-button-link">ダッシュボード</a>
+        </button>
+      </div>
+      <h1>タスク管理</h1>
+      
+      <!-- ポモドーロタイマー -->
+      <div class="pomodoro-timer">
+        <div class="timer-display">
+          <span id="timer-time">25:00</span>
+        </div>
+        <div class="timer-controls">
+          <button id="timer-start" class="timer-btn">開始</button>
+          <button id="timer-pause" class="timer-btn">一時停止</button>
+          <button id="timer-reset" class="timer-btn">リセット</button>
+        </div>
+        <div class="timer-mode">
+          <span id="timer-mode-text">作業時間</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="task-container">
+      <!-- 計画セクション -->
+      <div class="task-section" id="plan-section">
+        <h2>計画</h2>
+        <div class="task-list" id="plan-tasks" data-status="plan">
+          <!-- タスクがここに追加される -->
+        </div>
+        <div class="add-task-area">
+          <input type="text" id="new-task-input" placeholder="新しいタスクを入力..." />
+          <select id="task-priority" class="task-priority-select">
+            <option value="low">低</option>
+            <option value="medium" selected>中</option>
+            <option value="high">高</option>
+          </select>
+          <input type="date" id="task-due-date" class="task-due-date" />
+          <button id="add-task-btn">追加</button>
+        </div>
+      </div>
+
+      <!-- 実行セクション -->
+      <div class="task-section" id="progress-section">
+        <h2>実行</h2>
+        <div class="task-list" id="progress-tasks" data-status="progress">
+          <!-- タスクがここに追加される -->
+        </div>
+      </div>
+
+      <!-- 完了セクション -->
+      <div class="task-section" id="completed-section">
+        <h2>完了</h2>
+        <div class="task-list" id="completed-tasks" data-status="completed">
+          <!-- タスクがここに追加される -->
+        </div>
+      </div>
+    </div>
+
+    <!-- タスク編集モーダル -->
+    <div id="task-edit-modal" class="modal">
+      <div class="modal-content">
+        <h3>タスク編集</h3>
+        <label for="edit-task-title">タスク名</label>
+        <input type="text" id="edit-task-title" />
+        <label for="edit-task-description">説明</label>
+        <textarea id="edit-task-description" rows="4"></textarea>
+        
+        <label for="edit-task-priority">優先度</label>
+        <select id="edit-task-priority" class="task-priority-select">
+          <option value="low">低</option>
+          <option value="medium">中</option>
+          <option value="high">高</option>
+        </select>
+        
+        <label for="edit-task-due-date">期限</label>
+        <input type="date" id="edit-task-due-date" class="task-due-date" />
+        
+        <label for="edit-task-progress">進捗率 (%)</label>
+        <input type="range" id="edit-task-progress" min="0" max="100" value="0" class="progress-slider" />
+        <span id="progress-value">0%</span>
+        
+        <div class="modal-buttons">
+          <button id="save-task-btn">保存</button>
+          <button id="delete-task-btn">削除</button>
+          <button id="cancel-edit-btn">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/TaskManager.js"></script>
+</body>
+</html>

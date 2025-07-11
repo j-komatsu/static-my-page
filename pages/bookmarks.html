@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブックマーク管理</title>
+    <link rel="stylesheet" href="../css/bookmarks.css">
+</head>
+<body>
+    <div class="bookmark-manager">
+        <header class="bookmark-header">
+            <div class="header-nav">
+                <button class="back-button">
+                    <a href="../index.html" class="back-button-link">MyPageに戻る</a>
+                </button>
+                <button class="dashboard-button">
+                    <a href="dashboard.html" class="dashboard-button-link">ダッシュボード</a>
+                </button>
+            </div>
+            <h1>ブックマーク管理</h1>
+            <button class="add-bookmark-btn" onclick="showAddModal()">新規追加</button>
+        </header>
+
+        <main class="bookmark-main">
+            <!-- サイドバー -->
+            <aside class="bookmark-sidebar">
+                <!-- 検索セクション -->
+                <div class="search-section">
+                    <h3>検索</h3>
+                    <input type="text" id="search-input" placeholder="タイトル、URL、タグで検索..." />
+                    <button id="search-btn">検索</button>
+                    <button id="clear-search-btn">クリア</button>
+                </div>
+
+                <!-- カテゴリフィルタ -->
+                <div class="category-section">
+                    <h3>カテゴリ</h3>
+                    <select id="category-filter">
+                        <option value="">すべて</option>
+                        <option value="開発">開発</option>
+                        <option value="デザイン">デザイン</option>
+                        <option value="ニュース">ニュース</option>
+                        <option value="学習">学習</option>
+                        <option value="エンタメ">エンタメ</option>
+                        <option value="ツール">ツール</option>
+                        <option value="ショッピング">ショッピング</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+
+                <!-- タグクラウド -->
+                <div class="tags-section">
+                    <h3>タグ</h3>
+                    <div id="tag-cloud" class="tag-cloud">
+                        <!-- 動的に生成 -->
+                    </div>
+                </div>
+
+                <!-- 表示設定 -->
+                <div class="view-settings">
+                    <h3>表示設定</h3>
+                    <div class="view-options">
+                        <label>
+                            <input type="radio" name="view-mode" value="grid" checked>
+                            グリッド表示
+                        </label>
+                        <label>
+                            <input type="radio" name="view-mode" value="list">
+                            リスト表示
+                        </label>
+                    </div>
+                    <div class="sort-options">
+                        <label for="sort-select">並び順:</label>
+                        <select id="sort-select">
+                            <option value="date-desc">追加日時（新しい順）</option>
+                            <option value="date-asc">追加日時（古い順）</option>
+                            <option value="title-asc">タイトル（昇順）</option>
+                            <option value="title-desc">タイトル（降順）</option>
+                            <option value="category">カテゴリ別</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 統計情報 -->
+                <div class="stats-section">
+                    <h3>統計</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">総ブックマーク数</span>
+                        <span class="stat-value" id="total-bookmarks">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">カテゴリ数</span>
+                        <span class="stat-value" id="total-categories">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">タグ数</span>
+                        <span class="stat-value" id="total-tags">0</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- メインコンテンツ -->
+            <section class="bookmark-content">
+                <div class="content-header">
+                    <div class="result-info">
+                        <span id="result-count">0件のブックマーク</span>
+                        <span id="filter-info"></span>
+                    </div>
+                    <div class="bulk-actions">
+                        <button id="select-all-btn">全選択</button>
+                        <button id="delete-selected-btn" disabled>選択削除</button>
+                    </div>
+                </div>
+
+                <!-- ブックマーク一覧 -->
+                <div id="bookmarks-container" class="bookmarks-grid">
+                    <!-- 動的に生成 -->
+                </div>
+
+                <!-- ページネーション -->
+                <div class="pagination">
+                    <button id="prev-page" disabled>前のページ</button>
+                    <span id="page-info">1 / 1</span>
+                    <button id="next-page" disabled>次のページ</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ブックマーク追加/編集モーダル -->
+    <div id="bookmark-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">ブックマーク追加</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="bookmark-form">
+                    <div class="form-group">
+                        <label for="bookmark-url">URL *</label>
+                        <input type="url" id="bookmark-url" required>
+                        <button type="button" id="fetch-info-btn">サイト情報取得</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookmark-title">タイトル *</label>
+                        <input type="text" id="bookmark-title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookmark-description">説明</label>
+                        <textarea id="bookmark-description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookmark-category">カテゴリ</label>
+                        <select id="bookmark-category">
+                            <option value="その他">その他</option>
+                            <option value="開発">開発</option>
+                            <option value="デザイン">デザイン</option>
+                            <option value="ニュース">ニュース</option>
+                            <option value="学習">学習</option>
+                            <option value="エンタメ">エンタメ</option>
+                            <option value="ツール">ツール</option>
+                            <option value="ショッピング">ショッピング</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookmark-tags">タグ（カンマ区切り）</label>
+                        <input type="text" id="bookmark-tags" placeholder="タグ1, タグ2, タグ3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookmark-favicon">ファビコンURL</label>
+                        <input type="url" id="bookmark-favicon">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookmark-thumbnail">サムネイルURL</label>
+                        <input type="url" id="bookmark-thumbnail">
+                        <div class="thumbnail-preview">
+                            <img id="thumbnail-preview-img" style="display: none;" alt="サムネイルプレビュー">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="save-bookmark-btn">保存</button>
+                <button type="button" id="delete-bookmark-btn" style="display: none;">削除</button>
+                <button type="button" onclick="closeModal()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ブックマーク詳細モーダル -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detail-title">ブックマーク詳細</h2>
+                <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="detail-content">
+                    <!-- 動的に生成 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="edit-bookmark-btn">編集</button>
+                <button type="button" id="visit-bookmark-btn">サイトを開く</button>
+                <button type="button" onclick="closeDetailModal()">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/bookmarks.js"></script>
+</body>
+</html>

@@ -14,14 +14,18 @@ body {
     color: white;
 }
 
-.todo-back-button {
+.header-nav {
     position: absolute;
     top: 10px;
     left: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.todo-back-button, .todo-dashboard-button {
     font-size: 10px; /* フォントサイズを少し大きく */
     font-weight: bold; /* テキストを太字に */
     padding: 10px 15px; /* パディングを追加してクリック範囲を広げる */
-    background-color: #666; /* 背景色を少し明るく */
     border-radius: 5px; /* 角を丸く */
     border: none;
     color: white; /* 白い文字 */
@@ -30,9 +34,21 @@ body {
     transition: background-color 0.3s, box-shadow 0.3s; /* ホバー時の変化を追加 */
 }
 
+.todo-back-button {
+    background-color: #666; /* 背景色を少し明るく */
+}
+
+.todo-dashboard-button {
+    background-color: #4a90e2; /* ダッシュボードボタンは青色 */
+}
 
 .todo-back-button:hover {
     background-color: #888; /* ホバー時の背景色 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* ホバー時に影を強調 */
+}
+
+.todo-dashboard-button:hover {
+    background-color: #357abd; /* ホバー時の背景色 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* ホバー時に影を強調 */
 }
 
@@ -119,4 +135,135 @@ body {
 
 .todo-clear-btn:hover {
     background-color: #666; /* 濃い灰色 */
+}
+
+/* 新しいレイアウト用のスタイル */
+.todo-add-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.todo-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 120px;
+}
+
+.todo-lists-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.todo-section {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.todo-section h2 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 8px;
+}
+
+.todo-stats-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+#completion-chart {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.todo-actions {
+    text-align: center;
+}
+
+/* サブタスクのスタイル */
+.subtask-container {
+    margin-left: 30px;
+    margin-top: 10px;
+}
+
+.subtask-item {
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border-left: 3px solid #ccc;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.add-subtask-btn {
+    background-color: #777;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    margin-left: 10px;
+}
+
+.recurring-badge {
+    background-color: #4a90e2;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.delete-btn {
+    background-color: #999;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    margin-left: 10px;
 }
