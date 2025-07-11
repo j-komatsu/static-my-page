@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ビジネス計算ツール - My Page</title>
+  <link rel="stylesheet" href="../css/calculator.css">
+</head>
+<body>
+  <div class="App">
+    <!-- ヘッダー部分 -->
+    <header class="main-header">
+      <div class="title-section">
+        <h1>🧮 ビジネス計算ツール</h1>
+      </div>
+      
+      <nav class="header-navigation">
+        <div class="fixed-buttons-group">
+          <a href="../index.html" class="navigation-link back-link">🏠 ホームに戻る</a>
+          <a href="dashboard.html" class="navigation-link internal-link">ダッシュボード</a>
+          <a href="task-manager.html" class="navigation-link internal-link">タスク管理</a>
+          <a href="memo-page.html" class="navigation-link internal-link">メモ管理</a>
+          <a href="calendar.html" class="navigation-link internal-link">カレンダー</a>
+          <a href="dev-tools.html" class="navigation-link internal-link">効率化ツール</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <!-- タブナビゲーション -->
+      <div class="tab-navigation">
+        <button class="tab-btn active" data-tab="finance" onclick="switchTab('finance')">
+          💰 財務・投資
+        </button>
+        <button class="tab-btn" data-tab="project" onclick="switchTab('project')">
+          📊 プロジェクト管理
+        </button>
+        <button class="tab-btn" data-tab="data" onclick="switchTab('data')">
+          💾 データ・パフォーマンス
+        </button>
+        <button class="tab-btn" data-tab="network" onclick="switchTab('network')">
+          🌐 ネットワーク・インフラ
+        </button>
+        <button class="tab-btn" data-tab="development" onclick="switchTab('development')">
+          🛠️ 開発効率
+        </button>
+        <button class="tab-btn" data-tab="time" onclick="switchTab('time')">
+          ⏰ 時間・効率
+        </button>
+        <button class="tab-btn" data-tab="statistics" onclick="switchTab('statistics')">
+          📈 統計・分析
+        </button>
+        <button class="tab-btn" data-tab="encoding" onclick="switchTab('encoding')">
+          🔐 エンコーディング
+        </button>
+        <button class="tab-btn" data-tab="conversion" onclick="switchTab('conversion')">
+          🔄 数値変換
+        </button>
+      </div>
+
+      <!-- タブコンテンツ -->
+      <div class="tab-content-container">
+        <!-- 財務・投資計算 -->
+        <div id="finance-tab" class="tab-content active">
+          <h2>💰 財務・投資計算</h2>
+          
+          <!-- 複利計算 -->
+          <div class="calc-section">
+            <h3>複利計算（投資シミュレーション）</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>元金:</label>
+                <input type="number" id="principal" placeholder="1000000" />
+                <span>円</span>
+              </div>
+              <div class="input-row">
+                <label>年利率:</label>
+                <input type="number" id="annual-rate" placeholder="5" step="0.01" />
+                <span>%</span>
+              </div>
+              <div class="input-row">
+                <label>運用期間:</label>
+                <input type="number" id="years" placeholder="10" />
+                <span>年</span>
+              </div>
+              <button onclick="calculateCompoundInterest()" class="calc-btn">計算</button>
+            </div>
+            <div id="compound-result" class="result-display"></div>
+          </div>
+
+          <!-- ローン返済計算 -->
+          <div class="calc-section">
+            <h3>ローン返済計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>借入金額:</label>
+                <input type="number" id="loan-amount" placeholder="30000000" />
+                <span>円</span>
+              </div>
+              <div class="input-row">
+                <label>年利率:</label>
+                <input type="number" id="loan-rate" placeholder="1.5" step="0.01" />
+                <span>%</span>
+              </div>
+              <div class="input-row">
+                <label>返済期間:</label>
+                <input type="number" id="loan-years" placeholder="35" />
+                <span>年</span>
+              </div>
+              <button onclick="calculateLoan()" class="calc-btn">計算</button>
+            </div>
+            <div id="loan-result" class="result-display"></div>
+          </div>
+
+          <!-- ROI計算 -->
+          <div class="calc-section">
+            <h3>ROI（投資収益率）計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>投資額:</label>
+                <input type="number" id="investment" placeholder="1000000" />
+                <span>円</span>
+              </div>
+              <div class="input-row">
+                <label>利益:</label>
+                <input type="number" id="profit" placeholder="200000" />
+                <span>円</span>
+              </div>
+              <button onclick="calculateROI()" class="calc-btn">計算</button>
+            </div>
+            <div id="roi-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- プロジェクト管理計算 -->
+        <div id="project-tab" class="tab-content">
+          <h2>📊 プロジェクト管理計算</h2>
+          
+          <!-- 工数計算 -->
+          <div class="calc-section">
+            <h3>工数計算（人日・人月換算）</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>作業時間:</label>
+                <input type="number" id="work-hours" placeholder="200" />
+                <span>時間</span>
+              </div>
+              <div class="input-row">
+                <label>1日の稼働時間:</label>
+                <input type="number" id="daily-hours" placeholder="8" />
+                <span>時間</span>
+              </div>
+              <div class="input-row">
+                <label>1ヶ月の稼働日数:</label>
+                <input type="number" id="monthly-days" placeholder="20" />
+                <span>日</span>
+              </div>
+              <button onclick="calculateManDays()" class="calc-btn">計算</button>
+            </div>
+            <div id="mandays-result" class="result-display"></div>
+          </div>
+
+          <!-- プロジェクトコスト計算 -->
+          <div class="calc-section">
+            <h3>プロジェクトコスト計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>人数:</label>
+                <input type="number" id="team-size" placeholder="5" />
+                <span>人</span>
+              </div>
+              <div class="input-row">
+                <label>期間:</label>
+                <input type="number" id="project-months" placeholder="6" />
+                <span>ヶ月</span>
+              </div>
+              <div class="input-row">
+                <label>月額単価:</label>
+                <input type="number" id="monthly-rate" placeholder="800000" />
+                <span>円</span>
+              </div>
+              <button onclick="calculateProjectCost()" class="calc-btn">計算</button>
+            </div>
+            <div id="project-cost-result" class="result-display"></div>
+          </div>
+
+          <!-- 稼働率計算 -->
+          <div class="calc-section">
+            <h3>稼働率計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>実稼働時間:</label>
+                <input type="number" id="actual-hours" placeholder="160" />
+                <span>時間</span>
+              </div>
+              <div class="input-row">
+                <label>総稼働時間:</label>
+                <input type="number" id="total-hours" placeholder="200" />
+                <span>時間</span>
+              </div>
+              <button onclick="calculateUtilization()" class="calc-btn">計算</button>
+            </div>
+            <div id="utilization-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- データ容量・パフォーマンス計算 -->
+        <div id="data-tab" class="tab-content">
+          <h2>💾 データ容量・パフォーマンス計算</h2>
+          
+          <!-- データ容量換算 -->
+          <div class="calc-section">
+            <h3>データ容量換算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>データ量:</label>
+                <input type="number" id="data-size" placeholder="1024" />
+                <select id="data-unit">
+                  <option value="B">Byte</option>
+                  <option value="KB">KB</option>
+                  <option value="MB" selected>MB</option>
+                  <option value="GB">GB</option>
+                  <option value="TB">TB</option>
+                </select>
+              </div>
+              <button onclick="convertDataSize()" class="calc-btn">変換</button>
+            </div>
+            <div id="data-size-result" class="result-display"></div>
+          </div>
+
+          <!-- 転送時間計算 -->
+          <div class="calc-section">
+            <h3>転送時間計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>ファイルサイズ:</label>
+                <input type="number" id="file-size" placeholder="500" />
+                <span>MB</span>
+              </div>
+              <div class="input-row">
+                <label>回線速度:</label>
+                <input type="number" id="bandwidth" placeholder="100" />
+                <span>Mbps</span>
+              </div>
+              <button onclick="calculateTransferTime()" class="calc-btn">計算</button>
+            </div>
+            <div id="transfer-result" class="result-display"></div>
+          </div>
+
+          <!-- CPU・メモリ使用率計算 -->
+          <div class="calc-section">
+            <h3>CPU・メモリ使用率計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>使用量:</label>
+                <input type="number" id="used-resource" placeholder="6" />
+                <span>GB</span>
+              </div>
+              <div class="input-row">
+                <label>総容量:</label>
+                <input type="number" id="total-resource" placeholder="16" />
+                <span>GB</span>
+              </div>
+              <button onclick="calculateResourceUsage()" class="calc-btn">計算</button>
+            </div>
+            <div id="resource-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- ネットワーク・インフラ計算 -->
+        <div id="network-tab" class="tab-content">
+          <h2>🌐 ネットワーク・インフラ計算</h2>
+          
+          <!-- IPアドレス・サブネット計算 -->
+          <div class="calc-section">
+            <h3>IPアドレス・サブネット計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>IPアドレス:</label>
+                <input type="text" id="ip-address" placeholder="192.168.1.0" />
+              </div>
+              <div class="input-row">
+                <label>サブネットマスク:</label>
+                <input type="text" id="subnet-mask" placeholder="255.255.255.0" />
+              </div>
+              <button onclick="calculateSubnet()" class="calc-btn">計算</button>
+            </div>
+            <div id="subnet-result" class="result-display"></div>
+          </div>
+
+          <!-- 可用性計算 -->
+          <div class="calc-section">
+            <h3>可用性計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>稼働時間:</label>
+                <input type="number" id="uptime" placeholder="8760" />
+                <span>時間/年</span>
+              </div>
+              <div class="input-row">
+                <label>停止時間:</label>
+                <input type="number" id="downtime" placeholder="8.76" />
+                <span>時間/年</span>
+              </div>
+              <button onclick="calculateAvailability()" class="calc-btn">計算</button>
+            </div>
+            <div id="availability-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- 開発効率計算 -->
+        <div id="development-tab" class="tab-content">
+          <h2>🛠️ 開発効率計算</h2>
+          
+          <!-- バグ密度計算 -->
+          <div class="calc-section">
+            <h3>バグ密度計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>バグ数:</label>
+                <input type="number" id="bug-count" placeholder="25" />
+                <span>個</span>
+              </div>
+              <div class="input-row">
+                <label>コード行数:</label>
+                <input type="number" id="lines-of-code" placeholder="10000" />
+                <span>行</span>
+              </div>
+              <button onclick="calculateBugDensity()" class="calc-btn">計算</button>
+            </div>
+            <div id="bug-density-result" class="result-display"></div>
+          </div>
+
+          <!-- コードカバレッジ計算 -->
+          <div class="calc-section">
+            <h3>コードカバレッジ計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>テスト済み行数:</label>
+                <input type="number" id="tested-lines" placeholder="8500" />
+                <span>行</span>
+              </div>
+              <div class="input-row">
+                <label>総コード行数:</label>
+                <input type="number" id="total-lines" placeholder="10000" />
+                <span>行</span>
+              </div>
+              <button onclick="calculateCodeCoverage()" class="calc-btn">計算</button>
+            </div>
+            <div id="coverage-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- 時間・効率計算 -->
+        <div id="time-tab" class="tab-content">
+          <h2>⏰ 時間・効率計算</h2>
+          
+          <!-- 作業時間計算 -->
+          <div class="calc-section">
+            <h3>作業時間計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>開始時刻:</label>
+                <input type="time" id="start-time" />
+              </div>
+              <div class="input-row">
+                <label>終了時刻:</label>
+                <input type="time" id="end-time" />
+              </div>
+              <div class="input-row">
+                <label>休憩時間:</label>
+                <input type="number" id="break-time" placeholder="60" />
+                <span>分</span>
+              </div>
+              <button onclick="calculateWorkTime()" class="calc-btn">計算</button>
+            </div>
+            <div id="work-time-result" class="result-display"></div>
+          </div>
+
+          <!-- 時差計算 -->
+          <div class="calc-section">
+            <h3>時差計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>基準時刻:</label>
+                <input type="time" id="base-time" />
+              </div>
+              <div class="input-row">
+                <label>基準タイムゾーン:</label>
+                <select id="base-timezone">
+                  <option value="9">日本（JST +9）</option>
+                  <option value="0">イギリス（GMT +0）</option>
+                  <option value="-5">アメリカ東部（EST -5）</option>
+                  <option value="-8">アメリカ西部（PST -8）</option>
+                </select>
+              </div>
+              <button onclick="calculateTimezone()" class="calc-btn">計算</button>
+            </div>
+            <div id="timezone-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- 統計・分析計算 -->
+        <div id="statistics-tab" class="tab-content">
+          <h2>📈 統計・分析計算</h2>
+          
+          <!-- 平均値・標準偏差計算 -->
+          <div class="calc-section">
+            <h3>統計値計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>データ（カンマ区切り）:</label>
+                <textarea id="data-values" placeholder="10,20,30,40,50,60,70,80,90,100" rows="3"></textarea>
+              </div>
+              <button onclick="calculateStatistics()" class="calc-btn">計算</button>
+            </div>
+            <div id="statistics-result" class="result-display"></div>
+          </div>
+
+          <!-- 成長率計算 -->
+          <div class="calc-section">
+            <h3>成長率計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>前期の値:</label>
+                <input type="number" id="previous-value" placeholder="1000000" />
+              </div>
+              <div class="input-row">
+                <label>今期の値:</label>
+                <input type="number" id="current-value" placeholder="1200000" />
+              </div>
+              <button onclick="calculateGrowthRate()" class="calc-btn">計算</button>
+            </div>
+            <div id="growth-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- エンコーディング・変換 -->
+        <div id="encoding-tab" class="tab-content">
+          <h2>🔐 エンコーディング・変換</h2>
+          
+          <!-- Base64エンコード/デコード -->
+          <div class="calc-section">
+            <h3>Base64エンコード/デコード</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>入力テキスト:</label>
+                <textarea id="base64-input" placeholder="エンコード/デコードするテキスト" rows="3"></textarea>
+              </div>
+              <div class="button-group">
+                <button onclick="encodeBase64()" class="calc-btn">エンコード</button>
+                <button onclick="decodeBase64()" class="calc-btn">デコード</button>
+              </div>
+            </div>
+            <div id="base64-result" class="result-display"></div>
+          </div>
+
+          <!-- URL エンコード/デコード -->
+          <div class="calc-section">
+            <h3>URL エンコード/デコード</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>入力URL:</label>
+                <textarea id="url-input" placeholder="エンコード/デコードするURL" rows="2"></textarea>
+              </div>
+              <div class="button-group">
+                <button onclick="encodeURL()" class="calc-btn">エンコード</button>
+                <button onclick="decodeURL()" class="calc-btn">デコード</button>
+              </div>
+            </div>
+            <div id="url-result" class="result-display"></div>
+          </div>
+
+          <!-- ハッシュ値計算 -->
+          <div class="calc-section">
+            <h3>ハッシュ値計算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>入力テキスト:</label>
+                <textarea id="hash-input" placeholder="ハッシュ値を計算するテキスト" rows="2"></textarea>
+              </div>
+              <button onclick="calculateHash()" class="calc-btn">SHA-256ハッシュ計算</button>
+            </div>
+            <div id="hash-result" class="result-display"></div>
+          </div>
+        </div>
+
+        <!-- 数値変換 -->
+        <div id="conversion-tab" class="tab-content">
+          <h2>🔄 数値変換</h2>
+          
+          <!-- 進数変換 -->
+          <div class="calc-section">
+            <h3>進数変換</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>入力値:</label>
+                <input type="text" id="number-input" placeholder="255" />
+              </div>
+              <div class="input-row">
+                <label>入力進数:</label>
+                <select id="input-base">
+                  <option value="10" selected>10進数</option>
+                  <option value="2">2進数</option>
+                  <option value="8">8進数</option>
+                  <option value="16">16進数</option>
+                </select>
+              </div>
+              <button onclick="convertNumber()" class="calc-btn">変換</button>
+            </div>
+            <div id="number-result" class="result-display"></div>
+          </div>
+
+          <!-- 色コード変換 -->
+          <div class="calc-section">
+            <h3>色コード変換</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>HEX色コード:</label>
+                <input type="text" id="hex-color" placeholder="#FF5733" />
+              </div>
+              <button onclick="convertColor()" class="calc-btn">RGB/HSLに変換</button>
+            </div>
+            <div id="color-result" class="result-display"></div>
+          </div>
+
+          <!-- 単位換算 -->
+          <div class="calc-section">
+            <h3>単位換算</h3>
+            <div class="input-group">
+              <div class="input-row">
+                <label>値:</label>
+                <input type="number" id="unit-value" placeholder="100" />
+              </div>
+              <div class="input-row">
+                <label>変換タイプ:</label>
+                <select id="unit-type">
+                  <option value="length">長さ (m ↔ ft)</option>
+                  <option value="weight">重さ (kg ↔ lb)</option>
+                  <option value="temp">温度 (°C ↔ °F)</option>
+                </select>
+              </div>
+              <button onclick="convertUnit()" class="calc-btn">変換</button>
+            </div>
+            <div id="unit-result" class="result-display"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/calculator.js"></script>
+</body>
+</html>
