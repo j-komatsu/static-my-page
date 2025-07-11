@@ -1,28 +1,6 @@
 let currentSectionId = "";
 
 
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-}
-
-function addLink() {
-  const text = document.getElementById("new-link-text").value;
-  const url = document.getElementById("new-link-url").value;
-
-  if (!text || !url) {
-    alert("リンクテキストとURLを入力してください！");
-    return;
-  }
-
-  const linkList = document.querySelector(`#${currentSectionId} .link-list`);
-  const newListItem = document.createElement("li");
-  newListItem.innerHTML = `<a href="${url}" target="_blank">${text}</a>`;
-  linkList.appendChild(newListItem);
-
-  document.getElementById("new-link-text").value = "";
-  document.getElementById("new-link-url").value = "";
-  editLinks(currentSectionId);
-}
 
 function removeLink(index) {
   if (!linksData[currentSectionId]) {
@@ -137,7 +115,12 @@ function addLink() {
 
 // ローカルストレージにリンクデータを保存
 function saveLinks() {
-  localStorage.setItem(pageKey, JSON.stringify(linksData));
+  try {
+    localStorage.setItem(pageKey, JSON.stringify(linksData));
+  } catch (error) {
+    console.error('リンクデータの保存に失敗しました:', error);
+    alert('データの保存に失敗しました。ストレージの容量が不足している可能性があります。');
+  }
 }
 
 // ページロード時にリンクデータを読み込む
@@ -187,8 +170,18 @@ window.onload = function () {
     switchView('main');
   }
   
-  // 初期状態でプロジェクトが空の場合のメッセージ表示
-  if (projects.length === 0) {
+  // MyPageタブのクリックイベントを設定
+  const mainTab = document.querySelector('a[data-view="main"]');
+  if (mainTab) {
+    mainTab.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchView('main');
+    });
+  }
+  
+  // 初期状態でプロジェクトが空かつMyPageが開始されていない場合のメッセージ表示
+  const myPageStarted = localStorage.getItem(myPageStartedKey) === 'true';
+  if (projects.length === 0 && !myPageStarted) {
     showWelcomeMessage();
   }
 };
@@ -415,6 +408,7 @@ function handleMainTitleKeypress(event) {
 
 // SPA機能 - プロジェクト管理 --------------------------------------------------
 const projectsKey = 'projects_data';
+const myPageStartedKey = 'mypage_started';
 let projects = [];
 
 // プロジェクトデータの読み込み
@@ -427,7 +421,12 @@ function loadProjects() {
 
 // プロジェクトデータの保存
 function saveProjects() {
-  localStorage.setItem(projectsKey, JSON.stringify(projects));
+  try {
+    localStorage.setItem(projectsKey, JSON.stringify(projects));
+  } catch (error) {
+    console.error('プロジェクトデータの保存に失敗しました:', error);
+    alert('データの保存に失敗しました。ストレージの容量が不足している可能性があります。');
+  }
 }
 
 // プロジェクトナビゲーションの更新
@@ -471,9 +470,25 @@ function switchView(viewId) {
   if (viewId === 'main') {
     document.getElementById('main-view').classList.add('active');
     updateMainTitle('My Page');
+    // MyPageタブをアクティブにする
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    const mainTab = document.querySelector('a[data-view="main"]');
+    if (mainTab) {
+      mainTab.classList.add('active');
+    }
   } else {
     // プロジェクトビューを表示
     showProjectView(viewId);
+    // 対応するタブをアクティブにする
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    const activeTab = document.querySelector(`a[href="#${viewId}"]`);
+    if (activeTab) {
+      activeTab.classList.add('active');
+    }
   }
   
   // URLハッシュを更新
@@ -543,8 +558,26 @@ function addNewProject() {
   const name = prompt('プロジェクト名を入力してください:');
   if (!name) return;
   
+  // 入力値の検証
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    alert('プロジェクト名は空にできません。');
+    return;
+  }
+  
+  if (trimmedName.length > 50) {
+    alert('プロジェクト名は50文字以内で入力してください。');
+    return;
+  }
+  
+  // 重複チェック
+  if (projects.some(p => p.name === trimmedName)) {
+    alert('同じ名前のプロジェクトが既に存在します。');
+    return;
+  }
+  
   const id = `project-${Date.now()}`;
-  const newProject = { id, name, sections: [] };
+  const newProject = { id, name: trimmedName, sections: [] };
   
   projects.push(newProject);
   saveProjects();
@@ -553,6 +586,8 @@ function addNewProject() {
   // 最初のプロジェクトが追加された場合、ウェルカムメッセージを隠す
   if (projects.length === 1) {
     hideWelcomeMessage();
+    // プロジェクト作成時もMyPage開始フラグを設定
+    localStorage.setItem(myPageStartedKey, 'true');
   }
   
   // 作成したプロジェクトを選択状態にする
@@ -666,8 +701,9 @@ function deleteProject(projectId) {
   // メインビューに戻る
   switchView('main');
   
-  // 全てのプロジェクトが削除された場合、ウェルカムメッセージを表示
-  if (projects.length === 0) {
+  // 全てのプロジェクトが削除された場合、MyPageが開始されていなければウェルカムメッセージを表示
+  const myPageStarted = localStorage.getItem(myPageStartedKey) === 'true';
+  if (projects.length === 0 && !myPageStarted) {
     showWelcomeMessage();
   }
 }
@@ -681,11 +717,22 @@ function showWelcomeMessage() {
   welcomeDiv.innerHTML = `
     <div class="welcome-content">
       <h2>🎉 My Pageへようこそ！</h2>
-      <p>まだプロジェクトがありません。<br>
-      右下の「ページ追加」ボタンから新しいプロジェクトを作成してみましょう。</p>
+      <p>パーソナルページ管理システムを始めましょう。<br>
+      まずはMyPageでリンクを整理してみませんか？</p>
+      
+      <div class="welcome-actions">
+        <button onclick="startMyPage()" class="start-mypage-btn">
+          📄 MyPageを始める
+        </button>
+        <button onclick="addNewProject()" class="add-project-btn">
+          📂 新しいプロジェクトを追加
+        </button>
+      </div>
+      
       <div class="welcome-features">
         <h3>✨ 主な機能</h3>
         <ul>
+          <li>📄 MyPage: メインのリンク管理ページ</li>
           <li>📂 プロジェクトページの追加・削除</li>
           <li>📝 セクションとリンクの管理</li>
           <li>🔄 ドラッグ&ドロップでリンクの並び替え</li>
@@ -717,6 +764,15 @@ function hideWelcomeMessage() {
   if (sectionGrid) {
     sectionGrid.style.display = 'grid';
   }
+}
+
+// MyPageを始める機能 --------------------------------------------------
+function startMyPage() {
+  // MyPage開始フラグを保存
+  localStorage.setItem(myPageStartedKey, 'true');
+  hideWelcomeMessage();
+  // MyPageタブをアクティブにする
+  switchView('main');
 }
 
 // ドラッグ&ドロップ機能 --------------------------------------------------
