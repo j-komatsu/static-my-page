@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>効率化ツール - My Page</title>
+  <link rel="stylesheet" href="../css/dev-tools.css">
+</head>
+<body>
+  <div class="App">
+    <!-- ヘッダー部分 -->
+    <header class="main-header">
+      <div class="title-section">
+        <h1>⚡ 効率化ツール</h1>
+      </div>
+      
+      <nav class="header-navigation">
+        <div class="fixed-buttons-group">
+          <a href="../index.html" class="navigation-link back-link">🏠 ホームに戻る</a>
+          <a href="dashboard.html" class="navigation-link internal-link">ダッシュボード</a>
+          <a href="task-manager.html" class="navigation-link internal-link">タスク管理</a>
+          <a href="memo-page.html" class="navigation-link internal-link">メモ管理</a>
+          <a href="todo.html" class="navigation-link internal-link">TODOリスト</a>
+          <a href="bookmarks.html" class="navigation-link internal-link">ブックマーク</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <!-- ツール選択タブ -->
+      <div class="tool-tabs">
+        <button class="tab-button active" onclick="switchTool('regex')">
+          🔍 正規表現テスター
+        </button>
+        <button class="tab-button" onclick="switchTool('formatter')">
+          📄 JSON/XML整形
+        </button>
+      </div>
+
+      <!-- 正規表現テスター -->
+      <div id="regex-tool" class="tool-content active">
+        <div class="tool-header">
+          <h2>🔍 正規表現テスター</h2>
+          <p>正規表現パターンのテストとマッチング結果の確認ができます</p>
+        </div>
+
+        <div class="regex-container">
+          <div class="input-section">
+            <div class="form-group">
+              <label for="regex-pattern">正規表現パターン:</label>
+              <div class="pattern-input-container">
+                <select id="regex-presets" onchange="loadRegexPreset()" title="よく使われる正規表現パターンを選択">
+                  <option value="">-- パターンを選択 --</option>
+                  <option value="email">メールアドレス</option>
+                  <option value="phone-jp">電話番号 (日本)</option>
+                  <option value="url">URL</option>
+                  <option value="ipv4">IPv4アドレス</option>
+                  <option value="date-iso">日付 (ISO形式)</option>
+                  <option value="date-jp">日付 (日本形式)</option>
+                  <option value="postal-jp">郵便番号 (日本)</option>
+                  <option value="credit-card">クレジットカード番号</option>
+                  <option value="password-strong">強いパスワード</option>
+                  <option value="html-tag">HTMLタグ</option>
+                  <option value="css-hex">CSS色コード</option>
+                  <option value="file-extension">ファイル拡張子</option>
+                  <option value="number-int">整数</option>
+                  <option value="number-float">小数</option>
+                  <option value="alphanumeric">英数字のみ</option>
+                  <option value="whitespace">空白文字</option>
+                </select>
+                <input type="text" id="regex-pattern" placeholder="例: \d{3}-\d{4}-\d{4}" title="正規表現パターンを入力してください" />
+              </div>
+              <div class="regex-flags-container">
+                <span class="flags-label" title="正規表現の動作を制御するフラグ">フラグ:</span>
+                <div class="regex-flags">
+                  <label title="すべてのマッチを検索する"><input type="checkbox" id="flag-g" checked> g</label>
+                  <label title="大文字と小文字を区別しない"><input type="checkbox" id="flag-i"> i</label>
+                  <label title="複数行モード（^と$が行の開始・終了にマッチ）"><input type="checkbox" id="flag-m"> m</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="test-string">テスト文字列:</label>
+              <textarea id="test-string" rows="6" placeholder="ここにテスト対象の文字列を入力してください..."></textarea>
+            </div>
+
+            <div class="button-group">
+              <button onclick="testRegex()" class="primary-btn">📝 テスト実行</button>
+              <button onclick="clearRegex()" class="secondary-btn">🗑️ クリア</button>
+            </div>
+          </div>
+
+          <div class="result-section">
+            <h3>📊 実行結果</h3>
+            <div id="regex-results" class="results-display">
+              正規表現パターンを入力してテストを実行してください
+            </div>
+
+            <h3>📋 マッチした部分</h3>
+            <div id="regex-matches" class="matches-display">
+              マッチした部分がここに表示されます
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JSON/XML整形ツール -->
+      <div id="formatter-tool" class="tool-content">
+        <div class="tool-header">
+          <h2>📄 JSON/XML整形ツール</h2>
+          <p>JSON・XMLデータの整形、圧縮、バリデーションができます</p>
+        </div>
+
+        <div class="formatter-container">
+          <div class="format-tabs">
+            <button class="format-tab active" onclick="switchFormat('json')">JSON</button>
+            <button class="format-tab" onclick="switchFormat('xml')">XML</button>
+          </div>
+
+          <div class="formatter-content">
+            <div class="input-section">
+              <div class="form-group">
+                <label for="input-data">入力データ:</label>
+                <textarea id="input-data" rows="12" placeholder="JSONまたはXMLデータを入力してください..."></textarea>
+              </div>
+
+              <div class="button-group">
+                <button onclick="formatData()" class="primary-btn">✨ 整形</button>
+                <button onclick="compressData()" class="secondary-btn">🗜️ 圧縮</button>
+                <button onclick="validateData()" class="info-btn">✅ 検証</button>
+                <button onclick="clearFormatter()" class="secondary-btn">🗑️ クリア</button>
+              </div>
+            </div>
+
+            <div class="output-section">
+              <div class="form-group">
+                <label for="output-data">出力結果:</label>
+                <textarea id="output-data" rows="12" readonly placeholder="整形結果がここに表示されます..."></textarea>
+                <button onclick="copyOutput()" class="copy-btn">📋 コピー</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="validation-results" class="validation-display">
+            <h3>🔍 検証結果</h3>
+            <div id="validation-output">データを入力して検証ボタンを押してください</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- サンプルデータセクション -->
+      <div class="samples-section">
+        <h3>📖 サンプルデータ</h3>
+        <div class="sample-buttons">
+          <button onclick="loadSample('json')" class="sample-btn">JSON サンプル</button>
+          <button onclick="loadSample('xml')" class="sample-btn">XML サンプル</button>
+          <button onclick="loadSample('regex-email')" class="sample-btn">正規表現: Email</button>
+          <button onclick="loadSample('regex-phone')" class="sample-btn">正規表現: 電話番号</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/dev-tools.js"></script>
+</body>
+</html>

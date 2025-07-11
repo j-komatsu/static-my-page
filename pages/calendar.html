@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カレンダー・スケジュール管理 - My Page</title>
+  <link rel="stylesheet" href="../css/calendar.css">
+</head>
+<body>
+  <div class="App">
+    <!-- ヘッダー部分 -->
+    <header class="main-header">
+      <div class="title-section">
+        <h1>📅 カレンダー・スケジュール管理</h1>
+      </div>
+      
+      <nav class="header-navigation">
+        <div class="fixed-buttons-group">
+          <a href="../index.html" class="navigation-link back-link">🏠 ホームに戻る</a>
+          <a href="dashboard.html" class="navigation-link internal-link">ダッシュボード</a>
+          <a href="task-manager.html" class="navigation-link internal-link">タスク管理</a>
+          <a href="memo-page.html" class="navigation-link internal-link">メモ管理</a>
+          <a href="dev-tools.html" class="navigation-link internal-link">効率化ツール</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <!-- カレンダーコントロール -->
+      <div class="calendar-controls">
+        <div class="calendar-navigation">
+          <button onclick="previousPeriod()" class="nav-btn">◀</button>
+          <div class="current-period">
+            <h2 id="current-period-text">2024年1月</h2>
+          </div>
+          <button onclick="nextPeriod()" class="nav-btn">▶</button>
+        </div>
+
+        <div class="view-controls">
+          <div class="view-buttons">
+            <button onclick="switchView('month')" class="view-btn active" data-view="month">月間</button>
+            <button onclick="switchView('week')" class="view-btn" data-view="week">週間</button>
+            <button onclick="switchView('day')" class="view-btn" data-view="day">日別</button>
+            <button onclick="switchView('year')" class="view-btn" data-view="year">年間</button>
+          </div>
+          
+          <div class="quick-actions">
+            <button onclick="goToToday()" class="today-btn">今日</button>
+            <button onclick="showAddEventModal()" class="add-event-btn">📝 予定追加</button>
+            <button onclick="showProjectModal()" class="project-btn">📋 プロジェクト</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- カレンダー表示エリア -->
+      <div class="calendar-container">
+        <!-- 月間表示 -->
+        <div id="month-view" class="calendar-view active">
+          <div class="month-calendar">
+            <div class="weekdays">
+              <div class="weekday">日</div>
+              <div class="weekday">月</div>
+              <div class="weekday">火</div>
+              <div class="weekday">水</div>
+              <div class="weekday">木</div>
+              <div class="weekday">金</div>
+              <div class="weekday">土</div>
+            </div>
+            <div id="calendar-grid" class="calendar-grid">
+              <!-- 日付セルが動的に生成される -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 週間表示 -->
+        <div id="week-view" class="calendar-view">
+          <div class="week-calendar">
+            <div class="week-header">
+              <div class="time-column"></div>
+              <div class="week-days" id="week-days">
+                <!-- 週の日付ヘッダーが動的に生成される -->
+              </div>
+            </div>
+            <div class="week-content">
+              <div class="time-slots" id="time-slots">
+                <!-- 時間スロットが動的に生成される -->
+              </div>
+              <div class="week-grid" id="week-grid">
+                <!-- 週間グリッドが動的に生成される -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 日別表示 -->
+        <div id="day-view" class="calendar-view">
+          <div class="day-calendar">
+            <div class="day-header">
+              <h3 id="day-title">2024年1月1日（月）</h3>
+              <div class="day-info">
+                <span id="day-holiday-info"></span>
+                <span id="day-business-info"></span>
+              </div>
+            </div>
+            <div class="day-content">
+              <div class="day-time-slots" id="day-time-slots">
+                <!-- 1日の時間スロットが動的に生成される -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 年間表示 -->
+        <div id="year-view" class="calendar-view">
+          <div class="year-calendar">
+            <div id="year-grid" class="year-grid">
+              <!-- 12ヶ月のミニカレンダーが動的に生成される -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- サイドパネル -->
+      <div class="side-panel">
+        <!-- 今日の予定 -->
+        <div class="today-events">
+          <h3>📋 今日の予定</h3>
+          <div id="today-events-list" class="events-list">
+            <!-- 今日の予定がここに表示される -->
+          </div>
+        </div>
+
+        <!-- 祝日情報 -->
+        <div class="holiday-info">
+          <h3>🎌 祝日情報</h3>
+          <div id="holiday-list" class="holiday-list">
+            <!-- 近日の祝日がここに表示される -->
+          </div>
+        </div>
+
+        <!-- プロジェクト一覧 -->
+        <div class="project-list">
+          <h3>📂 プロジェクト</h3>
+          <div id="project-list-container" class="projects-container">
+            <!-- プロジェクト一覧がここに表示される -->
+          </div>
+        </div>
+
+        <!-- 営業日計算 -->
+        <div class="business-calc">
+          <h3>📊 営業日計算</h3>
+          <div class="calc-form">
+            <div class="date-input-group">
+              <label for="calc-start-date">開始日</label>
+              <input type="date" id="calc-start-date" />
+            </div>
+            <div class="date-separator">〜</div>
+            <div class="date-input-group">
+              <label for="calc-end-date">終了日</label>
+              <input type="date" id="calc-end-date" />
+            </div>
+            <button onclick="calculateBusinessDays()" class="calc-btn">計算</button>
+          </div>
+          <div id="calc-result" class="calc-result">
+            <div class="calc-placeholder">
+              日付を選択して「計算」ボタンを押してください
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 予定追加/編集モーダル -->
+    <div id="event-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="event-modal-title">予定を追加</h3>
+          <button onclick="closeEventModal()" class="close-btn">×</button>
+        </div>
+        <form id="event-form" class="event-form">
+          <div class="form-group">
+            <label for="event-title">予定名</label>
+            <input type="text" id="event-title" required placeholder="会議、作業など" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="event-category">カテゴリ</label>
+              <select id="event-category">
+                <option value="meeting">会議</option>
+                <option value="work">作業</option>
+                <option value="deadline">締切</option>
+                <option value="release">リリース</option>
+                <option value="personal">個人</option>
+                <option value="other">その他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="event-multi-day" onchange="toggleMultiDay()" />
+                複数日予定
+              </label>
+            </div>
+          </div>
+
+          <!-- 日付設定エリア -->
+          <div id="single-date-section" class="form-group">
+            <label for="event-date">日付</label>
+            <input type="date" id="event-date" required />
+          </div>
+
+          <div id="multi-date-section" class="form-row" style="display: none;">
+            <div class="form-group">
+              <label for="event-start-date">開始日</label>
+              <input type="date" id="event-start-date" />
+            </div>
+            <div class="form-group">
+              <label for="event-end-date">終了日</label>
+              <input type="date" id="event-end-date" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="event-start-time">開始時刻</label>
+              <input type="time" id="event-start-time" />
+            </div>
+            <div class="form-group">
+              <label for="event-end-time">終了時刻</label>
+              <input type="time" id="event-end-time" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="event-project">プロジェクト</label>
+            <select id="event-project">
+              <option value="">選択してください</option>
+              <!-- プロジェクト一覧が動的に生成される -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="event-description">詳細</label>
+            <textarea id="event-description" rows="3" placeholder="詳細情報、場所、参加者など"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="event-all-day" onchange="toggleAllDay()" />
+              終日
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" onclick="saveEvent()" class="save-btn">保存</button>
+            <button type="button" onclick="deleteEvent()" id="delete-event-btn" class="delete-btn" style="display: none;">削除</button>
+            <button type="button" onclick="closeEventModal()" class="cancel-btn">キャンセル</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- プロジェクト管理モーダル -->
+    <div id="project-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>プロジェクト管理</h3>
+          <button onclick="closeProjectModal()" class="close-btn">×</button>
+        </div>
+        <div class="project-form">
+          <div class="form-row">
+            <input type="text" id="new-project-name" placeholder="プロジェクト名" />
+            <input type="date" id="new-project-deadline" />
+            <button onclick="addProject()" class="add-btn">追加</button>
+          </div>
+        </div>
+        <div id="projects-list" class="projects-list">
+          <!-- プロジェクト一覧がここに表示される -->
+        </div>
+      </div>
+    </div>
+
+    <!-- イベント詳細ポップアップ -->
+    <div id="event-popup" class="event-popup">
+      <div class="popup-content">
+        <div class="popup-header">
+          <h4 id="popup-title"></h4>
+          <button onclick="closeEventPopup()" class="close-btn">×</button>
+        </div>
+        <div id="popup-details" class="popup-details">
+          <!-- イベント詳細がここに表示される -->
+        </div>
+        <div class="popup-actions">
+          <button onclick="editEventFromPopup()" class="edit-btn">編集</button>
+          <button onclick="deleteEventFromPopup()" class="delete-btn">削除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/calendar.js"></script>
+</body>
+</html>
