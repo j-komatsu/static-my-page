@@ -554,6 +554,9 @@ function addNewProject() {
   if (projects.length === 1) {
     hideWelcomeMessage();
   }
+  
+  // 作成したプロジェクトを選択状態にする
+  switchView(id);
 }
 
 // フッターからのページ削除ダイアログ
