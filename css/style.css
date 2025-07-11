@@ -196,6 +196,253 @@ body {
     overflow: hidden;
   }
   
+  /* 強化されたセクションスタイル */
+  .enhanced-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .enhanced-section:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: #6c757d;
+  }
+  
+  .enhanced-section[data-category="work"]:hover {
+    border-color: #007bff;
+  }
+  
+  .enhanced-section[data-category="social"]:hover {
+    border-color: #28a745;
+  }
+  
+  .enhanced-section[data-category="dev"]:hover {
+    border-color: #dc3545;
+  }
+  
+  .enhanced-section[data-category="entertainment"]:hover {
+    border-color: #fd7e14;
+  }
+  
+  .enhanced-section[data-category="news"]:hover {
+    border-color: #6f42c1;
+  }
+  
+  .enhanced-section[data-category="shopping"]:hover {
+    border-color: #e83e8c;
+  }
+  
+  /* コンパクトなセクションヘッダー */
+  .section-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .section-title-area {
+    flex-grow: 1;
+  }
+  
+  .section-title-text {
+    margin: 0 0 2px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .section-title-text:hover {
+    color: #007bff;
+  }
+  
+  .section-subtitle {
+    font-size: 11px;
+    color: #6c757d;
+    margin: 0;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .section-subtitle:hover {
+    color: #007bff;
+  }
+  
+  .section-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .action-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    opacity: 0.7;
+  }
+  
+  .action-btn:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+  }
+  
+  .favorite-btn.active {
+    opacity: 1;
+    color: #ffc107;
+  }
+  
+  /* コンパクトなリンクグリッド */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 6px;
+    padding: 12px;
+  }
+  
+  /* インライン（1行）表示のリンク */
+  .link-card.inline {
+    grid-column: 1 / -1;
+    max-width: 100%;
+  }
+  
+  .link-card.inline .link-card-content {
+    justify-content: flex-start;
+    padding: 4px 8px;
+    min-height: 24px;
+  }
+  
+  .link-card.inline .link-title {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .link-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+    overflow: visible;
+    position: relative;
+  }
+  
+  .link-actions {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+    display: flex;
+    gap: 2px;
+  }
+  
+  .link-card:hover .link-actions {
+    opacity: 1;
+  }
+  
+  .link-actions button {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .link-actions button:hover {
+    background: #0056b3;
+  }
+  
+  .link-actions button:last-child {
+    background: #dc3545;
+  }
+  
+  .link-actions button:last-child:hover {
+    background: #c82333;
+  }
+  
+  /* 編集中のリンクカードのハイライト */
+  .link-card.editing {
+    border: 2px solid #007bff;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    transform: scale(1.02);
+  }
+  
+  .link-card.editing .link-actions {
+    opacity: 1;
+  }
+  
+  .link-card.editing::before {
+    content: "編集中";
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    background: #007bff;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    z-index: 20;
+  }
+  
+  .link-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #999;
+  }
+  
+  .link-card-content {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    text-decoration: none;
+    color: inherit;
+    min-height: 28px;
+  }
+  
+  .link-favicon {
+    font-size: 14px;
+    margin-right: 8px;
+    min-width: 16px;
+    text-align: center;
+    color: #666;
+  }
+  
+  .link-info {
+    flex-grow: 1;
+    min-width: 0;
+  }
+  
+  .link-title {
+    font-weight: 500;
+    color: #333;
+    font-size: 13px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .link-url {
+    display: none; /* URLは非表示にしてよりコンパクトに */
+  }
+  
   .section:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
@@ -234,6 +481,21 @@ body {
     display: block;
   }
   
+  .section-subtitle-input {
+    width: 100%;
+    font-size: 11px;
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-top: 2px;
+    background-color: #fff;
+  }
+  
+  .section-subtitle-input:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
   .modal {
     display: none;
     position: fixed;
@@ -247,21 +509,213 @@ body {
   }
   
   .modal-content {
-    width: 600px;
-    max-width: 90%;
-    max-height: 80vh;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    overflow-y: auto;
+    width: 700px;
+    max-width: 95%;
+    max-height: 90vh;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   
   .modal-content h3 {
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
+  
+  .modal-editing-info {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f8ff 100%);
+    border: 1px solid #007bff;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #0056b3;
+  }
+  
+  .modal-editing-info .editing-label {
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 5px;
+  }
+  
+  .modal-editing-info .editing-details {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  /* 単一リンク編集モード */
+  .single-edit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .current-link-info {
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+    border: 1px solid #28a745;
+    border-radius: 8px;
+    padding: 15px;
+  }
+  
+  .info-label {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .info-details {
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.5;
+  }
+  
+  .edit-form-container {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .edit-form-container .form-row {
+    margin-bottom: 15px;
+  }
+  
+  .edit-form-container .form-options {
     margin-bottom: 20px;
+  }
+  
+  .edit-form-container .form-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  
+  #save-edit-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  #save-edit-btn:hover {
+    background-color: #218838;
+  }
+  
+  .list-edit-container {
+    display: block;
+  }
+  
+  .modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .link-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+  }
+  
+  .add-link-form {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #fff;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .form-row input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  
+  .form-options {
+    margin-bottom: 15px;
+  }
+  
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .checkbox-container input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  
+  .form-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  
+  .form-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  
+  #add-link-btn, #update-link-btn {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  #add-link-btn:hover, #update-link-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    text-align: center;
+  }
+  
+  .modal-footer button {
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .modal-footer button:hover {
+    background-color: #545b62;
   }
   
   .modal-content input {
@@ -395,12 +849,77 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 12px;
     border-bottom: 1px solid #ddd;
     cursor: move;
     transition: background-color 0.2s, opacity 0.2s;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .link-item-actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .link-item-actions button {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
     border-radius: 4px;
-    margin-bottom: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .link-item-actions button:first-child {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .link-item-actions button:first-child:hover {
+    background-color: #0056b3;
+  }
+  
+  .link-item-actions button:last-child {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .link-item-actions button:last-child:hover {
+    background-color: #c82333;
+  }
+  
+  .inline-badge {
+    background-color: #28a745;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+  }
+  
+  .editing-badge {
+    background-color: #007bff;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+  
+  .editing-item {
+    background-color: #e3f2fd !important;
+    border: 2px solid #007bff !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
   }
 
   #modal-link-list li:hover {
@@ -553,6 +1072,80 @@ body {
 
   .delete-project-footer-btn:hover {
     background-color: #da190b;
+  }
+
+  /* レスポンシブ対応 - セクション改善 */
+  @media (max-width: 768px) {
+    .enhanced-section {
+      margin-bottom: 15px;
+    }
+    
+    .section-header {
+      padding: 10px 12px;
+    }
+    
+    .section-title-text {
+      font-size: 14px;
+    }
+    
+    .link-grid {
+      grid-template-columns: repeat(2, 1fr);
+      padding: 10px;
+      gap: 4px;
+    }
+    
+    .link-card-content {
+      padding: 5px 8px;
+      min-height: 24px;
+    }
+    
+    .link-favicon {
+      font-size: 12px;
+      margin-right: 6px;
+    }
+    
+    .link-title {
+      font-size: 12px;
+    }
+    
+    .action-btn {
+      padding: 4px;
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .link-grid {
+      grid-template-columns: 1fr;
+      padding: 8px;
+      gap: 3px;
+    }
+    
+    .section-header {
+      padding: 8px 10px;
+    }
+    
+    .section-title-text {
+      font-size: 13px;
+    }
+    
+    .section-subtitle {
+      font-size: 10px;
+    }
+    
+    .link-card-content {
+      padding: 4px 6px;
+      min-height: 20px;
+    }
+    
+    .link-favicon {
+      font-size: 11px;
+      margin-right: 5px;
+    }
+    
+    .link-title {
+      font-size: 11px;
+    }
   }
 
   #project-links {

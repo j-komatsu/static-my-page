@@ -1,4 +1,63 @@
 let currentSectionId = "";
+let currentEditingIndex = -1;
+let favoriteSections = JSON.parse(localStorage.getItem('favoriteSections')) || [];
+
+// お気に入りセクション機能
+function toggleSectionFavorite(sectionId) {
+  const index = favoriteSections.indexOf(sectionId);
+  const button = document.querySelector(`#${sectionId} .favorite-btn`);
+  
+  if (index === -1) {
+    // お気に入りに追加
+    favoriteSections.push(sectionId);
+    button.classList.add('active');
+    button.textContent = '⭐';
+  } else {
+    // お気に入りから削除
+    favoriteSections.splice(index, 1);
+    button.classList.remove('active');
+    button.textContent = '☆';
+  }
+  
+  localStorage.setItem('favoriteSections', JSON.stringify(favoriteSections));
+  updateSectionOrder();
+}
+
+// お気に入りに基づいてセクション順序を更新
+function updateSectionOrder() {
+  const sectionGrid = document.querySelector('.section-grid');
+  const sections = Array.from(sectionGrid.children);
+  
+  // お気に入りセクションとそれ以外に分ける
+  const favoriteSectionElements = [];
+  const otherSectionElements = [];
+  
+  sections.forEach(section => {
+    if (favoriteSections.includes(section.id)) {
+      favoriteSectionElements.push(section);
+    } else {
+      otherSectionElements.push(section);
+    }
+  });
+  
+  // グリッドをクリアして、お気に入り → その他の順で再配置
+  sectionGrid.innerHTML = '';
+  [...favoriteSectionElements, ...otherSectionElements].forEach(section => {
+    sectionGrid.appendChild(section);
+  });
+}
+
+// ページ読み込み時にお気に入り状態を復元
+function restoreFavoriteStates() {
+  favoriteSections.forEach(sectionId => {
+    const button = document.querySelector(`#${sectionId} .favorite-btn`);
+    if (button) {
+      button.classList.add('active');
+      button.textContent = '⭐';
+    }
+  });
+  updateSectionOrder();
+}
 
 
 
@@ -27,17 +86,76 @@ function removeLink(index) {
 // ページごとのキーを生成（ページタイトルやURLを利用）
 const pageKey = `sectionLinks_${document.title.replace(/\s+/g, "_")}`;
 const sectionNamesKey = `sectionNames_${document.title.replace(/\s+/g, "_")}`;
+const sectionSubtitlesKey = `sectionSubtitles_${document.title.replace(/\s+/g, "_")}`;
 const mainTitleKey = `mainTitle_${window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_")}`;
 let linksData = {};
 
 
 // 各セクションのリンクを描画
 function renderLinks() {
+  console.log('Current linksData:', linksData);
   for (const [sectionId, links] of Object.entries(linksData)) {
+    const linkGrid = document.querySelector(`#${sectionId} .link-grid`);
     const linkList = document.querySelector(`#${sectionId} .link-list`);
 
-    // リンクリストを一度クリアして再描画
-    if (linkList) {
+    // 新しいカードスタイルのセクションの場合
+    if (linkGrid) {
+      linkGrid.innerHTML = ""; // 既存のリンクを削除
+      links.forEach((link, index) => {
+        // 既存のリンクデータの安全な取得
+        const text = link.text || '';
+        const url = link.url || '';
+        const inline = link.inline || false;
+        
+        const linkCard = document.createElement("div");
+        linkCard.className = `link-card${inline ? ' inline' : ''}`;
+        
+        // リンク要素を作成
+        const linkElement = document.createElement("a");
+        linkElement.href = url;
+        linkElement.target = "_blank";
+        linkElement.className = "link-card-content";
+        linkElement.innerHTML = `
+          <div class="link-favicon">🔗</div>
+          <div class="link-info">
+            <div class="link-title">${text}</div>
+          </div>
+        `;
+        
+        // アクションボタンを作成
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "link-actions";
+        
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "編集";
+        editBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Edit button clicked for:', sectionId, index);
+          editLinkItem(sectionId, index);
+        });
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "削除";
+        deleteBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Delete button clicked for:', sectionId, index);
+          removeLinkItem(sectionId, index);
+        });
+        
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(deleteBtn);
+        
+        // カードにリンクとアクションを追加
+        linkCard.appendChild(linkElement);
+        linkCard.appendChild(actionsDiv);
+        
+        linkGrid.appendChild(linkCard);
+      });
+    }
+    // 従来のリストスタイルのセクションの場合
+    else if (linkList) {
       linkList.innerHTML = ""; // 既存のリンクを削除
       links.forEach(({ text, url }) => {
         const listItem = document.createElement("li");
@@ -48,28 +166,212 @@ function renderLinks() {
   }
 }
 
-// リンクを編集するためのモーダルを表示
+// サブタイトル編集機能
+function editSectionSubtitle(sectionId) {
+  const subtitleElement = document.querySelector(`#${sectionId} .section-subtitle`);
+  const inputElement = document.getElementById(`${sectionId}-subtitle-input`);
+  
+  if (subtitleElement && inputElement) {
+    // 現在のテキストを入力フィールドに設定
+    inputElement.value = subtitleElement.textContent;
+    
+    // 表示を切り替え
+    subtitleElement.style.display = 'none';
+    inputElement.style.display = 'block';
+    inputElement.focus();
+    inputElement.select();
+  }
+}
+
+function saveSectionSubtitle(sectionId) {
+  const subtitleElement = document.querySelector(`#${sectionId} .section-subtitle`);
+  const inputElement = document.getElementById(`${sectionId}-subtitle-input`);
+  
+  if (subtitleElement && inputElement) {
+    const newSubtitle = inputElement.value.trim();
+    
+    if (newSubtitle !== '') {
+      // 新しいサブタイトルを保存
+      subtitleElement.textContent = newSubtitle;
+      
+      // ローカルストレージに保存
+      const storedSubtitles = JSON.parse(localStorage.getItem(sectionSubtitlesKey) || '{}');
+      storedSubtitles[sectionId] = newSubtitle;
+      localStorage.setItem(sectionSubtitlesKey, JSON.stringify(storedSubtitles));
+    }
+    
+    // 表示を元に戻す
+    inputElement.style.display = 'none';
+    subtitleElement.style.display = 'block';
+  }
+}
+
+// 個別のリンクを編集
+function editLinkItem(sectionId, index) {
+  console.log('editLinkItem called:', sectionId, index);
+  currentSectionId = sectionId;
+  currentEditingIndex = index;
+  
+  const links = linksData[sectionId] || [];
+  const link = links[index];
+  
+  console.log('Link data:', link);
+  
+  if (link) {
+    // 編集中のリンクカードをハイライト
+    highlightEditingLink(sectionId, index);
+    
+    // 単一編集モードでモーダルを開く
+    openSingleEditMode(link, sectionId);
+  } else {
+    console.error('Link not found:', sectionId, index);
+  }
+}
+
+// 単一編集モードでモーダルを開く
+function openSingleEditMode(link, sectionId) {
+  // モーダルタイトルを変更
+  document.getElementById('modal-title').textContent = 'リンクの編集';
+  
+  // 単一編集モードを表示、一覧モードを非表示
+  document.getElementById('single-edit-mode').style.display = 'block';
+  document.getElementById('list-edit-mode').style.display = 'none';
+  
+  // セクション名を取得
+  const sectionName = document.querySelector(`#${sectionId} .section-title-text`)?.textContent || sectionId;
+  
+  // 現在のリンク情報を表示
+  const currentDetails = document.getElementById('current-link-details');
+  if (currentDetails) {
+    currentDetails.innerHTML = `
+      <div><strong>セクション:</strong> ${sectionName}</div>
+      <div><strong>現在のテキスト:</strong> ${link.text || 'テキストなし'}</div>
+      <div><strong>現在のURL:</strong> ${link.url || 'URLなし'}</div>
+      <div><strong>表示形式:</strong> ${link.inline ? '1行表示' : '通常表示'}</div>
+    `;
+  }
+  
+  // フォームに現在の値を設定
+  document.getElementById('edit-link-text').value = link.text || '';
+  document.getElementById('edit-link-url').value = link.url || '';
+  document.getElementById('edit-link-inline').checked = link.inline || false;
+  
+  // モーダルを表示
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// 編集した内容を保存
+function saveEditedLink() {
+  const text = document.getElementById('edit-link-text').value.trim();
+  const url = document.getElementById('edit-link-url').value.trim();
+  const inline = document.getElementById('edit-link-inline').checked;
+  
+  if (!text || !url) {
+    alert('リンクテキストとURLを入力してください。');
+    return;
+  }
+  
+  if (!linksData[currentSectionId]) {
+    linksData[currentSectionId] = [];
+  }
+  
+  // リンクデータを更新
+  linksData[currentSectionId][currentEditingIndex] = { text, url, inline };
+  
+  // データを保存して表示を更新
+  saveLinks();
+  renderLinks();
+  
+  // モーダルを閉じる
+  closeModal();
+}
+
+// 単一編集をキャンセル
+function cancelSingleEdit() {
+  closeModal();
+}
+
+// 編集中のリンクをハイライト
+function highlightEditingLink(sectionId, index) {
+  // 全てのediting状態をクリア
+  document.querySelectorAll('.link-card.editing').forEach(card => {
+    card.classList.remove('editing');
+  });
+  
+  // 編集対象をハイライト
+  const linkGrid = document.querySelector(`#${sectionId} .link-grid`);
+  if (linkGrid) {
+    const linkCards = linkGrid.querySelectorAll('.link-card');
+    if (linkCards[index]) {
+      linkCards[index].classList.add('editing');
+      
+      // スクロールして見えるようにする
+      linkCards[index].scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  }
+}
+
+
+// 個別のリンクを削除
+function removeLinkItem(sectionId, index) {
+  if (!linksData[sectionId]) return;
+  
+  if (confirm('このリンクを削除しますか？')) {
+    linksData[sectionId].splice(index, 1);
+    saveLinks();
+    renderLinks();
+  }
+}
+
+
+// 編集モードをキャンセル（一覧モード用）
+function cancelEdit() {
+  // フォームをクリア
+  document.getElementById('new-link-text').value = '';
+  document.getElementById('new-link-url').value = '';
+  document.getElementById('new-link-inline').checked = false;
+}
+
+// リンクを編集するためのモーダルを表示（一覧モード）
 function editLinks(sectionId) {
   currentSectionId = sectionId;
+  currentEditingIndex = -1; // 一覧モードでは編集インデックスをリセット
+  
+  // モーダルタイトルを変更
+  document.getElementById('modal-title').textContent = 'リンクの管理';
+  
+  // 一覧編集モードを表示、単一編集モードを非表示
+  document.getElementById('single-edit-mode').style.display = 'none';
+  document.getElementById('list-edit-mode').style.display = 'block';
+  
   const modalLinkList = document.getElementById("modal-link-list");
   modalLinkList.innerHTML = ""; // モーダル内のリンクリストをクリア
 
   // 入力フィールドをリセット
   document.getElementById("new-link-text").value = ""; // リンクテキストをクリア
   document.getElementById("new-link-url").value = ""; // リンクURLをクリア
+  document.getElementById("new-link-inline").checked = false;
 
   // 現在のリンクを表示
   (linksData[sectionId] || []).forEach((link, index) => {
     const listItem = document.createElement("li");
     listItem.draggable = true;
     listItem.dataset.index = index;
+    
     listItem.innerHTML = `
       <div class="drag-handle">⋮⋮</div>
       <div class="link-content">
         <span class="link-text">${link.text}</span>
         <a href="${link.url}" target="_blank" class="link-url">${link.url}</a>
+        ${link.inline ? '<span class="inline-badge">1行表示</span>' : ''}
       </div>
-      <button onclick="removeLink(${index})">削除</button>
+      <div class="link-item-actions">
+        <button onclick="editLinkFromModal('${sectionId}', ${index})">編集</button>
+        <button onclick="removeLink(${index})">削除</button>
+      </div>
     `;
     
     // ドラッグイベントリスナーを追加
@@ -84,16 +386,34 @@ function editLinks(sectionId) {
   document.getElementById("modal").style.display = "flex";
 }
 
+// モーダルからリンクを編集
+function editLinkFromModal(sectionId, index) {
+  editLinkItem(sectionId, index);
+}
+
 
 // モーダルを閉じる
 function closeModal() {
   document.getElementById("modal").style.display = "none";
+  
+  // 全ての編集状態をリセット
+  currentEditingIndex = -1;
+  
+  // ハイライトを削除
+  document.querySelectorAll('.link-card.editing').forEach(card => {
+    card.classList.remove('editing');
+  });
+  
+  // モーダルの表示状態をリセット
+  document.getElementById('single-edit-mode').style.display = 'none';
+  document.getElementById('list-edit-mode').style.display = 'block';
 }
 
 // リンクを追加
 function addLink() {
-  const text = document.getElementById("new-link-text").value;
-  const url = document.getElementById("new-link-url").value;
+  const text = document.getElementById("new-link-text").value.trim();
+  const url = document.getElementById("new-link-url").value.trim();
+  const inline = document.getElementById("new-link-inline").checked;
 
   if (!text || !url) {
     alert("リンクテキストとURLを入力してください！");
@@ -104,12 +424,17 @@ function addLink() {
   if (!linksData[currentSectionId]) {
     linksData[currentSectionId] = [];
   }
-  linksData[currentSectionId].push({ text, url });
+  linksData[currentSectionId].push({ text, url, inline });
 
   // ローカルストレージに保存
   saveLinks();
   renderLinks(); // セクションを再描画
   editLinks(currentSectionId); // モーダル内のリストも更新
+  
+  // フォームをクリア
+  document.getElementById("new-link-text").value = '';
+  document.getElementById("new-link-url").value = '';
+  document.getElementById("new-link-inline").checked = false;
 }
 
 
@@ -137,6 +462,9 @@ window.onload = function () {
     document.getElementById("main-title").textContent = storedMainTitle;
     document.title = storedMainTitle;
   }
+  
+  // お気に入り状態の復元
+  restoreFavoriteStates();
 
   // セクション名の読み込み
   const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
@@ -144,6 +472,15 @@ window.onload = function () {
     const title = document.querySelector(`#${sectionId} h2`);
     if (title) {
       title.textContent = name;
+    }
+  }
+  
+  // サブタイトルの読み込み
+  const storedSubtitles = JSON.parse(localStorage.getItem(sectionSubtitlesKey) || "{}");
+  for (const [sectionId, subtitle] of Object.entries(storedSubtitles)) {
+    const subtitleElement = document.querySelector(`#${sectionId} .section-subtitle`);
+    if (subtitleElement) {
+      subtitleElement.textContent = subtitle;
     }
   }
 
@@ -508,6 +845,12 @@ function showProjectView(projectId) {
   
   projectView.classList.add('active');
   updateMainTitle(project.name);
+  
+  // リンクを再描画してアクションボタンが正しく表示されるようにする
+  renderLinks();
+  
+  // お気に入り状態を復元
+  restoreFavoriteStates();
 }
 
 // プロジェクトビューの作成
@@ -516,25 +859,67 @@ function createProjectView(project) {
   view.id = `${project.id}-view`;
   view.className = 'view';
   
+  // カテゴリ配列（セクションごとに異なるカテゴリを割り当て）
+  const categories = ['work', 'social', 'dev', 'entertainment', 'news', 'shopping'];
+  const categoryNames = ['作業関連のリンク', 'ソーシャル・コミュニケーション', '開発・技術関連', 'エンターテイメント', 'ニュース・情報収集', 'ショッピング・サービス'];
+  
   view.innerHTML = `
     <div class="section-grid">
       ${[1,2,3,4,5,6].map(i => `
-        <div class="section" id="${project.id}-section${i}">
-          <div class="section-title">
-            <h2 onclick="editSectionName('${project.id}-section${i}')">セクション${i}</h2>
-            <input type="text" id="${project.id}-section${i}-input" class="section-name-input" onblur="saveSectionName('${project.id}-section${i}')" />
+        <div class="section enhanced-section" id="${project.id}-section${i}" data-category="${categories[i-1]}">
+          <div class="section-header">
+            <div class="section-title-area">
+              <h2 onclick="editSectionName('${project.id}-section${i}')" class="section-title-text">セクション${i}</h2>
+              <input type="text" id="${project.id}-section${i}-input" class="section-name-input" onblur="saveSectionName('${project.id}-section${i}')" />
+              <div class="section-subtitle" onclick="editSectionSubtitle('${project.id}-section${i}')">${categoryNames[i-1]}</div>
+              <input type="text" id="${project.id}-section${i}-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('${project.id}-section${i}')" style="display: none;" />
+            </div>
+            <div class="section-actions">
+              <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('${project.id}-section${i}')" title="お気に入り">⭐</button>
+              <button class="action-btn edit-btn" onclick="editLinks('${project.id}-section${i}')" title="編集">✏️</button>
+            </div>
           </div>
-          <ul class="link-list">
-            <li><a href="https://example${i}.com" target="_blank">リンク${i}-1</a></li>
-            <li><a href="https://example${i}.com" target="_blank">リンク${i}-2</a></li>
-          </ul>
-          <button class="edit-button" onclick="editLinks('${project.id}-section${i}')">リンクを編集</button>
+          <div class="link-grid">
+            <!-- リンクはrenderLinks()によって動的に生成される -->
+          </div>
         </div>
       `).join('')}
     </div>
   `;
   
+  // 新しいプロジェクトのサンプルリンクデータを初期化
+  initializeProjectLinks(project.id, categories, categoryNames);
+  
   return view;
+}
+
+// プロジェクトのサンプルリンクデータを初期化
+function initializeProjectLinks(projectId, categories, categoryNames) {
+  for (let i = 1; i <= 6; i++) {
+    const sectionId = `${projectId}-section${i}`;
+    
+    // 既にデータが存在する場合はスキップ
+    if (linksData[sectionId] && linksData[sectionId].length > 0) {
+      continue;
+    }
+    
+    // サンプルリンクデータを作成
+    linksData[sectionId] = [
+      {
+        text: `サンプルリンク${i}-1`,
+        url: `https://example${i}.com`,
+        inline: false
+      },
+      {
+        text: `サンプルリンク${i}-2`,
+        url: `https://example${i}.com`,
+        inline: false
+      }
+    ];
+  }
+  
+  // データを保存
+  saveLinks();
 }
 
 // アクティブタブの更新

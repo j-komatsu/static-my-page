@@ -55,71 +55,209 @@
       <div id="main-view" class="view active">
         <div class="section-grid">
           <!-- 固定で6セクションを作成 -->
-          <div class="section" id="mypage-section1">
-            <div class="section-title">
-              <h2 onclick="editSectionName('mypage-section1')">セクション1</h2>
-              <input type="text" id="mypage-section1-input" class="section-name-input" onblur="saveSectionName('mypage-section1')" />
+          <div class="section enhanced-section" id="mypage-section1" data-category="work">
+            <div class="section-header">
+              <div class="section-title-area">
+                <h2 onclick="editSectionName('mypage-section1')" class="section-title-text">セクション1</h2>
+                <input type="text" id="mypage-section1-input" class="section-name-input" onblur="saveSectionName('mypage-section1')" />
+                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section1')">作業関連のリンク</div>
+                <input type="text" id="mypage-section1-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section1')" style="display: none;" />
+              </div>
+              <div class="section-actions">
+                <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section1')" title="お気に入り">⭐</button>
+                <button class="action-btn edit-btn" onclick="editLinks('mypage-section1')" title="編集">✏️</button>
+              </div>
             </div>
-            <ul class="link-list">
-              <li><a href="https://example1.com" target="_blank">リンク1-1</a></li>
-              <li><a href="https://example1.com" target="_blank">リンク1-2</a></li>
-            </ul>
-            <button class="edit-button" onclick="editLinks('mypage-section1')">リンクを編集</button>
+            <div class="link-grid">
+              <div class="link-card">
+                <a href="https://example1.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク1-1</div>
+                    <div class="link-url">example1.com</div>
+                  </div>
+                </a>
+              </div>
+              <div class="link-card">
+                <a href="https://example1.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク1-2</div>
+                    <div class="link-url">example1.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="section" id="mypage-section2">
-            <div class="section-title">
-              <h2 onclick="editSectionName('mypage-section2')">セクション2</h2>
-              <input type="text" id="mypage-section2-input" class="section-name-input" onblur="saveSectionName('mypage-section2')" />
+          <div class="section enhanced-section" id="mypage-section2" data-category="social">
+            <div class="section-header">
+              <div class="section-title-area">
+                <h2 onclick="editSectionName('mypage-section2')" class="section-title-text">セクション2</h2>
+                <input type="text" id="mypage-section2-input" class="section-name-input" onblur="saveSectionName('mypage-section2')" />
+                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section2')">ソーシャル・コミュニケーション</div>
+                <input type="text" id="mypage-section2-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section2')" style="display: none;" />
+              </div>
+              <div class="section-actions">
+                <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section2')" title="お気に入り">⭐</button>
+                <button class="action-btn edit-btn" onclick="editLinks('mypage-section2')" title="編集">✏️</button>
+              </div>
             </div>
-            <ul class="link-list">
-              <li><a href="https://example2.com" target="_blank">リンク2-1</a></li>
-              <li><a href="https://example2.com" target="_blank">リンク2-2</a></li>
-            </ul>
-            <button class="edit-button" onclick="editLinks('mypage-section2')">リンクを編集</button>
+            <div class="link-grid">
+              <div class="link-card">
+                <a href="https://example2.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク2-1</div>
+                    <div class="link-url">example2.com</div>
+                  </div>
+                </a>
+              </div>
+              <div class="link-card">
+                <a href="https://example2.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク2-2</div>
+                    <div class="link-url">example2.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="section" id="mypage-section3">
-            <div class="section-title">
-              <h2 onclick="editSectionName('mypage-section3')">セクション3</h2>
-              <input type="text" id="mypage-section3-input" class="section-name-input" onblur="saveSectionName('mypage-section3')" />
+          <div class="section enhanced-section" id="mypage-section3" data-category="dev">
+            <div class="section-header">
+              <div class="section-title-area">
+                <h2 onclick="editSectionName('mypage-section3')" class="section-title-text">セクション3</h2>
+                <input type="text" id="mypage-section3-input" class="section-name-input" onblur="saveSectionName('mypage-section3')" />
+                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section3')">開発・技術関連</div>
+                <input type="text" id="mypage-section3-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section3')" style="display: none;" />
+              </div>
+              <div class="section-actions">
+                <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section3')" title="お気に入り">⭐</button>
+                <button class="action-btn edit-btn" onclick="editLinks('mypage-section3')" title="編集">✏️</button>
+              </div>
             </div>
-            <ul class="link-list">
-              <li><a href="https://example3.com" target="_blank">リンク3-1</a></li>
-              <li><a href="https://example3.com" target="_blank">リンク3-2</a></li>
-            </ul>
-            <button class="edit-button" onclick="editLinks('mypage-section3')">リンクを編集</button>
+            <div class="link-grid">
+              <div class="link-card">
+                <a href="https://example3.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク3-1</div>
+                    <div class="link-url">example3.com</div>
+                  </div>
+                </a>
+              </div>
+              <div class="link-card">
+                <a href="https://example3.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク3-2</div>
+                    <div class="link-url">example3.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="section" id="mypage-section4">
-            <div class="section-title">
-              <h2 onclick="editSectionName('mypage-section4')">セクション4</h2>
-              <input type="text" id="mypage-section4-input" class="section-name-input" onblur="saveSectionName('mypage-section4')" />
+          <div class="section enhanced-section" id="mypage-section4" data-category="entertainment">
+            <div class="section-header">
+              <div class="section-title-area">
+                <h2 onclick="editSectionName('mypage-section4')" class="section-title-text">セクション4</h2>
+                <input type="text" id="mypage-section4-input" class="section-name-input" onblur="saveSectionName('mypage-section4')" />
+                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section4')">エンターテイメント</div>
+                <input type="text" id="mypage-section4-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section4')" style="display: none;" />
+              </div>
+              <div class="section-actions">
+                <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section4')" title="お気に入り">⭐</button>
+                <button class="action-btn edit-btn" onclick="editLinks('mypage-section4')" title="編集">✏️</button>
+              </div>
             </div>
-            <ul class="link-list">
-              <li><a href="https://example4.com" target="_blank">リンク4-1</a></li>
-              <li><a href="https://example4.com" target="_blank">リンク4-2</a></li>
-            </ul>
-            <button class="edit-button" onclick="editLinks('mypage-section4')">リンクを編集</button>
+            <div class="link-grid">
+              <div class="link-card">
+                <a href="https://example4.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク4-1</div>
+                    <div class="link-url">example4.com</div>
+                  </div>
+                </a>
+              </div>
+              <div class="link-card">
+                <a href="https://example4.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク4-2</div>
+                    <div class="link-url">example4.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="section" id="mypage-section5">
-            <div class="section-title">
-              <h2 onclick="editSectionName('mypage-section5')">セクション5</h2>
-              <input type="text" id="mypage-section5-input" class="section-name-input" onblur="saveSectionName('mypage-section5')" />
+          <div class="section enhanced-section" id="mypage-section5" data-category="news">
+            <div class="section-header">
+              <div class="section-title-area">
+                <h2 onclick="editSectionName('mypage-section5')" class="section-title-text">セクション5</h2>
+                <input type="text" id="mypage-section5-input" class="section-name-input" onblur="saveSectionName('mypage-section5')" />
+                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section5')">ニュース・情報収集</div>
+                <input type="text" id="mypage-section5-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section5')" style="display: none;" />
+              </div>
+              <div class="section-actions">
+                <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section5')" title="お気に入り">⭐</button>
+                <button class="action-btn edit-btn" onclick="editLinks('mypage-section5')" title="編集">✏️</button>
+              </div>
             </div>
-            <ul class="link-list">
-              <li><a href="https://example5.com" target="_blank">リンク5-1</a></li>
-              <li><a href="https://example5.com" target="_blank">リンク5-2</a></li>
-            </ul>
-            <button class="edit-button" onclick="editLinks('mypage-section5')">リンクを編集</button>
+            <div class="link-grid">
+              <div class="link-card">
+                <a href="https://example5.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク5-1</div>
+                    <div class="link-url">example5.com</div>
+                  </div>
+                </a>
+              </div>
+              <div class="link-card">
+                <a href="https://example5.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク5-2</div>
+                    <div class="link-url">example5.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="section" id="mypage-section6">
-            <div class="section-title">
-              <h2 onclick="editSectionName('mypage-section6')">セクション6</h2>
-              <input type="text" id="mypage-section6-input" class="section-name-input" onblur="saveSectionName('mypage-section6')" />
+          <div class="section enhanced-section" id="mypage-section6" data-category="shopping">
+            <div class="section-header">
+              <div class="section-title-area">
+                <h2 onclick="editSectionName('mypage-section6')" class="section-title-text">セクション6</h2>
+                <input type="text" id="mypage-section6-input" class="section-name-input" onblur="saveSectionName('mypage-section6')" />
+                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section6')">ショッピング・サービス</div>
+                <input type="text" id="mypage-section6-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section6')" style="display: none;" />
+              </div>
+              <div class="section-actions">
+                <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section6')" title="お気に入り">⭐</button>
+                <button class="action-btn edit-btn" onclick="editLinks('mypage-section6')" title="編集">✏️</button>
+              </div>
             </div>
-            <ul class="link-list">
-              <li><a href="https://example6.com" target="_blank">リンク6-1</a></li>
-              <li><a href="https://example6.com" target="_blank">リンク6-2</a></li>
-            </ul>
-            <button class="edit-button" onclick="editLinks('mypage-section6')">リンクを編集</button>
+            <div class="link-grid">
+              <div class="link-card">
+                <a href="https://example6.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク6-1</div>
+                    <div class="link-url">example6.com</div>
+                  </div>
+                </a>
+              </div>
+              <div class="link-card">
+                <a href="https://example6.com" target="_blank" class="link-card-content">
+                  <div class="link-favicon">🔗</div>
+                  <div class="link-info">
+                    <div class="link-title">リンク6-2</div>
+                    <div class="link-url">example6.com</div>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -131,12 +269,60 @@
     <!-- モーダルポップアップ -->
     <div id="modal" class="modal">
       <div class="modal-content">
-        <h3>リンクの編集</h3>
-        <ul id="modal-link-list"></ul>
-        <input type="text" id="new-link-text" placeholder="リンクテキスト" />
-        <input type="url" id="new-link-url" placeholder="リンクURL" />
-        <button onclick="addLink()">リンクを追加</button>
-        <button onclick="closeModal()">閉じる</button>
+        <h3 id="modal-title">リンクの編集</h3>
+        <div class="modal-body">
+          <!-- 単一リンク編集モード -->
+          <div id="single-edit-mode" class="single-edit-container" style="display: none;">
+            <div class="current-link-info">
+              <div class="info-label">📝 編集中のリンク</div>
+              <div id="current-link-details" class="info-details"></div>
+            </div>
+            <div class="edit-form-container">
+              <div class="form-row">
+                <input type="text" id="edit-link-text" placeholder="リンクテキスト" />
+                <input type="url" id="edit-link-url" placeholder="リンクURL" />
+              </div>
+              <div class="form-options">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="edit-link-inline" />
+                  <span class="checkmark"></span>
+                  1行表示（コンパクト）
+                </label>
+              </div>
+              <div class="form-buttons">
+                <button id="save-edit-btn" onclick="saveEditedLink()">変更を保存</button>
+                <button onclick="cancelSingleEdit()">キャンセル</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 通常の一覧編集モード -->
+          <div id="list-edit-mode" class="list-edit-container">
+            <div class="link-list-container">
+              <ul id="modal-link-list"></ul>
+            </div>
+            <div class="add-link-form">
+              <div class="form-row">
+                <input type="text" id="new-link-text" placeholder="リンクテキスト" />
+                <input type="url" id="new-link-url" placeholder="リンクURL" />
+              </div>
+              <div class="form-options">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="new-link-inline" />
+                  <span class="checkmark"></span>
+                  1行表示（コンパクト）
+                </label>
+              </div>
+              <div class="form-buttons">
+                <button id="add-link-btn" onclick="addLink()">リンクを追加</button>
+                <button onclick="cancelEdit()">キャンセル</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button onclick="closeModal()">閉じる</button>
+        </div>
       </div>
     </div>
 
