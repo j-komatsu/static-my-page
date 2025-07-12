@@ -408,6 +408,14 @@ body {
   background: #f8d7da;
 }
 
+.week-day-header.saturday {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+}
+
+.week-day-header.saturday .day-date {
+  color: #1565c0;
+}
+
 .week-day-header.today {
   background: #d4edda;
   border: 3px solid #28a745;
@@ -521,6 +529,24 @@ body {
   margin: 0 0 10px 0;
   font-size: 1.8rem;
   color: #2c3e50;
+}
+
+#day-title.saturday {
+  color: #1565c0 !important;
+  font-weight: 600 !important;
+}
+
+#day-title.holiday {
+  color: #dc3545 !important;
+  font-weight: 600 !important;
+}
+
+.day-header.saturday {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
+}
+
+.day-header.holiday {
+  background: linear-gradient(135deg, #f8d7da, #f5c6cb) !important;
 }
 
 .day-info {

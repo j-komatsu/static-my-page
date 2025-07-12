@@ -435,9 +435,15 @@ function renderWeekView() {
     dayHeader.className = 'week-day-header';
     
     const holiday = holidaySystem.isHoliday(day);
-    if (day.getDay() === 0 || day.getDay() === 6 || holiday) {
+    const isSaturday = day.getDay() === 6;
+    const isSunday = day.getDay() === 0;
+    
+    if (holiday || isSunday) {
       dayHeader.classList.add('holiday');
+    } else if (isSaturday) {
+      dayHeader.classList.add('saturday');
     }
+    
     if (isDateToday(day)) {
       dayHeader.classList.add('today');
     }
@@ -525,6 +531,7 @@ function createWeekEventElement(event) {
 // 日別ビューの描画
 function renderDayView() {
   const dayTitle = document.getElementById('day-title');
+  const dayHeader = document.querySelector('.day-header');
   const holidayInfo = document.getElementById('day-holiday-info');
   const businessInfo = document.getElementById('day-business-info');
   const timeSlots = document.getElementById('day-time-slots');
@@ -533,8 +540,22 @@ function renderDayView() {
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
   const holiday = holidaySystem.isHoliday(currentDate);
   const isBusinessDay = holidaySystem.isBusinessDay(currentDate);
+  const isSaturday = currentDate.getDay() === 6;
+  const isSunday = currentDate.getDay() === 0;
   
   dayTitle.textContent = `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月${currentDate.getDate()}日（${weekdays[currentDate.getDay()]}）`;
+  
+  // タイトルとヘッダーにクラスを追加
+  dayTitle.className = '';
+  dayHeader.className = 'day-header';
+  
+  if (holiday || isSunday) {
+    dayTitle.classList.add('holiday');
+    dayHeader.classList.add('holiday');
+  } else if (isSaturday) {
+    dayTitle.classList.add('saturday');
+    dayHeader.classList.add('saturday');
+  }
   
   // 祝日情報
   if (holiday) {
