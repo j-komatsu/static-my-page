@@ -302,8 +302,21 @@ const drawCompletionChart = () => {
     const canvas = document.getElementById('completion-chart');
     const ctx = canvas.getContext('2d');
     
+    // 高DPI対応
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    
+    canvas.width = width * devicePixelRatio;
+    canvas.height = height * devicePixelRatio;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    
     // キャンバスをクリア
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, width, height);
     
     // 過去7日間のデータを取得
     const last7Days = [];
@@ -325,8 +338,8 @@ const drawCompletionChart = () => {
     
     // グラフを描画
     const padding = 40;
-    const chartWidth = canvas.width - padding * 2;
-    const chartHeight = canvas.height - padding * 2;
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
     const maxRate = 100;
     
     // 背景グリッド
@@ -382,12 +395,12 @@ const drawCompletionChart = () => {
     
     // ラベル
     ctx.fillStyle = '#666';
-    ctx.font = '12px Arial';
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.textAlign = 'center';
     
     last7Days.forEach((day, index) => {
         const x = padding + (chartWidth / 6) * index;
-        ctx.fillText(day.label, x, canvas.height - 10);
+        ctx.fillText(day.label, x, height - 10);
         ctx.fillText(`${Math.round(day.rate)}%`, x, padding + chartHeight - (day.rate / maxRate) * chartHeight - 10);
     });
 };

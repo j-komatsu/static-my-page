@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TODOリスト</title>
+    <link rel="stylesheet" href="../css/shared-header.css">
     <link rel="stylesheet" href="../css/todo-style.css">
+    <link rel="stylesheet" href="../css/page-overrides.css">
 </head>
 <body>
-    <header class="todo-header">
-        <div class="header-nav">
-            <button class="todo-back-button" onclick="location.href='../index.html'">🏠 ホームに戻る</button>
-            <button class="todo-dashboard-button" onclick="location.href='dashboard.html'">ダッシュボード</button>
-        </div>
-        <h1>TODOリスト</h1>
-    </header>
-    <main class="todo-main">
+    <div class="page-container">
+        <header class="unified-header">
+            <button class="back-button">
+                <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
+            </button>
+            <h1>TODOリスト</h1>
+        </header>
+        <main class="page-main">
         <div class="todo-container">
             <!-- タスク追加エリア -->
             <div class="todo-add-section">

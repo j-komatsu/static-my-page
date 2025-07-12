@@ -1,0 +1,134 @@
+/* ページ間スタイルの競合を防ぐためのオーバーライド */
+
+/* 古いヘッダースタイルを無効化 */
+.main-header,
+.dashboard-header,
+.bookmark-header,
+.todo-header {
+    display: none !important;
+}
+
+/* 古いコンテナスタイルを調整 */
+.App,
+.dashboard,
+.bookmark-manager,
+.memo-manager,
+.task-manager {
+    all: unset;
+    display: block;
+}
+
+/* 統一スタイルが優先されるように */
+.unified-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 25px !important;
+    padding-bottom: 15px !important;
+    border-bottom: 2px solid #ddd !important;
+}
+
+.page-container {
+    width: 95vw !important;
+    min-height: 95vh !important;
+    padding: 15px !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    background-color: #f8f8f8 !important;
+    border-radius: 15px !important;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.unified-header h1 {
+    font-size: 28px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    flex-grow: 1 !important;
+    letter-spacing: 0.5px !important;
+}
+
+.back-button {
+    padding: 8px 12px !important;
+    background-color: #6c757d !important;
+    border: none !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    color: white !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.back-button:hover {
+    background-color: #5a6268 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.back-button-link {
+    color: white !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.back-button-link:hover {
+    color: white !important;
+}
+
+/* ページ固有の調整 */
+
+/* カレンダーページ */
+.main-content {
+    margin-top: 0 !important;
+}
+
+/* TODOページ */
+.todo-main {
+    all: unset;
+    display: block;
+}
+
+.todo-container {
+    max-width: 1200px !important;
+    width: 100% !important;
+}
+
+/* タスク管理ページ */
+.pomodoro-timer {
+    margin-top: 20px;
+}
+
+/* メモページ */
+.memo-container {
+    margin-top: 20px;
+}
+
+/* ブックマークページ */
+.bookmark-main {
+    margin-top: 20px;
+}
+
+/* 重複要素の削除 */
+.header-nav,
+.dashboard-button,
+.todo-dashboard-button {
+    display: none !important;
+}
+
+/* ページ固有の古いスタイルを無効化 */
+.App .main-header,
+.dashboard .dashboard-header,
+.bookmark-manager .bookmark-header,
+.memo-manager header,
+.task-manager header {
+    display: none !important;
+}
