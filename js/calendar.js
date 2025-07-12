@@ -353,12 +353,14 @@ function createMonthCell(date, currentMonth) {
   
   const isCurrentMonth = date.getMonth() === currentMonth;
   const isToday = isDateToday(date);
-  const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+  const isSunday = date.getDay() === 0;
+  const isSaturday = date.getDay() === 6;
   const holiday = holidaySystem.isHoliday(date);
   
   if (!isCurrentMonth) cell.classList.add('other-month');
   if (isToday) cell.classList.add('today');
-  if (isWeekend || holiday) cell.classList.add('holiday');
+  if (isSaturday) cell.classList.add('saturday');
+  if (isSunday || holiday) cell.classList.add('holiday');
   
   // 日付表示
   const dayNumber = document.createElement('div');
@@ -658,7 +660,13 @@ function createMiniCalendar(year, month) {
       }
       
       const holiday = holidaySystem.isHoliday(cellDate);
-      if (cellDate.getDay() === 0 || cellDate.getDay() === 6 || holiday) {
+      const isSaturday = cellDate.getDay() === 6;
+      const isSunday = cellDate.getDay() === 0;
+      
+      if (isSaturday && !holiday) {
+        dayEl.classList.add('saturday');
+      }
+      if (isSunday || holiday) {
         dayEl.classList.add('holiday');
       }
       

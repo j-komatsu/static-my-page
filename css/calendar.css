@@ -283,12 +283,30 @@ body {
 }
 
 .calendar-cell.today {
-  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-  border: 2px solid #ffc107;
+  background: linear-gradient(135deg, #e8f5e8, #d4edda);
+  border: 4px solid #28a745;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.4);
 }
 
 .calendar-cell.holiday {
   background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+}
+
+.calendar-cell.saturday {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+}
+
+.calendar-cell.saturday .day-number {
+  color: #1565c0;
+}
+
+/* 祝日が土曜日の場合は祝日色を優先 */
+.calendar-cell.saturday.holiday {
+  background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+}
+
+.calendar-cell.saturday.holiday .day-number {
+  color: #dc3545;
 }
 
 .day-number {
@@ -391,8 +409,10 @@ body {
 }
 
 .week-day-header.today {
-  background: #fff3cd;
+  background: #d4edda;
+  border: 3px solid #28a745;
   font-weight: bold;
+  box-shadow: 0 0 6px rgba(40, 167, 69, 0.3);
 }
 
 .day-name {
@@ -649,14 +669,25 @@ body {
 }
 
 .mini-day.today {
-  background: #ffc107;
-  color: #333;
+  background: #28a745;
+  color: white;
   font-weight: bold;
+  border: 2px solid #155724;
 }
 
 .mini-day.holiday {
   color: #dc3545;
   font-weight: 500;
+}
+
+.mini-day.saturday {
+  color: #1565c0;
+  font-weight: 500;
+}
+
+/* 祝日が土曜日の場合は祝日色を優先 */
+.mini-day.saturday.holiday {
+  color: #dc3545;
 }
 
 .mini-day.has-events {
