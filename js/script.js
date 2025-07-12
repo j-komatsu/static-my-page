@@ -2,6 +2,13 @@ let currentSectionId = "";
 let currentEditingIndex = -1;
 let favoriteSections = JSON.parse(localStorage.getItem('favoriteSections')) || [];
 
+// ヘッダーリンクのデータ管理
+const headerLinksKey = 'headerLinks_global';
+let headerLinksData = JSON.parse(localStorage.getItem(headerLinksKey)) || [
+  { text: 'Google', url: 'https://www.google.co.jp/' },
+  { text: 'Claude', url: 'https://claude.ai/' }
+];
+
 // お気に入りセクション機能
 function toggleSectionFavorite(sectionId) {
   const index = favoriteSections.indexOf(sectionId);
@@ -438,6 +445,9 @@ window.onload = function () {
   
   // お気に入り状態の復元
   restoreFavoriteStates();
+  
+  // ヘッダーリンクの表示
+  renderHeaderLinks();
 
   // セクション名の読み込み
   const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
@@ -1031,6 +1041,126 @@ function closeDeleteProjectModal() {
   if (modal) {
     modal.remove();
   }
+}
+
+// ヘッダーリンク関連の関数
+function renderHeaderLinks() {
+  const container = document.getElementById('header-links-container');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // 最大5個までのリンクを表示
+  const linksToShow = headerLinksData.slice(0, 5);
+  
+  linksToShow.forEach(link => {
+    const linkElement = document.createElement('a');
+    linkElement.href = link.url;
+    linkElement.target = '_blank';
+    linkElement.className = 'header-link';
+    linkElement.textContent = link.text;
+    container.appendChild(linkElement);
+  });
+}
+
+function saveHeaderLinks() {
+  localStorage.setItem(headerLinksKey, JSON.stringify(headerLinksData));
+}
+
+function editHeaderLinks() {
+  // モーダルのタイトルを変更
+  document.getElementById('modal-title').textContent = 'ヘッダーリンクの編集';
+  
+  // 他のモードを非表示にして、ヘッダーリンク編集モードを表示
+  document.getElementById('single-edit-mode').style.display = 'none';
+  document.getElementById('list-edit-mode').style.display = 'none';
+  document.getElementById('header-links-edit-mode').style.display = 'block';
+  
+  // ヘッダーリンクのリストを描画
+  renderHeaderLinksModal();
+  
+  // モーダルを表示
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function renderHeaderLinksModal() {
+  const list = document.getElementById('modal-header-link-list');
+  list.innerHTML = '';
+  
+  headerLinksData.forEach((link, index) => {
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `
+      <div class="header-link-info">
+        <div class="header-link-title">${link.text}</div>
+        <div class="header-link-url">${link.url}</div>
+      </div>
+      <div class="link-actions">
+        <button onclick="editHeaderLinkItem(${index})">編集</button>
+        <button onclick="removeHeaderLink(${index})">削除</button>
+      </div>
+    `;
+    list.appendChild(listItem);
+  });
+}
+
+function addHeaderLink() {
+  const textInput = document.getElementById('new-header-link-text');
+  const urlInput = document.getElementById('new-header-link-url');
+  
+  const text = textInput.value.trim();
+  const url = urlInput.value.trim();
+  
+  if (!text || !url) {
+    alert('リンクテキストとURLを入力してください。');
+    return;
+  }
+  
+  // 最大5個まで
+  if (headerLinksData.length >= 5) {
+    alert('ヘッダーリンクは最大5個までです。');
+    return;
+  }
+  
+  headerLinksData.push({ text, url });
+  saveHeaderLinks();
+  renderHeaderLinks();
+  renderHeaderLinksModal();
+  
+  // 入力フィールドをクリア
+  textInput.value = '';
+  urlInput.value = '';
+}
+
+function removeHeaderLink(index) {
+  if (confirm('このリンクを削除しますか？')) {
+    headerLinksData.splice(index, 1);
+    saveHeaderLinks();
+    renderHeaderLinks();
+    renderHeaderLinksModal();
+  }
+}
+
+function editHeaderLinkItem(index) {
+  const link = headerLinksData[index];
+  const newText = prompt('リンクテキストを入力してください:', link.text);
+  if (newText === null) return;
+  
+  const newUrl = prompt('URLを入力してください:', link.url);
+  if (newUrl === null) return;
+  
+  if (!newText.trim() || !newUrl.trim()) {
+    alert('リンクテキストとURLを入力してください。');
+    return;
+  }
+  
+  headerLinksData[index] = { text: newText.trim(), url: newUrl.trim() };
+  saveHeaderLinks();
+  renderHeaderLinks();
+  renderHeaderLinksModal();
+}
+
+function cancelHeaderEdit() {
+  closeModal();
 }
 
 // プロジェクト削除メニューの表示

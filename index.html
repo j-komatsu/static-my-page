@@ -305,6 +305,23 @@
               </div>
             </div>
           </div>
+
+          <!-- ヘッダーリンク編集モード -->
+          <div id="header-links-edit-mode" class="header-edit-container" style="display: none;">
+            <div class="header-links-list-container">
+              <ul id="modal-header-link-list"></ul>
+            </div>
+            <div class="add-header-link-form">
+              <div class="form-row">
+                <input type="text" id="new-header-link-text" placeholder="リンクテキスト" />
+                <input type="url" id="new-header-link-url" placeholder="リンクURL" />
+              </div>
+              <div class="form-buttons">
+                <button id="add-header-link-btn" onclick="addHeaderLink()">リンクを追加</button>
+                <button onclick="cancelHeaderEdit()">キャンセル</button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button onclick="closeModal()">閉じる</button>
