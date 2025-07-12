@@ -1,6 +1,5 @@
 let currentSectionId = "";
 let currentEditingIndex = -1;
-let favoriteSections = JSON.parse(localStorage.getItem('favoriteSections')) || [];
 
 // ヘッダーリンクのデータ管理
 const headerLinksKey = 'headerLinks_global';
@@ -8,63 +7,6 @@ let headerLinksData = JSON.parse(localStorage.getItem(headerLinksKey)) || [
   { text: 'Google', url: 'https://www.google.co.jp/' },
   { text: 'Claude', url: 'https://claude.ai/' }
 ];
-
-// お気に入りセクション機能
-function toggleSectionFavorite(sectionId) {
-  const index = favoriteSections.indexOf(sectionId);
-  const button = document.querySelector(`#${sectionId} .favorite-btn`);
-  
-  if (index === -1) {
-    // お気に入りに追加
-    favoriteSections.push(sectionId);
-    button.classList.add('active');
-    button.textContent = '⭐';
-  } else {
-    // お気に入りから削除
-    favoriteSections.splice(index, 1);
-    button.classList.remove('active');
-    button.textContent = '☆';
-  }
-  
-  localStorage.setItem('favoriteSections', JSON.stringify(favoriteSections));
-  updateSectionOrder();
-}
-
-// お気に入りに基づいてセクション順序を更新
-function updateSectionOrder() {
-  const sectionGrid = document.querySelector('.section-grid');
-  const sections = Array.from(sectionGrid.children);
-  
-  // お気に入りセクションとそれ以外に分ける
-  const favoriteSectionElements = [];
-  const otherSectionElements = [];
-  
-  sections.forEach(section => {
-    if (favoriteSections.includes(section.id)) {
-      favoriteSectionElements.push(section);
-    } else {
-      otherSectionElements.push(section);
-    }
-  });
-  
-  // グリッドをクリアして、お気に入り → その他の順で再配置
-  sectionGrid.innerHTML = '';
-  [...favoriteSectionElements, ...otherSectionElements].forEach(section => {
-    sectionGrid.appendChild(section);
-  });
-}
-
-// ページ読み込み時にお気に入り状態を復元
-function restoreFavoriteStates() {
-  favoriteSections.forEach(sectionId => {
-    const button = document.querySelector(`#${sectionId} .favorite-btn`);
-    if (button) {
-      button.classList.add('active');
-      button.textContent = '⭐';
-    }
-  });
-  updateSectionOrder();
-}
 
 
 
@@ -323,9 +265,10 @@ function editLinks(sectionId) {
   // モーダルタイトルを変更
   document.getElementById('modal-title').textContent = 'リンクの管理';
   
-  // 一覧編集モードを表示、単一編集モードを非表示
+  // 一覧編集モードを表示、他のモードを非表示
   document.getElementById('single-edit-mode').style.display = 'none';
   document.getElementById('list-edit-mode').style.display = 'block';
+  document.getElementById('header-links-edit-mode').style.display = 'none';
   
   const modalLinkList = document.getElementById("modal-link-list");
   modalLinkList.innerHTML = ""; // モーダル内のリンクリストをクリア
@@ -354,11 +297,13 @@ function editLinks(sectionId) {
       </div>
     `;
     
-    // ドラッグイベントリスナーを追加
-    listItem.addEventListener('dragstart', handleDragStart);
-    listItem.addEventListener('dragover', handleDragOver);
-    listItem.addEventListener('drop', handleDrop);
-    listItem.addEventListener('dragend', handleDragEnd);
+    // リンク項目のドラッグ機能を追加
+    listItem.addEventListener('dragstart', handleLinkDragStart);
+    listItem.addEventListener('dragover', handleLinkDragOver);
+    listItem.addEventListener('drop', handleLinkDrop);
+    listItem.addEventListener('dragend', handleLinkDragEnd);
+    listItem.addEventListener('dragenter', handleLinkDragEnter);
+    listItem.addEventListener('dragleave', handleLinkDragLeave);
     
     modalLinkList.appendChild(listItem);
   });
@@ -430,79 +375,87 @@ function saveLinks() {
 
 // ページロード時にリンクデータを読み込む
 window.onload = function () {
-  // プロジェクトデータの読み込み
-  loadProjects();
+  console.log('Page loaded, initializing...');
   
-  // プロジェクトナビゲーションの更新
-  updateProjectNavigation();
-  
-  // メインタイトルの読み込み
-  const storedMainTitle = localStorage.getItem(mainTitleKey);
-  if (storedMainTitle) {
-    document.getElementById("main-title").textContent = storedMainTitle;
-    document.title = storedMainTitle;
-  }
-  
-  // お気に入り状態の復元
-  restoreFavoriteStates();
-  
-  // ヘッダーリンクの表示
-  renderHeaderLinks();
-
-  // セクション名の読み込み
-  const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
-  for (const [sectionId, name] of Object.entries(storedSectionNames)) {
-    const title = document.querySelector(`#${sectionId} h2`);
-    if (title) {
-      title.textContent = name;
+  try {
+    // プロジェクトデータの読み込み
+    loadProjects();
+    console.log('Projects loaded:', projects.length);
+    
+    // プロジェクトナビゲーションの更新
+    updateProjectNavigation();
+    
+    // メインタイトルの読み込み
+    const storedMainTitle = localStorage.getItem(mainTitleKey);
+    if (storedMainTitle) {
+      document.getElementById("main-title").textContent = storedMainTitle;
+      document.title = storedMainTitle;
     }
-  }
-  
-  // サブタイトルの読み込み
-  const storedSubtitles = JSON.parse(localStorage.getItem(sectionSubtitlesKey) || "{}");
-  for (const [sectionId, subtitle] of Object.entries(storedSubtitles)) {
-    const subtitleElement = document.querySelector(`#${sectionId} .section-subtitle`);
-    if (subtitleElement) {
-      subtitleElement.textContent = subtitle;
+    
+    // ヘッダーリンクの表示
+    renderHeaderLinks();
+
+    // セクション名の読み込み
+    const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
+    for (const [sectionId, name] of Object.entries(storedSectionNames)) {
+      const title = document.querySelector(`#${sectionId} h2`);
+      if (title) {
+        title.textContent = name;
+      }
     }
-  }
 
-  // リンクデータの読み込み
-  const storedLinks = localStorage.getItem(pageKey);
-  if (storedLinks) {
-    linksData = JSON.parse(storedLinks);
-  }
+    // リンクデータの読み込み
+    const storedLinks = localStorage.getItem(pageKey);
+    if (storedLinks) {
+      linksData = JSON.parse(storedLinks);
+    }
 
-  // リンクのレンダリング
-  renderLinks();
-  
-  // URLハッシュに基づいてビューを切り替え
-  const hash = window.location.hash.substring(1);
-  if (hash && hash !== 'main') {
-    // プロジェクトが存在する場合のみ切り替え
-    const projectExists = projects.some(p => p.id === hash);
-    if (projectExists) {
-      switchView(hash);
+    // リンクのレンダリング
+    renderLinks();
+    
+    // URLハッシュに基づいてビューを切り替え
+    const hash = window.location.hash.substring(1);
+    if (hash && hash !== 'main') {
+      // プロジェクトが存在する場合のみ切り替え
+      const projectExists = projects.some(p => p.id === hash);
+      if (projectExists) {
+        switchView(hash);
+      } else {
+        switchView('main');
+      }
     } else {
       switchView('main');
     }
-  } else {
-    switchView('main');
-  }
-  
-  // MyPageタブのクリックイベントを設定
-  const mainTab = document.querySelector('a[data-view="main"]');
-  if (mainTab) {
-    mainTab.addEventListener('click', (e) => {
-      e.preventDefault();
-      switchView('main');
-    });
-  }
-  
-  // 初期状態でプロジェクトが空かつMyPageが開始されていない場合のメッセージ表示
-  const myPageStarted = localStorage.getItem(myPageStartedKey) === 'true';
-  if (projects.length === 0 && !myPageStarted) {
-    showWelcomeMessage();
+    
+    // MyPageタブのクリックイベントを設定
+    const mainTab = document.querySelector('a[data-view="main"]');
+    if (mainTab) {
+      mainTab.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchView('main');
+      });
+    }
+    
+    // 初期状態でプロジェクトが空かつMyPageが開始されていない場合のメッセージ表示
+    const myPageStarted = localStorage.getItem(myPageStartedKey) === 'true';
+    console.log('MyPage started:', myPageStarted, 'Projects count:', projects.length);
+    
+    if (projects.length === 0 && !myPageStarted) {
+      console.log('Showing welcome message');
+      setTimeout(() => {
+        showWelcomeMessage();
+      }, 300);
+    }
+    
+    // DOM完全構築後にドラッグ&ドロップ機能を初期化
+    setTimeout(() => {
+      console.log('Initializing drag and drop...');
+      initializeDragAndDrop();
+      restoreSectionOrder();
+    }, 500);
+    
+  } catch (error) {
+    console.error('Error during initialization:', error);
   }
 };
 
@@ -775,9 +728,18 @@ function addTabClickEvents() {
       e.preventDefault();
       const view = e.target.getAttribute('data-view');
       switchView(view);
-      updateActiveTab(e.target);
     });
   });
+}
+
+// アクティブタブの更新
+function updateActiveTab(activeTab) {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  if (activeTab) {
+    activeTab.classList.add('active');
+  }
 }
 
 // ビュー切り替え機能
@@ -805,7 +767,7 @@ function switchView(viewId) {
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.classList.remove('active');
     });
-    const activeTab = document.querySelector(`a[href="#${viewId}"]`);
+    const activeTab = document.querySelector(`a[data-view="${viewId}"]`);
     if (activeTab) {
       activeTab.classList.add('active');
     }
@@ -832,8 +794,15 @@ function showProjectView(projectId) {
   // リンクを再描画してアクションボタンが正しく表示されるようにする
   renderLinks();
   
-  // お気に入り状態を復元
-  restoreFavoriteStates();
+  // 新しく作成されたプロジェクトビューでもドラッグ&ドロップを有効にする
+  setTimeout(() => {
+    initializeDragAndDropForProject(projectId);
+    // プロジェクトページのセクション順序も復元
+    const projectSectionGrid = projectView.querySelector('.section-grid');
+    if (projectSectionGrid) {
+      restoreSectionOrderForGrid(projectSectionGrid, projectId);
+    }
+  }, 100);
 }
 
 // プロジェクトビューの作成
@@ -856,7 +825,6 @@ function createProjectView(project) {
               <input type="text" id="${project.id}-section${i}-input" class="section-name-input" onblur="saveSectionName('${project.id}-section${i}')" />
             </div>
             <div class="section-actions">
-              <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('${project.id}-section${i}')" title="お気に入り">⭐</button>
               <button class="action-btn edit-btn" onclick="editLinks('${project.id}-section${i}')" title="編集">✏️</button>
             </div>
           </div>
@@ -1163,6 +1131,251 @@ function cancelHeaderEdit() {
   closeModal();
 }
 
+// リンク項目のドラッグ&ドロップ機能
+let draggedLinkElement = null;
+let draggedLinkIndex = null;
+
+function handleLinkDragStart(e) {
+  draggedLinkElement = this;
+  draggedLinkIndex = parseInt(this.dataset.index);
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleLinkDragEnd(e) {
+  this.classList.remove('dragging');
+  
+  // すべてのリンク項目からdrag-overクラスを削除
+  document.querySelectorAll('#modal-link-list li').forEach(item => {
+    item.classList.remove('drag-over');
+  });
+  
+  draggedLinkElement = null;
+  draggedLinkIndex = null;
+}
+
+function handleLinkDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleLinkDragEnter(e) {
+  if (this !== draggedLinkElement) {
+    this.classList.add('drag-over');
+  }
+}
+
+function handleLinkDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function handleLinkDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  if (draggedLinkElement !== this && draggedLinkIndex !== null) {
+    const targetIndex = parseInt(this.dataset.index);
+    
+    // リンクデータの順番を変更
+    const draggedLink = linksData[currentSectionId][draggedLinkIndex];
+    linksData[currentSectionId].splice(draggedLinkIndex, 1);
+    linksData[currentSectionId].splice(targetIndex, 0, draggedLink);
+    
+    // ローカルストレージに保存
+    saveLinks();
+    
+    // 表示を更新
+    renderLinks();
+    editLinks(currentSectionId);
+  }
+  
+  this.classList.remove('drag-over');
+  return false;
+}
+
+// ドラッグ&ドロップ機能
+function initializeDragAndDrop() {
+  const sectionGrid = document.querySelector('#main-view .section-grid');
+  if (!sectionGrid) {
+    console.log('Section grid not found for drag and drop');
+    return;
+  }
+
+  // 各セクションにドラッグ機能を追加
+  const sections = sectionGrid.querySelectorAll('.section');
+  console.log('Initializing drag and drop for', sections.length, 'sections');
+  
+  sections.forEach(section => {
+    // 既存のイベントリスナーを削除
+    section.removeEventListener('dragstart', handleDragStart);
+    section.removeEventListener('dragend', handleDragEnd);
+    section.removeEventListener('dragover', handleDragOver);
+    section.removeEventListener('drop', handleDrop);
+    section.removeEventListener('dragenter', handleDragEnter);
+    section.removeEventListener('dragleave', handleDragLeave);
+    
+    section.draggable = true;
+    
+    section.addEventListener('dragstart', handleDragStart);
+    section.addEventListener('dragend', handleDragEnd);
+    section.addEventListener('dragover', handleDragOver);
+    section.addEventListener('drop', handleDrop);
+    section.addEventListener('dragenter', handleDragEnter);
+    section.addEventListener('dragleave', handleDragLeave);
+  });
+}
+
+// プロジェクト専用のドラッグ&ドロップ初期化
+function initializeDragAndDropForProject(projectId) {
+  const projectView = document.getElementById(`${projectId}-view`);
+  if (!projectView) return;
+  
+  const sectionGrid = projectView.querySelector('.section-grid');
+  if (!sectionGrid) {
+    console.log('Project section grid not found for drag and drop:', projectId);
+    return;
+  }
+
+  const sections = sectionGrid.querySelectorAll('.section');
+  console.log('Initializing drag and drop for project', projectId, 'with', sections.length, 'sections');
+  
+  sections.forEach(section => {
+    // 既存のイベントリスナーを削除
+    section.removeEventListener('dragstart', handleDragStart);
+    section.removeEventListener('dragend', handleDragEnd);
+    section.removeEventListener('dragover', handleDragOver);
+    section.removeEventListener('drop', handleDrop);
+    section.removeEventListener('dragenter', handleDragEnter);
+    section.removeEventListener('dragleave', handleDragLeave);
+    
+    section.draggable = true;
+    
+    section.addEventListener('dragstart', handleDragStart);
+    section.addEventListener('dragend', handleDragEnd);
+    section.addEventListener('dragover', handleDragOver);
+    section.addEventListener('drop', handleDrop);
+    section.addEventListener('dragenter', handleDragEnter);
+    section.addEventListener('dragleave', handleDragLeave);
+  });
+}
+
+let draggedElement = null;
+
+function handleDragStart(e) {
+  draggedElement = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  
+  // すべてのセクションからdrag-overクラスを削除
+  const sections = document.querySelectorAll('.section');
+  sections.forEach(section => {
+    section.classList.remove('drag-over');
+  });
+  
+  draggedElement = null;
+}
+
+function handleDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleDragEnter(e) {
+  this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  if (draggedElement !== this) {
+    // 現在のセクションの親グリッドを取得
+    const sectionGrid = draggedElement.parentElement;
+    const draggedIndex = Array.from(sectionGrid.children).indexOf(draggedElement);
+    const targetIndex = Array.from(sectionGrid.children).indexOf(this);
+    
+    if (draggedIndex < targetIndex) {
+      sectionGrid.insertBefore(draggedElement, this.nextSibling);
+    } else {
+      sectionGrid.insertBefore(draggedElement, this);
+    }
+    
+    // セクションの順序をローカルストレージに保存
+    saveSectionOrderForGrid(sectionGrid);
+  }
+  
+  this.classList.remove('drag-over');
+  return false;
+}
+
+// セクションの順序を保存（メインページ用）
+function saveSectionOrder() {
+  const sectionGrid = document.querySelector('#main-view .section-grid');
+  if (sectionGrid) {
+    saveSectionOrderForGrid(sectionGrid);
+  }
+}
+
+// 指定されたグリッドのセクション順序を保存
+function saveSectionOrderForGrid(sectionGrid) {
+  const sectionOrder = Array.from(sectionGrid.children).map(section => section.id);
+  
+  // メインページかプロジェクトページかを判定
+  const parentView = sectionGrid.closest('.view');
+  const viewId = parentView ? parentView.id.replace('-view', '') : 'main';
+  
+  const storageKey = viewId === 'main' ? 'sectionOrder' : `sectionOrder_${viewId}`;
+  localStorage.setItem(storageKey, JSON.stringify(sectionOrder));
+  
+  console.log('Saved section order for', viewId, ':', sectionOrder);
+}
+
+// セクションの順序を復元（メインページ用）
+function restoreSectionOrder() {
+  const sectionGrid = document.querySelector('#main-view .section-grid');
+  if (sectionGrid) {
+    restoreSectionOrderForGrid(sectionGrid, 'main');
+  }
+}
+
+// 指定されたグリッドのセクション順序を復元
+function restoreSectionOrderForGrid(sectionGrid, viewId) {
+  const storageKey = viewId === 'main' ? 'sectionOrder' : `sectionOrder_${viewId}`;
+  const storedOrder = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  
+  if (storedOrder.length === 0) return;
+  
+  const sections = Array.from(sectionGrid.children);
+  
+  // 保存された順序に従ってセクションを並び替え
+  storedOrder.forEach(sectionId => {
+    const section = sections.find(s => s.id === sectionId);
+    if (section) {
+      sectionGrid.appendChild(section);
+    }
+  });
+  
+  console.log('Restored section order for', viewId, ':', storedOrder);
+}
+
 // プロジェクト削除メニューの表示
 function showDeleteMenu(e, projectId) {
   e.preventDefault();
@@ -1183,6 +1396,9 @@ function deleteProject(projectId) {
   if (projectView) {
     projectView.remove();
   }
+  
+  // プロジェクトのセクション順序データも削除
+  localStorage.removeItem(`sectionOrder_${projectId}`);
   
   // メインビューに戻る
   switchView('main');
@@ -1261,61 +1477,3 @@ function startMyPage() {
   switchView('main');
 }
 
-// ドラッグ&ドロップ機能 --------------------------------------------------
-let draggedElement = null;
-let draggedIndex = null;
-
-function handleDragStart(e) {
-  draggedElement = this;
-  draggedIndex = parseInt(this.dataset.index);
-  this.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  
-  // ドロップターゲットのハイライト
-  const targetElement = e.currentTarget;
-  if (targetElement !== draggedElement) {
-    targetElement.classList.add('drag-over');
-  }
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  const targetElement = e.currentTarget;
-  const targetIndex = parseInt(targetElement.dataset.index);
-  
-  if (draggedElement && draggedIndex !== null && draggedIndex !== targetIndex) {
-    // リンクデータの順番を変更
-    const draggedLink = linksData[currentSectionId][draggedIndex];
-    linksData[currentSectionId].splice(draggedIndex, 1);
-    linksData[currentSectionId].splice(targetIndex, 0, draggedLink);
-    
-    // ローカルストレージに保存
-    saveLinks();
-    
-    // 表示を更新
-    renderLinks();
-    editLinks(currentSectionId);
-  }
-  
-  // クリーンアップ
-  targetElement.classList.remove('drag-over');
-}
-
-function handleDragEnd(e) {
-  this.classList.remove('dragging');
-  
-  // すべてのドラッグオーバーのハイライトを削除
-  document.querySelectorAll('#modal-link-list li').forEach(item => {
-    item.classList.remove('drag-over');
-  });
-  
-  draggedElement = null;
-  draggedIndex = null;
-}
-
-// ドラッグ&ドロップ機能 --------------------------------------------------

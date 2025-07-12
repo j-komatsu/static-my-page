@@ -274,6 +274,18 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
   }
+
+  .section.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+    z-index: 1000;
+    position: relative;
+  }
+
+  .section.drag-over {
+    border: 2px dashed #4a90e2;
+    background-color: #f0f8ff;
+  }
   
   .section {
     background-color: #ffffff;
@@ -284,6 +296,7 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+    cursor: move;
   }
   
   /* 強化されたセクションスタイル */
