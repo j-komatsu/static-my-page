@@ -17,12 +17,10 @@
           <input type="text" id="main-title-input" class="title-input" onblur="saveMainTitle()" onkeypress="handleMainTitleKeypress(event)" />
         </div>
         <div class="title-right">
-          <a href="https://www.google.co.jp/" class="navigation-link google-link" target="_blank">
-            <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-          </a>
-          <a href="https://claude.ai/" class="navigation-link claude-link" target="_blank">
-            <span>C</span><span>l</span><span>a</span><span>u</span><span>d</span><span>e</span>
-          </a>
+          <div id="header-links-container">
+            <!-- ヘッダーリンクは動的に生成されます -->
+          </div>
+          <button class="action-btn edit-btn" onclick="editHeaderLinks()" title="ヘッダーリンク編集">✏️</button>
         </div>
       </div>
       
@@ -60,8 +58,6 @@
               <div class="section-title-area">
                 <h2 onclick="editSectionName('mypage-section1')" class="section-title-text">セクション1</h2>
                 <input type="text" id="mypage-section1-input" class="section-name-input" onblur="saveSectionName('mypage-section1')" />
-                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section1')">作業関連のリンク</div>
-                <input type="text" id="mypage-section1-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section1')" style="display: none;" />
               </div>
               <div class="section-actions">
                 <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section1')" title="お気に入り">⭐</button>
@@ -94,8 +90,6 @@
               <div class="section-title-area">
                 <h2 onclick="editSectionName('mypage-section2')" class="section-title-text">セクション2</h2>
                 <input type="text" id="mypage-section2-input" class="section-name-input" onblur="saveSectionName('mypage-section2')" />
-                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section2')">ソーシャル・コミュニケーション</div>
-                <input type="text" id="mypage-section2-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section2')" style="display: none;" />
               </div>
               <div class="section-actions">
                 <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section2')" title="お気に入り">⭐</button>
@@ -128,8 +122,6 @@
               <div class="section-title-area">
                 <h2 onclick="editSectionName('mypage-section3')" class="section-title-text">セクション3</h2>
                 <input type="text" id="mypage-section3-input" class="section-name-input" onblur="saveSectionName('mypage-section3')" />
-                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section3')">開発・技術関連</div>
-                <input type="text" id="mypage-section3-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section3')" style="display: none;" />
               </div>
               <div class="section-actions">
                 <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section3')" title="お気に入り">⭐</button>
@@ -162,8 +154,6 @@
               <div class="section-title-area">
                 <h2 onclick="editSectionName('mypage-section4')" class="section-title-text">セクション4</h2>
                 <input type="text" id="mypage-section4-input" class="section-name-input" onblur="saveSectionName('mypage-section4')" />
-                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section4')">エンターテイメント</div>
-                <input type="text" id="mypage-section4-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section4')" style="display: none;" />
               </div>
               <div class="section-actions">
                 <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section4')" title="お気に入り">⭐</button>
@@ -196,8 +186,6 @@
               <div class="section-title-area">
                 <h2 onclick="editSectionName('mypage-section5')" class="section-title-text">セクション5</h2>
                 <input type="text" id="mypage-section5-input" class="section-name-input" onblur="saveSectionName('mypage-section5')" />
-                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section5')">ニュース・情報収集</div>
-                <input type="text" id="mypage-section5-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section5')" style="display: none;" />
               </div>
               <div class="section-actions">
                 <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section5')" title="お気に入り">⭐</button>
@@ -230,8 +218,6 @@
               <div class="section-title-area">
                 <h2 onclick="editSectionName('mypage-section6')" class="section-title-text">セクション6</h2>
                 <input type="text" id="mypage-section6-input" class="section-name-input" onblur="saveSectionName('mypage-section6')" />
-                <div class="section-subtitle" onclick="editSectionSubtitle('mypage-section6')">ショッピング・サービス</div>
-                <input type="text" id="mypage-section6-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('mypage-section6')" style="display: none;" />
               </div>
               <div class="section-actions">
                 <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('mypage-section6')" title="お気に入り">⭐</button>

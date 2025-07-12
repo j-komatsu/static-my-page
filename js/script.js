@@ -116,40 +116,13 @@ function renderLinks() {
         linkElement.target = "_blank";
         linkElement.className = "link-card-content";
         linkElement.innerHTML = `
-          <div class="link-favicon">🔗</div>
           <div class="link-info">
             <div class="link-title">${text}</div>
           </div>
         `;
         
-        // アクションボタンを作成
-        const actionsDiv = document.createElement("div");
-        actionsDiv.className = "link-actions";
-        
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "編集";
-        editBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Edit button clicked for:', sectionId, index);
-          editLinkItem(sectionId, index);
-        });
-        
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "削除";
-        deleteBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Delete button clicked for:', sectionId, index);
-          removeLinkItem(sectionId, index);
-        });
-        
-        actionsDiv.appendChild(editBtn);
-        actionsDiv.appendChild(deleteBtn);
-        
-        // カードにリンクとアクションを追加
+        // カードにリンクを追加
         linkCard.appendChild(linkElement);
-        linkCard.appendChild(actionsDiv);
         
         linkGrid.appendChild(linkCard);
       });
@@ -871,8 +844,6 @@ function createProjectView(project) {
             <div class="section-title-area">
               <h2 onclick="editSectionName('${project.id}-section${i}')" class="section-title-text">セクション${i}</h2>
               <input type="text" id="${project.id}-section${i}-input" class="section-name-input" onblur="saveSectionName('${project.id}-section${i}')" />
-              <div class="section-subtitle" onclick="editSectionSubtitle('${project.id}-section${i}')">${categoryNames[i-1]}</div>
-              <input type="text" id="${project.id}-section${i}-subtitle-input" class="section-subtitle-input" onblur="saveSectionSubtitle('${project.id}-section${i}')" style="display: none;" />
             </div>
             <div class="section-actions">
               <button class="action-btn favorite-btn" onclick="toggleSectionFavorite('${project.id}-section${i}')" title="お気に入り">⭐</button>
