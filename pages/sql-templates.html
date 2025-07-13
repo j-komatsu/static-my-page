@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLテンプレート機能 - My Page</title>
+    <link rel="stylesheet" href="../css/shared-header.css">
+    <link rel="stylesheet" href="../css/sql-templates.css">
+    <link rel="stylesheet" href="../css/page-overrides.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="unified-header">
+            <button class="back-button">
+                <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
+            </button>
+            <h1>🛡️ SQLテンプレート機能</h1>
+        </header>
+
+        <main class="sql-main">
+
+            <div class="sql-container">
+                <!-- テンプレート選択エリア -->
+                <div class="template-section">
+                    <h2>テンプレート選択</h2>
+                    
+                    <!-- カテゴリ選択プルダウン -->
+                    <div class="category-selector">
+                        <label for="category-select">カテゴリ:</label>
+                        <select id="category-select" class="category-dropdown">
+                            <option value="basic">基本操作</option>
+                            <option value="join">結合</option>
+                            <option value="aggregate">集計</option>
+                            <option value="window">ウィンドウ関数</option>
+                            <option value="subquery">サブクエリ</option>
+                            <option value="cte">CTE (共通テーブル式)</option>
+                            <option value="analysis">分析</option>
+                            <option value="maintenance">メンテナンス</option>
+                        </select>
+                    </div>
+                    
+                    <div class="template-list" id="template-list">
+                        <!-- テンプレート一覧が動的に生成される -->
+                    </div>
+                </div>
+
+                <!-- 入力フォームエリア -->
+                <div class="input-section">
+                    <h2>パラメータ入力</h2>
+                    
+                    <div class="selected-template">
+                        <h3 id="selected-template-name">テンプレートを選択してください</h3>
+                        <p id="selected-template-desc">左からテンプレートを選択すると、入力フォームが表示されます</p>
+                    </div>
+                    
+                    <form id="parameter-form" class="parameter-form" style="display: none;">
+                        <!-- 動的に生成される入力フォーム -->
+                    </form>
+                    
+                    <div class="form-actions">
+                        <button id="generate-btn" class="generate-btn" disabled>SQL生成</button>
+                        <button id="clear-btn" class="clear-btn">クリア</button>
+                    </div>
+                </div>
+
+                <!-- SQL出力エリア -->
+                <div class="output-section">
+                    <h2>生成SQL</h2>
+                    <div class="sql-output">
+                        <div class="output-header">
+                            <div class="output-controls">
+                                <button id="copy-btn" class="copy-btn" disabled>📋 コピー</button>
+                                <button id="format-btn" class="format-btn" disabled>✨ 整形</button>
+                                <button id="validate-btn" class="validate-btn" disabled>✅ 検証</button>
+                            </div>
+                        </div>
+                        
+                        <div class="sql-display">
+                            <pre id="generated-sql" class="sql-code">-- 生成されたSQLがここに表示されます
+-- セキュリティのため、実際のテーブル名は保存されません</pre>
+                        </div>
+                        
+                        <div class="validation-result" id="validation-result" style="display: none;">
+                            <!-- バリデーション結果 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/sql-templates.js"></script>
+</body>
+</html>
