@@ -8,6 +8,15 @@ let headerLinksData = JSON.parse(localStorage.getItem(headerLinksKey)) || [
   { text: 'Claude', url: 'https://claude.ai/' }
 ];
 
+// 初期データが空の場合は強制的にデフォルト値を設定
+if (!headerLinksData || headerLinksData.length === 0) {
+  headerLinksData = [
+    { text: 'Google', url: 'https://www.google.co.jp/' },
+    { text: 'Claude', url: 'https://claude.ai/' }
+  ];
+  localStorage.setItem(headerLinksKey, JSON.stringify(headerLinksData));
+}
+
 
 
 function removeLink(index) {
@@ -61,7 +70,15 @@ function renderLinks() {
         
         // リンク要素を作成
         const linkElement = document.createElement("a");
-        linkElement.href = url;
+        
+        // ローカルファイルパスの場合はfile://プロトコルを付与
+        let processedUrl = url;
+        if (url.match(/^[A-Za-z]:\\/) || url.match(/^\\\\/) || url.match(/^\/[^\/]/)) {
+          // Windows パス (C:\...) または UNC パス (\\...) または Unix パス (/...)
+          processedUrl = `file:///${url.replace(/\\/g, '/')}`;
+        }
+        
+        linkElement.href = processedUrl;
         linkElement.target = "_blank";
         linkElement.className = "link-card-content";
         linkElement.innerHTML = `
@@ -80,8 +97,15 @@ function renderLinks() {
     else if (linkList) {
       linkList.innerHTML = ""; // 既存のリンクを削除
       links.forEach(({ text, url }) => {
+        // ローカルファイルパスの場合はfile://プロトコルを付与
+        let processedUrl = url;
+        if (url.match(/^[A-Za-z]:\\/) || url.match(/^\\\\/) || url.match(/^\/[^\/]/)) {
+          // Windows パス (C:\...) または UNC パス (\\...) または Unix パス (/...)
+          processedUrl = `file:///${url.replace(/\\/g, '/')}`;
+        }
+        
         const listItem = document.createElement("li");
-        listItem.innerHTML = `<a href="${url}" target="_blank">${text}</a>`;
+        listItem.innerHTML = `<a href="${processedUrl}" target="_blank">${text}</a>`;
         linkList.appendChild(listItem);
       });
     }
@@ -375,12 +399,9 @@ function saveLinks() {
 
 // ページロード時にリンクデータを読み込む
 window.onload = function () {
-  console.log('Page loaded, initializing...');
-  
   try {
     // プロジェクトデータの読み込み
     loadProjects();
-    console.log('Projects loaded:', projects.length);
     
     // プロジェクトナビゲーションの更新
     updateProjectNavigation();
@@ -392,7 +413,14 @@ window.onload = function () {
       document.title = storedMainTitle;
     }
     
-    // ヘッダーリンクの表示
+    // ヘッダーリンクの初期化と表示
+    if (!headerLinksData || headerLinksData.length === 0) {
+      headerLinksData = [
+        { text: 'Google', url: 'https://www.google.co.jp/' },
+        { text: 'Claude', url: 'https://claude.ai/' }
+      ];
+      localStorage.setItem(headerLinksKey, JSON.stringify(headerLinksData));
+    }
     renderHeaderLinks();
 
     // セクション名の読み込み
@@ -1053,20 +1081,65 @@ function editHeaderLinks() {
 
 function renderHeaderLinksModal() {
   const list = document.getElementById('modal-header-link-list');
+  if (!list) return;
+  
+  // ヘッダーリンクデータを強制確認
+  if (!headerLinksData || headerLinksData.length === 0) {
+    headerLinksData = [
+      { text: 'Google', url: 'https://www.google.co.jp/' },
+      { text: 'Claude', url: 'https://claude.ai/' }
+    ];
+    saveHeaderLinks();
+  }
+  
   list.innerHTML = '';
   
   headerLinksData.forEach((link, index) => {
     const listItem = document.createElement('li');
-    listItem.innerHTML = `
-      <div class="header-link-info">
-        <div class="header-link-title">${link.text}</div>
-        <div class="header-link-url">${link.url}</div>
-      </div>
-      <div class="link-actions">
-        <button onclick="editHeaderLinkItem(${index})">編集</button>
-        <button onclick="removeHeaderLink(${index})">削除</button>
-      </div>
+    listItem.draggable = true;
+    listItem.dataset.index = index;
+    
+    // ドラッグハンドル
+    const dragHandle = document.createElement('div');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '⋮⋮';
+    
+    // リンク情報
+    const linkInfo = document.createElement('div');
+    linkInfo.className = 'header-link-info';
+    linkInfo.innerHTML = `
+      <div class="header-link-title">${link.text}</div>
+      <div class="header-link-url">${link.url}</div>
     `;
+    
+    // アクションボタン
+    const linkActions = document.createElement('div');
+    linkActions.className = 'link-actions';
+    
+    const editButton = document.createElement('button');
+    editButton.textContent = '編集';
+    editButton.onclick = () => editHeaderLinkItem(index);
+    
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '削除';
+    deleteButton.onclick = () => removeHeaderLink(index);
+    
+    linkActions.appendChild(editButton);
+    linkActions.appendChild(deleteButton);
+    
+    // リストアイテムに追加
+    listItem.appendChild(dragHandle);
+    listItem.appendChild(linkInfo);
+    listItem.appendChild(linkActions);
+    
+    // ドラッグ&ドロップイベントリスナーを追加
+    listItem.addEventListener('dragstart', handleHeaderLinkDragStart);
+    listItem.addEventListener('dragover', handleHeaderLinkDragOver);
+    listItem.addEventListener('drop', handleHeaderLinkDrop);
+    listItem.addEventListener('dragend', handleHeaderLinkDragEnd);
+    listItem.addEventListener('dragenter', handleHeaderLinkDragEnter);
+    listItem.addEventListener('dragleave', handleHeaderLinkDragLeave);
+    
     list.appendChild(listItem);
   });
 }
@@ -1109,31 +1182,194 @@ function removeHeaderLink(index) {
 }
 
 function editHeaderLinkItem(index) {
-  const link = headerLinksData[index];
-  const newText = prompt('リンクテキストを入力してください:', link.text);
-  if (newText === null) return;
-  
-  const newUrl = prompt('URLを入力してください:', link.url);
-  if (newUrl === null) return;
-  
-  if (!newText.trim() || !newUrl.trim()) {
-    alert('リンクテキストとURLを入力してください。');
-    return;
+  try {
+    const link = headerLinksData[index];
+    if (!link) {
+      console.error('Link not found at index:', index);
+      return;
+    }
+    
+    const listItem = document.querySelector(`#modal-header-link-list li:nth-child(${index + 1})`);
+    if (!listItem) {
+      console.error('List item not found at index:', index);
+      return;
+    }
+    
+    // 編集フォームを作成
+    const editForm = document.createElement('div');
+    editForm.className = 'header-link-edit-form';
+    editForm.innerHTML = `
+      <div class="edit-form-row">
+        <input type="text" class="edit-text-input" value="${link.text}" placeholder="リンクテキスト">
+        <input type="url" class="edit-url-input" value="${link.url}" placeholder="URL">
+      </div>
+      <div class="edit-form-actions">
+        <button class="save-btn" onclick="saveHeaderLinkEdit(${index})">保存</button>
+        <button class="cancel-btn" onclick="cancelHeaderLinkEdit(${index})">キャンセル</button>
+      </div>
+    `;
+    
+    // 元の内容を保存
+    listItem.dataset.originalContent = listItem.innerHTML;
+    
+    // 編集フォームに置き換え
+    listItem.innerHTML = '';
+    listItem.appendChild(editForm);
+    
+    // テキストフィールドにフォーカス
+    const textInput = editForm.querySelector('.edit-text-input');
+    if (textInput) {
+      textInput.focus();
+      textInput.select();
+    }
+  } catch (error) {
+    console.error('Error in editHeaderLinkItem:', error);
+    alert('編集モードの開始に失敗しました。');
   }
-  
-  headerLinksData[index] = { text: newText.trim(), url: newUrl.trim() };
-  saveHeaderLinks();
-  renderHeaderLinks();
-  renderHeaderLinksModal();
+}
+
+function saveHeaderLinkEdit(index) {
+  try {
+    const listItem = document.querySelector(`#modal-header-link-list li:nth-child(${index + 1})`);
+    if (!listItem) {
+      console.error('List item not found for save:', index);
+      return;
+    }
+    
+    const textInput = listItem.querySelector('.edit-text-input');
+    const urlInput = listItem.querySelector('.edit-url-input');
+    
+    if (!textInput || !urlInput) {
+      console.error('Input fields not found');
+      return;
+    }
+    
+    const newText = textInput.value.trim();
+    const newUrl = urlInput.value.trim();
+    
+    if (!newText || !newUrl) {
+      alert('リンクテキストとURLを入力してください。');
+      return;
+    }
+    
+    headerLinksData[index] = { text: newText, url: newUrl };
+    saveHeaderLinks();
+    renderHeaderLinks();
+    renderHeaderLinksModal();
+  } catch (error) {
+    console.error('Error in saveHeaderLinkEdit:', error);
+    alert('変更の保存に失敗しました。');
+  }
+}
+
+function cancelHeaderLinkEdit(index) {
+  try {
+    const listItem = document.querySelector(`#modal-header-link-list li:nth-child(${index + 1})`);
+    if (!listItem) {
+      console.error('List item not found for cancel:', index);
+      return;
+    }
+    
+    if (listItem.dataset.originalContent) {
+      listItem.innerHTML = listItem.dataset.originalContent;
+    } else {
+      console.error('Original content not found');
+      // フォールバック: モーダル全体を再描画
+      renderHeaderLinksModal();
+    }
+  } catch (error) {
+    console.error('Error in cancelHeaderLinkEdit:', error);
+    // エラー時はモーダル全体を再描画
+    renderHeaderLinksModal();
+  }
 }
 
 function cancelHeaderEdit() {
   closeModal();
 }
 
+
+// ヘッダーリンク用ドラッグ&ドロップハンドラー
+function handleHeaderLinkDragStart(e) {
+  draggedHeaderLinkElement = this;
+  draggedHeaderLinkIndex = parseInt(this.dataset.index);
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleHeaderLinkDragEnd(e) {
+  this.classList.remove('dragging');
+  
+  // 全てのドロップゾーンハイライトを削除
+  const allItems = document.querySelectorAll('#modal-header-link-list li');
+  allItems.forEach(item => {
+    item.classList.remove('drag-over');
+  });
+  
+  draggedHeaderLinkElement = null;
+  draggedHeaderLinkIndex = null;
+}
+
+function handleHeaderLinkDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  
+  if (draggedHeaderLinkElement && draggedHeaderLinkElement !== this) {
+    this.classList.add('drag-over');
+    e.dataTransfer.dropEffect = 'move';
+  }
+  
+  return false;
+}
+
+function handleHeaderLinkDragEnter(e) {
+  if (draggedHeaderLinkElement && draggedHeaderLinkElement !== this) {
+    this.classList.add('drag-over');
+  }
+}
+
+function handleHeaderLinkDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function handleHeaderLinkDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  
+  if (draggedHeaderLinkElement !== this && draggedHeaderLinkIndex !== null) {
+    const targetIndex = parseInt(this.dataset.index);
+    
+    // ヘッダーリンクデータの順番を変更
+    const draggedLink = headerLinksData[draggedHeaderLinkIndex];
+    headerLinksData.splice(draggedHeaderLinkIndex, 1);
+    
+    // 新しい位置に挿入
+    if (draggedHeaderLinkIndex < targetIndex) {
+      headerLinksData.splice(targetIndex - 1, 0, draggedLink);
+    } else {
+      headerLinksData.splice(targetIndex, 0, draggedLink);
+    }
+    
+    // データを保存して表示を更新
+    saveHeaderLinks();
+    renderHeaderLinks();
+    renderHeaderLinksModal();
+  }
+  
+  this.classList.remove('drag-over');
+  return false;
+}
+
 // リンク項目のドラッグ&ドロップ機能
 let draggedLinkElement = null;
 let draggedLinkIndex = null;
+
+// ヘッダーリンク用のドラッグ&ドロップ変数
+let draggedHeaderLinkElement = null;
+let draggedHeaderLinkIndex = null;
 
 function handleLinkDragStart(e) {
   draggedLinkElement = this;
