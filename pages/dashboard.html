@@ -6,6 +6,7 @@
     <title>ダッシュボード</title>
     <link rel="stylesheet" href="../css/shared-header.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/calendar.css">
     <link rel="stylesheet" href="../css/page-overrides.css">
 </head>
 <body>
@@ -15,6 +16,7 @@
                 <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
             </button>
             <h1>ダッシュボード</h1>
+            <button class="help-button" onclick="openHelpModal()">?</button>
         </header>
 
         <main class="dashboard-main">
@@ -212,10 +214,159 @@
                     </div>
                 </div>
             </section>
+
+            <!-- カレンダー機能 -->
+            <section class="calendar-section">
+                <h2>カレンダー</h2>
+                
+                <!-- カレンダーコントロール -->
+                <div class="calendar-controls">
+                    <div class="calendar-navigation">
+                        <button onclick="previousPeriod()" class="nav-btn">◀</button>
+                        <div class="current-period">
+                            <h2 id="current-period-text">2024年1月</h2>
+                        </div>
+                        <button onclick="nextPeriod()" class="nav-btn">▶</button>
+                    </div>
+                    
+                    <div class="view-controls">
+                        <div class="view-buttons">
+                            <button onclick="switchView('month')" class="view-btn active" data-view="month">月間</button>
+                            <button onclick="switchView('week')" class="view-btn" data-view="week">週間</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- カレンダー表示エリア -->
+                <div class="calendar-container">
+                    <!-- 月間表示 -->
+                    <div id="month-view" class="calendar-view active">
+                        <div class="month-calendar">
+                            <div class="weekdays">
+                                <div class="weekday">日</div>
+                                <div class="weekday">月</div>
+                                <div class="weekday">火</div>
+                                <div class="weekday">水</div>
+                                <div class="weekday">木</div>
+                                <div class="weekday">金</div>
+                                <div class="weekday">土</div>
+                            </div>
+                            <div id="calendar-grid" class="calendar-grid">
+                                <!-- 日付セルが動的に生成される -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 週間表示 -->
+                    <div id="week-view" class="calendar-view">
+                        <div class="week-calendar">
+                            <div class="week-header">
+                                <div class="time-column"></div>
+                                <div class="week-days" id="week-days">
+                                    <!-- 週の日付ヘッダーが動的に生成される -->
+                                </div>
+                            </div>
+                            <div class="week-content">
+                                <div class="time-slots" id="time-slots">
+                                    <!-- 時間スロットが動的に生成される -->
+                                </div>
+                                <div class="week-grid" id="week-grid">
+                                    <!-- 週間グリッドが動的に生成される -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
+    <!-- 説明モーダル -->
+    <div id="helpModal" class="help-modal">
+        <div class="help-modal-content">
+            <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+            <h2>ダッシュボード 使い方ガイド</h2>
+            
+            <div class="help-section">
+                <h3>📊 概要カード</h3>
+                <p>各機能の現在の状況を一目で確認できます。</p>
+                <ul>
+                    <li><strong>タスク管理</strong>：進行中のタスク数、今日の完了数、進捗率</li>
+                    <li><strong>メモ管理</strong>：総メモ数、今日の作成数、カテゴリ別統計</li>
+                    <li><strong>TODOリスト</strong>：未完了数、完了数、優先度別統計</li>
+                    <li><strong>カレンダー</strong>：今日の予定数、近日の祝日、営業日残り</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>📋 今日のタスク</h3>
+                <p>4つのカラムで今日の作業を管理できます。</p>
+                <ul>
+                    <li><strong>期限近いタスク</strong>：3日以内に期限が来るタスク</li>
+                    <li><strong>今日のTODO</strong>：今日予定されているTODOアイテム</li>
+                    <li><strong>進行中タスク</strong>：現在作業中のタスク</li>
+                    <li><strong>今日の予定</strong>：カレンダーからの今日の予定</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>📝 最近のメモ</h3>
+                <p>最近作成・更新されたメモを確認できます。</p>
+                <ul>
+                    <li>直近10件のメモを表示</li>
+                    <li>タイトルをクリックでメモ詳細を表示</li>
+                    <li>カテゴリ別に色分けされています</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>📈 作業時間統計</h3>
+                <p>週間の作業時間を視覚的に確認できます。</p>
+                <ul>
+                    <li>グラフで週間の作業時間推移を表示</li>
+                    <li>各曜日の作業時間を表示</li>
+                    <li>週間合計と1日平均を算出</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>📅 統合カレンダー（参照専用）</h3>
+                <p>ダッシュボードに組み込まれたカレンダー機能（参照のみ）。</p>
+                <ul>
+                    <li><strong>月表示</strong>：月全体の予定を一覧表示</li>
+                    <li><strong>週表示</strong>：週単位での詳細表示</li>
+                    <li><strong>今日の予定</strong>：今日の予定をリスト表示</li>
+                    <li><strong>予定連携</strong>：カレンダーページと連携して予定を表示</li>
+                    <li><strong>参照専用</strong>：予定の編集・追加は専用カレンダーページで行ってください</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>🔗 クイックアクセス</h3>
+                <p>各カードの「○○を開く」ボタンで直接機能にアクセスできます。</p>
+            </div>
+        </div>
+    </div>
+
+
     <script src="../js/calendar.js"></script>
     <script src="../js/dashboard.js"></script>
+    <script>
+        function openHelpModal() {
+            document.getElementById('helpModal').style.display = 'block';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        // モーダル外をクリックしたら閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

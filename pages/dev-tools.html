@@ -15,6 +15,7 @@
         <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
       </button>
       <h1>⚡ 効率化ツール</h1>
+      <button class="help-button" onclick="openHelpModal()">?</button>
     </header>
     </header>
 
@@ -154,6 +155,75 @@
     </main>
   </div>
 
+  <!-- 説明モーダル -->
+  <div id="helpModal" class="help-modal">
+    <div class="help-modal-content">
+      <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+      <h2>効率化ツール 使い方ガイド</h2>
+      
+      <div class="help-section">
+        <h3>🔍 正規表現テスター</h3>
+        <p>正規表現パターンをテストできます。</p>
+        <ul>
+          <li><strong>パターン入力</strong>：テストしたい正規表現を入力</li>
+          <li><strong>テスト文字列</strong>：マッチングを確認する文字列を入力</li>
+          <li><strong>フラグ設定</strong>：グローバル検索、大文字小文字無視など</li>
+          <li><strong>結果表示</strong>：マッチした部分がハイライトされます</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>📄 JSON/XML整形</h3>
+        <p>JSONやXMLを見やすく整形できます。</p>
+        <ul>
+          <li><strong>JSON整形</strong>：圧縮されたJSONを読みやすく</li>
+          <li><strong>XML整形</strong>：XMLを適切にインデント</li>
+          <li><strong>構文チェック</strong>：エラーがあれば表示</li>
+          <li><strong>圧縮機能</strong>：不要なスペースを削除</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🔧 その他のツール</h3>
+        <p>開発効率を高める追加機能。</p>
+        <ul>
+          <li><strong>Base64エンコード/デコード</strong>：文字列の変換</li>
+          <li><strong>URLエンコード/デコード</strong>：URLの変換</li>
+          <li><strong>ハッシュ生成</strong>：MD5、SHA-1、SHA-256</li>
+          <li><strong>カラーパレット</strong>：色の選択と変換</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>💡 使い方のコツ</h3>
+        <p>効率的にツールを活用する方法。</p>
+        <ul>
+          <li>正規表現は段階的に作成して複雑さを避ける</li>
+          <li>大きなデータの整形前にバックアップを取る</li>
+          <li>タブ切り替えでツールを使い分ける</li>
+          <li>結果はコピーして他のアプリに貼り付け可能</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/dev-tools.js"></script>
+  <script>
+    function openHelpModal() {
+      document.getElementById('helpModal').style.display = 'block';
+    }
+
+    function closeHelpModal() {
+      document.getElementById('helpModal').style.display = 'none';
+    }
+
+    // モーダル外をクリックしたら閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('helpModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>

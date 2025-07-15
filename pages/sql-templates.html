@@ -15,6 +15,7 @@
                 <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
             </button>
             <h1>🛡️ SQLテンプレート機能</h1>
+            <button class="help-button" onclick="openHelpModal()">?</button>
         </header>
 
         <main class="sql-main">
@@ -89,6 +90,97 @@
         </main>
     </div>
 
+    <!-- 説明モーダル -->
+    <div id="helpModal" class="help-modal">
+        <div class="help-modal-content">
+            <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+            <h2>SQLテンプレート機能 使い方ガイド</h2>
+            
+            <div class="help-section">
+                <h3>🛡️ セキュリティ重視</h3>
+                <p>SQLインジェクション対策済みの安全なテンプレートを提供します。</p>
+                <ul>
+                    <li><strong>パラメータ化クエリ</strong>：プレースホルダーを使用</li>
+                    <li><strong>バリデーション</strong>：入力値の検証機能</li>
+                    <li><strong>エスケープ処理</strong>：危険な文字を無害化</li>
+                    <li><strong>権限制御</strong>：最小権限の原則に従った設計</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>📂 カテゴリ別テンプレート</h3>
+                <p>用途に応じたSQLテンプレートを選択できます。</p>
+                <ul>
+                    <li><strong>基本操作</strong>：SELECT、INSERT、UPDATE、DELETE</li>
+                    <li><strong>データ分析</strong>：集計、統計、レポート生成</li>
+                    <li><strong>管理操作</strong>：テーブル作成、インデックス管理</li>
+                    <li><strong>高度な機能</strong>：JOINs、サブクエリ、CTE</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>🔧 テンプレートの使用</h3>
+                <p>テンプレートを効率的に活用する方法。</p>
+                <ul>
+                    <li><strong>カテゴリ選択</strong>：プルダウンでカテゴリを選択</li>
+                    <li><strong>テンプレート選択</strong>：目的に合ったテンプレートを選択</li>
+                    <li><strong>パラメータ設定</strong>：必要な値を入力</li>
+                    <li><strong>プレビュー</strong>：生成されたSQLを確認</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>✏️ カスタマイズ機能</h3>
+                <p>テンプレートをカスタマイズできます。</p>
+                <ul>
+                    <li><strong>パラメータ編集</strong>：値を直接編集</li>
+                    <li><strong>条件追加</strong>：WHERE句の条件を追加</li>
+                    <li><strong>フィールド選択</strong>：必要なカラムのみ選択</li>
+                    <li><strong>並び順変更</strong>：ORDER BY句の編集</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>🔍 検証とテスト</h3>
+                <p>SQLの動作を事前に検証できます。</p>
+                <ul>
+                    <li><strong>構文チェック</strong>：SQLの文法を検証</li>
+                    <li><strong>ドライラン</strong>：実際のデータに影響せずテスト</li>
+                    <li><strong>パフォーマンス確認</strong>：実行計画の表示</li>
+                    <li><strong>結果プレビュー</strong>：想定される結果を表示</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>💡 使用上の注意</h3>
+                <p>安全にSQLテンプレートを使用するための注意点。</p>
+                <ul>
+                    <li>本番環境では必ず事前テストを実施</li>
+                    <li>大量データの操作は時間外に実行</li>
+                    <li>バックアップを取ってから実行</li>
+                    <li>権限を最小限に制限して使用</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/sql-templates.js"></script>
+    <script>
+        function openHelpModal() {
+            document.getElementById('helpModal').style.display = 'block';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        // モーダル外をクリックしたら閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

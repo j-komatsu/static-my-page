@@ -15,6 +15,7 @@
         <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
       </button>
       <h1>メモ管理</h1>
+      <button class="help-button" onclick="openHelpModal()">?</button>
     </header>
     </header>
 
@@ -100,6 +101,97 @@
       </div>
     </div>
   </div>
+
+  <!-- 説明モーダル -->
+  <div id="helpModal" class="help-modal">
+    <div class="help-modal-content">
+      <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+      <h2>メモ管理 使い方ガイド</h2>
+      
+      <div class="help-section">
+        <h3>🔍 検索機能</h3>
+        <p>メモを効率的に検索できます。</p>
+        <ul>
+          <li>タイトルや本文でメモを検索</li>
+          <li>「検索」ボタンで実行</li>
+          <li>「クリア」ボタンで検索をリセット</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>📂 カテゴリフィルタ</h3>
+        <p>カテゴリ別にメモを絞り込めます。</p>
+        <ul>
+          <li><strong>会議</strong>：会議の議事録や内容</li>
+          <li><strong>アイデア</strong>：思いついたアイデア</li>
+          <li><strong>TODO</strong>：やるべきこと</li>
+          <li><strong>学習</strong>：学習内容や覚書</li>
+          <li><strong>その他</strong>：その他のメモ</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>📝 テンプレート機能</h3>
+        <p>よく使う形式のメモを素早く作成できます。</p>
+        <ul>
+          <li><strong>会議メモ</strong>：日時、参加者、議題の形式</li>
+          <li><strong>アイデアメモ</strong>：アイデア内容、関連項目の形式</li>
+          <li><strong>プロジェクトメモ</strong>：プロジェクト概要、進捗の形式</li>
+          <li><strong>学習メモ</strong>：学習内容、重要点の形式</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>➕ メモの作成</h3>
+        <p>新しいメモを作成する方法。</p>
+        <ul>
+          <li>メインエリアでタイトルを入力</li>
+          <li>カテゴリを選択</li>
+          <li>本文を入力</li>
+          <li>「保存」ボタンで保存</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>✏️ メモの編集・削除</h3>
+        <p>既存のメモを編集・削除できます。</p>
+        <ul>
+          <li>メモリストからメモを選択</li>
+          <li>メインエリアで内容を編集</li>
+          <li>「保存」で変更を保存</li>
+          <li>「削除」でメモを削除</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>💾 データの永続化</h3>
+        <p>メモはブラウザのローカルストレージに保存されます。</p>
+        <ul>
+          <li>ブラウザを閉じても保存される</li>
+          <li>同じブラウザ・同じサイトでのみ利用可能</li>
+          <li>定期的なバックアップを推奨</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/MemoManager.js"></script> <!-- 外部ファイルとして読み込み -->
+  <script>
+    function openHelpModal() {
+      document.getElementById('helpModal').style.display = 'block';
+    }
+
+    function closeHelpModal() {
+      document.getElementById('helpModal').style.display = 'none';
+    }
+
+    // モーダル外をクリックしたら閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('helpModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>

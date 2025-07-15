@@ -209,10 +209,10 @@ body {
     text-decoration: none;
     color: #fff;
     background-color: #666;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: bold;
-    padding: 3px 10px;
-    border-radius: 4px;
+    padding: 6px 14px;
+    border-radius: 6px;
     transition: all 0.3s ease;
     text-align: center;
     display: inline-flex;

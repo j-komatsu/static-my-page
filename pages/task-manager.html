@@ -15,6 +15,7 @@
         <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
       </button>
       <h1>タスク管理</h1>
+      <button class="help-button" onclick="openHelpModal()">?</button>
     </header>
       
       <!-- ポモドーロタイマー -->
@@ -100,6 +101,95 @@
       </div>
     </div>
   </div>
+
+  <!-- 説明モーダル -->
+  <div id="helpModal" class="help-modal">
+    <div class="help-modal-content">
+      <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+      <h2>タスク管理 使い方ガイド</h2>
+      
+      <div class="help-section">
+        <h3>⏰ ポモドーロタイマー</h3>
+        <p>集中力を高めるポモドーロ・テクニックを実践できます。</p>
+        <ul>
+          <li><strong>開始</strong>：25分の作業時間をスタート</li>
+          <li><strong>一時停止</strong>：作業を中断</li>
+          <li><strong>リセット</strong>：タイマーを初期状態に戻す</li>
+          <li>作業時間後は5分の休憩時間に自動切り替え</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>📝 タスク管理</h3>
+        <p>3つのステータスでタスクを管理できます。</p>
+        <ul>
+          <li><strong>計画</strong>：新しいタスクを追加・計画</li>
+          <li><strong>進行中</strong>：現在作業中のタスク</li>
+          <li><strong>完了</strong>：完了したタスク</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>➕ タスクの追加</h3>
+        <p>計画セクションでタスクを追加できます。</p>
+        <ul>
+          <li>タスク名を入力</li>
+          <li>優先度を選択（低・中・高）</li>
+          <li>期限を設定（オプション）</li>
+          <li>「追加」ボタンでタスクを作成</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>✏️ タスクの編集</h3>
+        <p>タスクをクリックして詳細を編集できます。</p>
+        <ul>
+          <li>タスク名と説明を変更</li>
+          <li>優先度と期限を更新</li>
+          <li>進捗率をスライダーで調整</li>
+          <li>「保存」で変更を確定</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🚀 ステータス変更</h3>
+        <p>タスクを別のステータスに移動できます。</p>
+        <ul>
+          <li>ドラッグ&ドロップで移動</li>
+          <li>または編集画面でステータスを変更</li>
+          <li>完了時は自動的に完了日時が記録</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🎯 優先度システム</h3>
+        <p>タスクは優先度で色分けされます。</p>
+        <ul>
+          <li><strong>高</strong>：赤色 - 緊急度の高いタスク</li>
+          <li><strong>中</strong>：黄色 - 通常のタスク</li>
+          <li><strong>低</strong>：緑色 - 優先度の低いタスク</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/TaskManager.js"></script>
+  <script>
+    function openHelpModal() {
+      document.getElementById('helpModal').style.display = 'block';
+    }
+
+    function closeHelpModal() {
+      document.getElementById('helpModal').style.display = 'none';
+    }
+
+    // モーダル外をクリックしたら閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('helpModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>

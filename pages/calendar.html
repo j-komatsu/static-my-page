@@ -15,6 +15,7 @@
         <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
       </button>
       <h1>📅 カレンダー</h1>
+      <button class="help-button" onclick="openHelpModal()">?</button>
     </header>
 
     <main class="main-content">
@@ -290,6 +291,98 @@
     </div>
   </div>
 
+  <!-- 説明モーダル -->
+  <div id="helpModal" class="help-modal">
+    <div class="help-modal-content">
+      <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+      <h2>カレンダー 使い方ガイド</h2>
+      
+      <div class="help-section">
+        <h3>📅 カレンダー表示</h3>
+        <p>月・週・日単位でスケジュールを管理できます。</p>
+        <ul>
+          <li><strong>月表示</strong>：月全体の予定を一覧</li>
+          <li><strong>週表示</strong>：1週間の詳細スケジュール</li>
+          <li><strong>日表示</strong>：1日の時間割形式</li>
+          <li><strong>ナビゲーション</strong>：◀▶ボタンで前後の期間に移動</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>➕ 予定の追加</h3>
+        <p>新しい予定を簡単に追加できます。</p>
+        <ul>
+          <li><strong>日付クリック</strong>：カレンダーの日付をクリック</li>
+          <li><strong>タイトル入力</strong>：予定のタイトルを入力</li>
+          <li><strong>時間設定</strong>：開始・終了時刻を設定</li>
+          <li><strong>終日設定</strong>：チェックボックスで終日予定に</li>
+          <li><strong>詳細入力</strong>：場所、参加者、メモを追加</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>✏️ 予定の編集・削除</h3>
+        <p>既存の予定を編集・削除できます。</p>
+        <ul>
+          <li><strong>予定クリック</strong>：予定をクリックして詳細表示</li>
+          <li><strong>編集ボタン</strong>：詳細ポップアップから編集</li>
+          <li><strong>削除ボタン</strong>：不要な予定を削除</li>
+          <li><strong>ドラッグ移動</strong>：予定を別の日時に移動</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🗂️ プロジェクト管理</h3>
+        <p>プロジェクト単位でタスクを管理できます。</p>
+        <ul>
+          <li><strong>プロジェクト作成</strong>：新しいプロジェクトを追加</li>
+          <li><strong>期限設定</strong>：プロジェクトの締切日を設定</li>
+          <li><strong>進捗管理</strong>：タスクの完了状況を追跡</li>
+          <li><strong>色分け表示</strong>：プロジェクトごとに色で区別</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🎯 祝日・営業日管理</h3>
+        <p>祝日や営業日を自動で管理します。</p>
+        <ul>
+          <li><strong>祝日表示</strong>：日本の祝日を自動表示</li>
+          <li><strong>営業日計算</strong>：営業日数を自動計算</li>
+          <li><strong>休日設定</strong>：独自の休日を設定可能</li>
+          <li><strong>期限通知</strong>：営業日ベースで期限をお知らせ</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>💾 データ同期</h3>
+        <p>予定データは自動で保存・同期されます。</p>
+        <ul>
+          <li><strong>自動保存</strong>：変更は即座に保存</li>
+          <li><strong>ローカル保存</strong>：ブラウザに安全に保存</li>
+          <li><strong>データ復旧</strong>：ページ再読み込みでも保持</li>
+          <li><strong>バックアップ</strong>：定期的なデータバックアップ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/calendar.js"></script>
+  <script>
+    function openHelpModal() {
+      document.getElementById('helpModal').style.display = 'block';
+    }
+
+    function closeHelpModal() {
+      document.getElementById('helpModal').style.display = 'none';
+    }
+
+    // モーダル外をクリックしたら閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('helpModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>

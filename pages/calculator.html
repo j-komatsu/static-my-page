@@ -15,6 +15,7 @@
         <a href="../index.html" class="back-button-link">🏠 ホームに戻る</a>
       </button>
       <h1>🧮 ビジネス計算ツール</h1>
+      <button class="help-button" onclick="openHelpModal()">?</button>
     </header>
     </header>
 
@@ -541,6 +542,86 @@
     </main>
   </div>
 
+  <!-- 説明モーダル -->
+  <div id="helpModal" class="help-modal">
+    <div class="help-modal-content">
+      <span class="help-modal-close" onclick="closeHelpModal()">&times;</span>
+      <h2>ビジネス計算ツール 使い方ガイド</h2>
+      
+      <div class="help-section">
+        <h3>💰 財務・投資計算</h3>
+        <p>投資や融資の計算ができます。</p>
+        <ul>
+          <li><strong>複利計算</strong>：元本、利率、期間から将来価値を計算</li>
+          <li><strong>ローン計算</strong>：毎月の返済額、総返済額を計算</li>
+          <li><strong>投資収益率</strong>：投資の年間収益率を計算</li>
+          <li><strong>現在価値計算</strong>：将来の価値を現在価値で評価</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>📊 プロジェクト管理</h3>
+        <p>プロジェクトの進捗と工数を管理できます。</p>
+        <ul>
+          <li><strong>工数計算</strong>：作業時間とコストを計算</li>
+          <li><strong>進捗率計算</strong>：完了タスクから進捗率を算出</li>
+          <li><strong>リソース配分</strong>：人員とタスクの最適配分</li>
+          <li><strong>期限管理</strong>：納期までの残り時間を計算</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>📈 データ分析</h3>
+        <p>数値データの統計分析ができます。</p>
+        <ul>
+          <li><strong>平均値計算</strong>：データの算術平均、中央値</li>
+          <li><strong>標準偏差</strong>：データのばらつきを測定</li>
+          <li><strong>相関係数</strong>：2つのデータの相関を計算</li>
+          <li><strong>成長率計算</strong>：期間ごとの成長率を算出</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>🧮 その他の計算</h3>
+        <p>日常業務で使える計算機能。</p>
+        <ul>
+          <li><strong>税金計算</strong>：消費税、所得税の計算</li>
+          <li><strong>単位換算</strong>：重量、長さ、時間の換算</li>
+          <li><strong>パーセンテージ計算</strong>：割合、増減率</li>
+          <li><strong>通貨換算</strong>：為替レートでの通貨変換</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <h3>💡 使い方のコツ</h3>
+        <p>計算ツールを効率的に使う方法。</p>
+        <ul>
+          <li>タブを切り替えて用途に応じた計算を選択</li>
+          <li>結果は自動保存され、後で参照可能</li>
+          <li>計算履歴を確認して過去の結果を再利用</li>
+          <li>複雑な計算は段階的に分割して実行</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/calculator.js"></script>
+  <script>
+    function openHelpModal() {
+      document.getElementById('helpModal').style.display = 'block';
+    }
+
+    function closeHelpModal() {
+      document.getElementById('helpModal').style.display = 'none';
+    }
+
+    // モーダル外をクリックしたら閉じる
+    window.onclick = function(event) {
+      const modal = document.getElementById('helpModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>
