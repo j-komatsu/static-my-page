@@ -79,27 +79,6 @@
                     <a href="todo.html" class="card-link">TODOリストを開く</a>
                 </div>
 
-                <div class="overview-card work-time-overview">
-                    <h3>作業時間</h3>
-                    <div class="card-content">
-                        <div class="stat-item">
-                            <span class="stat-label">今日の作業時間</span>
-                            <span class="stat-value" id="today-work-time">0時間</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">今週の合計</span>
-                            <span class="stat-value" id="week-work-time">0時間</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">現在の状態</span>
-                            <span class="stat-value" id="current-status">休憩中</span>
-                        </div>
-                    </div>
-                    <div class="work-time-controls">
-                        <button id="start-work-btn" class="work-btn">作業開始</button>
-                        <button id="stop-work-btn" class="work-btn" disabled>作業終了</button>
-                    </div>
-                </div>
 
                 <div class="overview-card calendar-overview">
                     <h3>カレンダー</h3>
@@ -162,58 +141,6 @@
                 </div>
             </section>
 
-            <!-- 作業時間統計 -->
-            <section class="work-stats-section">
-                <h2>作業時間統計</h2>
-                <div class="stats-container">
-                    <div class="chart-container">
-                        <canvas id="work-time-chart" width="600" height="300"></canvas>
-                    </div>
-                    <div class="time-summary">
-                        <h3>週間サマリー</h3>
-                        <div class="weekly-stats">
-                            <div class="day-stat">
-                                <span class="day-label">月</span>
-                                <span class="day-time" id="mon-time">0h</span>
-                            </div>
-                            <div class="day-stat">
-                                <span class="day-label">火</span>
-                                <span class="day-time" id="tue-time">0h</span>
-                            </div>
-                            <div class="day-stat">
-                                <span class="day-label">水</span>
-                                <span class="day-time" id="wed-time">0h</span>
-                            </div>
-                            <div class="day-stat">
-                                <span class="day-label">木</span>
-                                <span class="day-time" id="thu-time">0h</span>
-                            </div>
-                            <div class="day-stat">
-                                <span class="day-label">金</span>
-                                <span class="day-time" id="fri-time">0h</span>
-                            </div>
-                            <div class="day-stat">
-                                <span class="day-label">土</span>
-                                <span class="day-time" id="sat-time">0h</span>
-                            </div>
-                            <div class="day-stat">
-                                <span class="day-label">日</span>
-                                <span class="day-time" id="sun-time">0h</span>
-                            </div>
-                        </div>
-                        <div class="total-summary">
-                            <div class="summary-item">
-                                <span class="summary-label">今週合計</span>
-                                <span class="summary-value" id="week-total">0時間</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="summary-label">平均/日</span>
-                                <span class="summary-value" id="daily-average">0時間</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <!-- カレンダー機能 -->
             <section class="calendar-section">
@@ -319,15 +246,6 @@
                 </ul>
             </div>
 
-            <div class="help-section">
-                <h3>📈 作業時間統計</h3>
-                <p>週間の作業時間を視覚的に確認できます。</p>
-                <ul>
-                    <li>グラフで週間の作業時間推移を表示</li>
-                    <li>各曜日の作業時間を表示</li>
-                    <li>週間合計と1日平均を算出</li>
-                </ul>
-            </div>
 
             <div class="help-section">
                 <h3>📅 統合カレンダー（参照専用）</h3>
