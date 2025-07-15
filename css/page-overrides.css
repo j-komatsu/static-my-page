@@ -3,7 +3,6 @@
 /* 古いヘッダースタイルを無効化 */
 .main-header,
 .dashboard-header,
-.bookmark-header,
 .todo-header {
     display: none !important;
 }
@@ -11,7 +10,6 @@
 /* 古いコンテナスタイルを調整 */
 .App,
 .dashboard,
-.bookmark-manager,
 .memo-manager,
 .task-manager {
     all: unset;
@@ -112,10 +110,6 @@
     margin-top: 20px;
 }
 
-/* ブックマークページ */
-.bookmark-main {
-    margin-top: 20px;
-}
 
 /* 重複要素の削除 */
 .header-nav,
@@ -127,8 +121,7 @@
 /* ページ固有の古いスタイルを無効化 */
 .App .main-header,
 .dashboard .dashboard-header,
-.bookmark-manager .bookmark-header,
-.memo-manager header,
+.bookmark-manager .memo-manager header,
 .task-manager header {
     display: none !important;
 }

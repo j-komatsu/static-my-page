@@ -15,8 +15,8 @@ body {
   .main-header {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 12px;
   }
 
   /* タイトルヘッダー */
@@ -25,11 +25,16 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+    min-height: 40px;
+    padding: 4px 0;
   }
 
   .title-left {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    min-height: 30px;
   }
 
   .title-right {
@@ -132,16 +137,19 @@ body {
 
   .title-left h1 {
     font-family: 'Comic Sans MS', 'Arial', sans-serif;
-    font-size: 28px;
+    font-size: 22px;
     font-weight: bold;
     margin: 0;
     background: linear-gradient(90deg, #333, #666);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     cursor: pointer;
     user-select: none;
-    line-height: 1.2;
+    line-height: 1.3;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
   }
 
   .title-input {
@@ -171,19 +179,19 @@ body {
   .header-navigation {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
   }
 
   .fixed-buttons-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 4px;
   }
 
   .dynamic-buttons-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 4px;
   }
 
   #project-links {
@@ -201,10 +209,10 @@ body {
     text-decoration: none;
     color: #fff;
     background-color: #666;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: bold;
-    padding: 4px 12px;
-    border-radius: 5px;
+    padding: 3px 10px;
+    border-radius: 4px;
     transition: all 0.3s ease;
     text-align: center;
     display: inline-flex;
@@ -356,12 +364,17 @@ body {
   }
   
   .section-title-text {
-    margin: 0 0 2px 0;
+    margin: 0 0 4px 0;
     font-size: 16px;
     font-weight: bold;
     color: #333;
     cursor: pointer;
     transition: color 0.2s;
+    line-height: 1.4;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    min-height: 22px;
   }
   
   .section-title-text:hover {
@@ -374,6 +387,11 @@ body {
     margin: 0;
     cursor: pointer;
     transition: color 0.2s;
+    line-height: 1.3;
+    padding: 1px 0;
+    min-height: 14px;
+    display: flex;
+    align-items: center;
   }
   
   .section-subtitle:hover {
@@ -585,9 +603,12 @@ body {
     width: 100%;
     font-size: 16px;
     margin-top: 5px;
-    padding: 5px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    line-height: 1.4;
+    min-height: 20px;
+    box-sizing: border-box;
   }
   
   .section-name-input:focus {
@@ -597,10 +618,13 @@ body {
   .section-subtitle-input {
     width: 100%;
     font-size: 11px;
-    padding: 2px 4px;
+    padding: 4px 6px;
     border: 1px solid #ccc;
     border-radius: 3px;
     margin-top: 2px;
+    line-height: 1.3;
+    min-height: 14px;
+    box-sizing: border-box;
     background-color: #fff;
   }
   
@@ -915,10 +939,10 @@ body {
     background-color: #e0e0e0;
     color: black;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 12px;
     text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
     transition: background-color 0.3s, transform 0.2s;
     display: inline-flex;
     align-items: center;
@@ -934,10 +958,10 @@ body {
     background-color: #e0e0e0;
     color: black;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 12px;
     text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
     transition: background-color 0.3s, transform 0.2s;
     display: inline-flex;
     align-items: center;
@@ -1267,6 +1291,27 @@ body {
 
   /* レスポンシブ対応 - セクション改善 */
   @media (max-width: 768px) {
+    .main-header {
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    
+    .title-header {
+      min-height: 35px;
+      padding: 3px 0;
+      margin-bottom: 6px;
+    }
+    
+    .title-left h1 {
+      font-size: 20px;
+      letter-spacing: 0.8px;
+    }
+    
+    .navigation-link {
+      font-size: 9px;
+      padding: 2px 8px;
+    }
+    
     .enhanced-section {
       margin-bottom: 15px;
     }
