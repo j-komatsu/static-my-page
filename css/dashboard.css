@@ -492,6 +492,125 @@ body {
     background-color: #f8f9fa;
 }
 
+/* メモ一覧セクション */
+.memo-list-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e0e0e0;
+    margin-bottom: 30px;
+}
+
+.memo-list-section h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 24px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.memo-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.memo-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.memo-list-header p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.memo-link {
+    background-color: #666;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: background-color 0.3s;
+}
+
+.memo-link:hover {
+    background-color: #555;
+}
+
+.memo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.memo-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+}
+
+.memo-item:hover {
+    background-color: #f0f0f0;
+}
+
+.memo-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.memo-title {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+.memo-category {
+    background-color: #6b8ca3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.memo-date {
+    color: #666;
+    font-size: 12px;
+}
+
+.memo-tags {
+    margin-bottom: 8px;
+}
+
+.memo-tag {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    margin-right: 5px;
+}
+
+.memo-preview {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
 /* カレンダー機能 */
 .calendar-section {
     background-color: #ffffff;

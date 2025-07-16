@@ -13,6 +13,10 @@ class Dashboard {
         this.updateWorkStatus();
         this.drawWorkTimeChart();
         
+        // グローバルに参照を設定（他のページからの更新用）
+        window.dashboardManager = this;
+        
+        
         // 1分ごとに更新
         setInterval(() => {
             this.updateWorkStatus();
@@ -31,8 +35,6 @@ class Dashboard {
         this.updateTodoStats();
         this.updateWorkTimeStats();
         this.updateCalendarStats();
-        this.loadTodayTasks();
-        this.loadRecentMemos();
         this.loadTodayEvents();
     }
 
@@ -200,41 +202,99 @@ class Dashboard {
         });
     }
 
-    // 最近のメモを読み込み
-    loadRecentMemos() {
-        const memos = JSON.parse(localStorage.getItem('memos')) || [];
-        const recentMemos = memos
-            .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
-            .slice(0, 6);
-
-        const container = document.getElementById('recent-memos');
-        container.innerHTML = '';
-
-        if (recentMemos.length === 0) {
-            const li = document.createElement('li');
-            li.innerHTML = '<div class="memo-title">メモがありません</div>';
-            li.style.color = '#999';
-            li.style.fontStyle = 'italic';
-            container.appendChild(li);
-            return;
+    // メモ一覧を表示（参照専用）
+    loadMemoList() {
+        try {
+            const memos = JSON.parse(localStorage.getItem('memos')) || [];
+            
+            // 1週間以内のメモに絞る（作成日時基準）
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            const recentMemos = memos.filter(memo => {
+                // 作成日時を基準にフィルタリング
+                const memoDate = new Date(memo.createdAt);
+                return memoDate >= oneWeekAgo;
+            }).sort((a, b) => {
+                // 最新の更新日時順でソート
+                const aDate = new Date(a.updatedAt || a.createdAt);
+                const bDate = new Date(b.updatedAt || b.createdAt);
+                return bDate - aDate;
+            });
+            
+            const memoList = document.getElementById('memo-list');
+            if (!memoList) return;
+            
+            memoList.innerHTML = '';
+            
+            if (recentMemos.length === 0) {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = '<div class="memo-title">1週間以内のメモがありません</div>';
+                listItem.style.color = '#999';
+                listItem.style.fontStyle = 'italic';
+                memoList.appendChild(listItem);
+                return;
+            }
+            
+            recentMemos.forEach(memo => {
+                const listItem = document.createElement('li');
+                listItem.className = 'memo-item';
+                
+                // メモの内容を構造化して表示
+                const memoMeta = document.createElement('div');
+                memoMeta.className = 'memo-meta';
+                
+                const memoTitle = document.createElement('span');
+                memoTitle.className = 'memo-title';
+                memoTitle.textContent = memo.title || '無題';
+                
+                const memoCategory = document.createElement('span');
+                memoCategory.className = 'memo-category';
+                memoCategory.textContent = memo.category || 'その他';
+                
+                const memoDate = document.createElement('span');
+                memoDate.className = 'memo-date';
+                const displayDate = new Date(memo.updatedAt || memo.createdAt).toLocaleDateString('ja-JP');
+                const createdDate = new Date(memo.createdAt).toLocaleDateString('ja-JP');
+                memoDate.textContent = memo.updatedAt && memo.updatedAt !== memo.createdAt ? 
+                    `更新: ${displayDate}` : `作成: ${createdDate}`;
+                
+                memoMeta.appendChild(memoTitle);
+                memoMeta.appendChild(memoCategory);
+                memoMeta.appendChild(memoDate);
+                listItem.appendChild(memoMeta);
+                
+                // タグがあれば表示
+                if (memo.tags && memo.tags.length > 0) {
+                    const tagsContainer = document.createElement('div');
+                    tagsContainer.className = 'memo-tags';
+                    memo.tags.forEach(tag => {
+                        const tagSpan = document.createElement('span');
+                        tagSpan.className = 'memo-tag';
+                        tagSpan.textContent = tag;
+                        tagsContainer.appendChild(tagSpan);
+                    });
+                    listItem.appendChild(tagsContainer);
+                }
+                
+                // 内容のプレビュー
+                if (memo.content) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'memo-preview';
+                    previewDiv.textContent = memo.content.substring(0, 100) + (memo.content.length > 100 ? '...' : '');
+                    listItem.appendChild(previewDiv);
+                }
+                
+                memoList.appendChild(listItem);
+            });
+            
+        } catch (error) {
+            console.error('メモ一覧の読み込みエラー:', error);
+            const memoList = document.getElementById('memo-list');
+            if (memoList) {
+                memoList.innerHTML = '<li><div class="memo-title">メモの読み込みに失敗しました</div></li>';
+            }
         }
-
-        recentMemos.forEach(memo => {
-            const li = document.createElement('li');
-            const date = new Date(memo.updatedAt || memo.createdAt).toLocaleDateString('ja-JP');
-            const preview = memo.content ? memo.content.substring(0, 80) + '...' : '';
-            
-            li.innerHTML = `
-                <div class="memo-title">${memo.title || '無題'}</div>
-                <div class="memo-meta">
-                    <span class="memo-category">${memo.category || 'その他'}</span>
-                    <span class="memo-date">${date}</span>
-                </div>
-                <div class="memo-preview">${preview}</div>
-            `;
-            
-            container.appendChild(li);
-        });
     }
 
     // 作業開始

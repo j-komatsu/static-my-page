@@ -34,6 +34,7 @@ function renderMemos() {
     const listItem = document.createElement("li");
     listItem.className = editingMemoId === memo.id ? "selected-memo" : "";
     listItem.onclick = () => selectMemo(memo.id);
+    listItem.dataset.memoId = memo.id;
     
     // メモの内容を構造化して表示（タイトルのみ）
     const memoMeta = document.createElement("div");
@@ -71,29 +72,6 @@ function renderMemos() {
     memoList.appendChild(listItem);
   });
 }
-
-// メモを選択
-function selectMemo(id) {
-  const memo = memos.find((m) => m.id === id);
-  if (memo) {
-    editingMemoId = id;
-    memoTitleInput.value = memo.title;
-    memoContentInput.value = memo.content;
-    deleteButton.disabled = false;
-
-    document.querySelectorAll("#memo-list li").forEach((item) => {
-      item.classList.remove("selected");
-    });
-
-    const selectedItem = [...memoList.children].find(
-      (item) => item.textContent === memo.title
-    );
-    if (selectedItem) {
-      selectedItem.classList.add("selected"); // 選択中のクラスを追加
-    }
-  }
-}
-
 
 // メモを選択
 function selectMemo(id) {
@@ -176,21 +154,9 @@ function resetForm() {
   saveButton.textContent = "メモを追加";
   
   // プレビューモードをリセット
-  if (markdownPreview.style.display !== 'none') {
+  if (markdownPreview && markdownPreview.style.display !== 'none') {
     togglePreview();
   }
-}
-
-
-// フォームをリセット
-function resetForm() {
-  editingMemoId = null;
-  memoTitleInput.value = "";
-  memoContentInput.value = "";
-  deleteButton.disabled = true;
-
-  // ボタンのテキストを「メモを追加」に戻す
-  saveButton.textContent = "メモを追加";
 }
 
 
@@ -204,17 +170,11 @@ function deleteMemo() {
   }
 }
 
-// フォームをリセット
-function resetForm() {
-  editingMemoId = null;
-  memoTitleInput.value = "";
-  memoContentInput.value = "";
-  deleteButton.disabled = true;
-}
 
 // ローカルストレージを更新
 function updateLocalStorage() {
   localStorage.setItem("memos", JSON.stringify(memos));
+  
 }
 
 // イベントリスナーを設定
