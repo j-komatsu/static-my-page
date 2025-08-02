@@ -163,6 +163,59 @@
   cursor: grabbing;
 }
 
+/* モバイル用移動ボタン */
+.mobile-move-buttons {
+  display: none;
+  margin-top: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.move-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  white-space: nowrap;
+}
+
+.move-btn:hover {
+  background-color: #357abd;
+  transform: translateY(-1px);
+}
+
+.move-btn:active {
+  transform: translateY(0);
+}
+
+.move-to-progress {
+  background-color: #28a745;
+}
+
+.move-to-progress:hover {
+  background-color: #218838;
+}
+
+.move-to-completed {
+  background-color: #6c757d;
+}
+
+.move-to-completed:hover {
+  background-color: #545b62;
+}
+
+.move-to-plan {
+  background-color: #fd7e14;
+}
+
+.move-to-plan:hover {
+  background-color: #e8690b;
+}
+
 .task-title {
   font-weight: bold;
   color: #333;
@@ -506,4 +559,31 @@
   font-size: 10px;
   color: #666;
   margin-top: 2px;
+}
+
+/* モバイル時にのみ移動ボタンを表示、デスクトップではドラッグハンドルを表示 */
+@media (max-width: 768px) {
+  .mobile-move-buttons {
+    display: flex;
+  }
+  
+  .drag-handle {
+    display: none;
+  }
+  
+  .move-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-height: 36px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-move-buttons {
+    display: none;
+  }
+  
+  .drag-handle {
+    display: block;
+  }
 }

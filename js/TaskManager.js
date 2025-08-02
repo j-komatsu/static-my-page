@@ -106,19 +106,35 @@ function createTaskElement(task) {
     </div>
   `;
   
+  // モバイル用の移動ボタン
+  const moveButtons = createMoveButtons(task);
+  
   taskDiv.innerHTML = `
     <div class="drag-handle">⋮⋮</div>
     <div class="task-title">${priorityBadge}${task.title}</div>
     <div class="task-description">${task.description || ""}</div>
     ${dueDateInfo}
     ${progressBar}
+    ${moveButtons}
   `;
   
-  // クリックで編集モーダルを開く
+  // クリックで編集モーダルを開く（移動ボタンとドラッグハンドル以外）
   taskDiv.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("drag-handle")) {
+    if (!e.target.classList.contains("drag-handle") && 
+        !e.target.classList.contains("move-btn") &&
+        !e.target.closest(".mobile-move-buttons")) {
       openEditModal(task.id);
     }
+  });
+  
+  // 移動ボタンのイベントリスナーを追加
+  const moveBtns = taskDiv.querySelectorAll('.move-btn');
+  moveBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newStatus = btn.dataset.status;
+      moveTaskToStatus(task.id, newStatus);
+    });
   });
   
   // ドラッグイベントリスナーを追加
@@ -131,6 +147,44 @@ function createTaskElement(task) {
   taskDiv.addEventListener("touchend", handleTouchEnd, { passive: false });
   
   return taskDiv;
+}
+
+// モバイル用移動ボタンを生成
+function createMoveButtons(task) {
+  const currentStatus = task.status;
+  let buttons = [];
+  
+  // 現在のステータスに応じて移動可能なボタンを表示
+  if (currentStatus === 'plan') {
+    buttons.push('<button class="move-btn move-to-progress" data-status="progress">▶ 実行</button>');
+    buttons.push('<button class="move-btn move-to-completed" data-status="completed">✓ 完了</button>');
+  } else if (currentStatus === 'progress') {
+    buttons.push('<button class="move-btn move-to-plan" data-status="plan">◀ 計画</button>');
+    buttons.push('<button class="move-btn move-to-completed" data-status="completed">✓ 完了</button>');
+  } else if (currentStatus === 'completed') {
+    buttons.push('<button class="move-btn move-to-plan" data-status="plan">↩ 計画</button>');
+    buttons.push('<button class="move-btn move-to-progress" data-status="progress">↩ 実行</button>');
+  }
+  
+  return `<div class="mobile-move-buttons">${buttons.join('')}</div>`;
+}
+
+// タスクを指定したステータスに移動
+function moveTaskToStatus(taskId, newStatus) {
+  const task = tasks.find(t => t.id === taskId);
+  if (!task || task.status === newStatus) return;
+  
+  console.log('Moving task from', task.status, 'to', newStatus);
+  task.status = newStatus;
+  
+  // 完了ステータスに移動した場合は進捗を100%に設定し、完了日時を記録
+  if (newStatus === "completed") {
+    task.progress = 100;
+    task.completedAt = new Date().toISOString();
+  }
+  
+  updateLocalStorage();
+  renderTasks();
 }
 
 // 新しいタスクを追加
