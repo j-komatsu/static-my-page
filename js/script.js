@@ -70,6 +70,7 @@ function renderLinks() {
     // 新しいカードスタイルのセクションの場合
     if (linkGrid) {
       linkGrid.innerHTML = ""; // 既存のリンクを削除
+      
       links.forEach((link, index) => {
         // 既存のリンクデータの安全な取得
         const text = link.text || '';
