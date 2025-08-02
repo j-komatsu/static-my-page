@@ -1,6 +1,20 @@
 // タスク管理のロジック
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let tasks = [];
 let editingTaskId = null;
+
+// ローカルストレージからタスクを読み込み
+try {
+  const savedTasks = localStorage.getItem("tasks");
+  if (savedTasks) {
+    tasks = JSON.parse(savedTasks);
+    console.log('Loaded tasks from localStorage:', tasks.length, 'tasks');
+  } else {
+    console.log('No saved tasks found in localStorage');
+  }
+} catch (error) {
+  console.error('Failed to load tasks from localStorage:', error);
+  tasks = [];
+}
 
 // ポモドーロタイマーの状態
 let pomodoroTimer = {
@@ -30,6 +44,7 @@ const editTaskPriority = document.getElementById("edit-task-priority");
 const editTaskDueDate = document.getElementById("edit-task-due-date");
 const editTaskProgress = document.getElementById("edit-task-progress");
 const progressValue = document.getElementById("progress-value");
+const editTaskStatus = document.getElementById("edit-task-status");
 
 // タイマー要素の取得
 const timerTime = document.getElementById("timer-time");
@@ -60,6 +75,9 @@ function renderTasks() {
         break;
     }
   });
+  
+  // レンダリング後にドラッグ&ドロップリスナーを再設定
+  setupDragAndDropListeners();
 }
 
 // タスク要素を作成
@@ -68,6 +86,8 @@ function createTaskElement(task) {
   taskDiv.className = "task-item";
   taskDiv.dataset.taskId = task.id;
   taskDiv.draggable = true;
+  
+  console.log('Creating task element for:', task.id, 'draggable:', taskDiv.draggable);
   
   // 優先度バッジ
   const priorityBadge = task.priority ? `<span class="priority-badge priority-${task.priority}">${getPriorityText(task.priority)}</span>` : '';
@@ -104,6 +124,11 @@ function createTaskElement(task) {
   // ドラッグイベントリスナーを追加
   taskDiv.addEventListener("dragstart", handleDragStart);
   taskDiv.addEventListener("dragend", handleDragEnd);
+  
+  // タッチイベントリスナーを追加（モバイル対応）
+  taskDiv.addEventListener("touchstart", handleTouchStart, { passive: false });
+  taskDiv.addEventListener("touchmove", handleTouchMove, { passive: false });
+  taskDiv.addEventListener("touchend", handleTouchEnd, { passive: false });
   
   return taskDiv;
 }
@@ -145,6 +170,7 @@ function openEditModal(taskId) {
   editTaskDescription.value = task.description || "";
   editTaskPriority.value = task.priority || "medium";
   editTaskDueDate.value = task.dueDate || "";
+  editTaskStatus.value = task.status || "plan";
   editTaskProgress.value = task.progress || 0;
   progressValue.textContent = `${task.progress || 0}%`;
   taskEditModal.style.display = "flex";
@@ -170,11 +196,20 @@ function saveTask() {
   
   const task = tasks.find(t => t.id === editingTaskId);
   if (task) {
+    const oldStatus = task.status;
     task.title = title;
     task.description = editTaskDescription.value.trim();
     task.priority = editTaskPriority.value;
     task.dueDate = editTaskDueDate.value || null;
+    task.status = editTaskStatus.value;
     task.progress = parseInt(editTaskProgress.value);
+    
+    // 完了ステータスに変更された場合は完了日時を記録
+    if (oldStatus !== "completed" && task.status === "completed") {
+      task.progress = 100;
+      task.completedAt = new Date().toISOString();
+    }
+    
     updateLocalStorage();
     renderTasks();
     closeEditModal();
@@ -195,18 +230,32 @@ function deleteTask() {
 
 // ローカルストレージを更新
 function updateLocalStorage() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  try {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    console.log('Tasks saved to localStorage:', tasks.length, 'tasks');
+  } catch (error) {
+    console.error('Failed to save tasks to localStorage:', error);
+  }
 }
 
 // ドラッグ&ドロップ機能
 let draggedElement = null;
 let draggedTaskId = null;
 
+// タッチ操作用の変数
+let touchStartX = 0;
+let touchStartY = 0;
+let isDragging = false;
+let touchDraggedElement = null;
+
 function handleDragStart(e) {
   draggedElement = this;
   draggedTaskId = parseInt(this.dataset.taskId);
   this.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", draggedTaskId);
+  
+  console.log('Drag started for task:', draggedTaskId);
 }
 
 function handleDragEnd(e) {
@@ -241,16 +290,123 @@ function handleDrop(e) {
   const taskList = e.currentTarget;
   const newStatus = taskList.dataset.status;
   
+  console.log('Drop event:', {
+    draggedTaskId,
+    newStatus,
+    hasElement: !!draggedElement
+  });
+  
   if (draggedTaskId && draggedElement) {
     const task = tasks.find(t => t.id === draggedTaskId);
     if (task && task.status !== newStatus) {
+      console.log('Moving task from', task.status, 'to', newStatus);
       task.status = newStatus;
+      
+      // 完了ステータスに移動した場合は進捗を100%に設定し、完了日時を記録
+      if (newStatus === "completed") {
+        task.progress = 100;
+        task.completedAt = new Date().toISOString();
+      }
+      
       updateLocalStorage();
       renderTasks();
     }
   }
   
   taskList.classList.remove("drag-over");
+}
+
+// タッチイベントハンドラー（モバイル対応）
+function handleTouchStart(e) {
+  if (e.target.classList.contains("drag-handle") || e.target.closest(".drag-handle")) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchDraggedElement = this;
+    draggedTaskId = parseInt(this.dataset.taskId);
+    
+    // 長押しでドラッグ開始
+    setTimeout(() => {
+      if (touchDraggedElement && !isDragging) {
+        isDragging = true;
+        touchDraggedElement.classList.add("dragging");
+        console.log('Touch drag started for task:', draggedTaskId);
+      }
+    }, 300);
+  }
+}
+
+function handleTouchMove(e) {
+  if (!isDragging || !touchDraggedElement) return;
+  
+  e.preventDefault();
+  const touch = e.touches[0];
+  const deltaX = touch.clientX - touchStartX;
+  const deltaY = touch.clientY - touchStartY;
+  
+  // ドラッグ距離が十分でない場合は何もしない
+  if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) return;
+  
+  // 要素の位置を更新
+  touchDraggedElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+  
+  // ドロップターゲットを検出
+  const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  const taskList = elementBelow?.closest('.task-list');
+  
+  // 既存のハイライトをクリア
+  document.querySelectorAll('.task-list').forEach(list => {
+    list.classList.remove('drag-over');
+  });
+  
+  // 新しいドロップターゲットをハイライト
+  if (taskList && taskList !== touchDraggedElement.parentElement) {
+    taskList.classList.add('drag-over');
+  }
+}
+
+function handleTouchEnd(e) {
+  if (!isDragging || !touchDraggedElement) {
+    // ドラッグしていない場合はクリック処理
+    touchDraggedElement = null;
+    return;
+  }
+  
+  const touch = e.changedTouches[0];
+  const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+  const taskList = elementBelow?.closest('.task-list');
+  
+  if (taskList && draggedTaskId) {
+    const newStatus = taskList.dataset.status;
+    const task = tasks.find(t => t.id === draggedTaskId);
+    
+    if (task && task.status !== newStatus) {
+      console.log('Touch drop: Moving task from', task.status, 'to', newStatus);
+      task.status = newStatus;
+      
+      // 完了ステータスに移動した場合は進捗を100%に設定
+      if (newStatus === "completed") {
+        task.progress = 100;
+        task.completedAt = new Date().toISOString();
+      }
+      
+      updateLocalStorage();
+      renderTasks();
+    }
+  }
+  
+  // クリーンアップ
+  if (touchDraggedElement) {
+    touchDraggedElement.classList.remove("dragging");
+    touchDraggedElement.style.transform = '';
+  }
+  
+  document.querySelectorAll('.task-list').forEach(list => {
+    list.classList.remove('drag-over');
+  });
+  
+  isDragging = false;
+  touchDraggedElement = null;
+  draggedTaskId = null;
 }
 
 // イベントリスナーの設定
@@ -265,12 +421,25 @@ saveTaskBtn.addEventListener("click", saveTask);
 deleteTaskBtn.addEventListener("click", deleteTask);
 cancelEditBtn.addEventListener("click", closeEditModal);
 
-// タスクリストにドラッグ&ドロップイベントを追加
-document.querySelectorAll(".task-list").forEach(taskList => {
-  taskList.addEventListener("dragover", handleDragOver);
-  taskList.addEventListener("dragleave", handleDragLeave);
-  taskList.addEventListener("drop", handleDrop);
-});
+// ドラッグ&ドロップイベントリスナーを設定する関数
+function setupDragAndDropListeners() {
+  const taskLists = document.querySelectorAll(".task-list");
+  console.log('Setting up drag and drop for', taskLists.length, 'task lists');
+  
+  taskLists.forEach((taskList, index) => {
+    // 既存のリスナーをクリア（重複防止）
+    taskList.removeEventListener("dragover", handleDragOver);
+    taskList.removeEventListener("dragleave", handleDragLeave);
+    taskList.removeEventListener("drop", handleDrop);
+    
+    // 新しいリスナーを追加
+    taskList.addEventListener("dragover", handleDragOver);
+    taskList.addEventListener("dragleave", handleDragLeave);
+    taskList.addEventListener("drop", handleDrop);
+    
+    console.log(`Task list ${index} (${taskList.dataset.status}) configured for drag and drop`);
+  });
+}
 
 // モーダルの外側クリックで閉じる
 taskEditModal.addEventListener("click", (e) => {
@@ -384,6 +553,13 @@ editTaskProgress.addEventListener('input', (e) => {
   progressValue.textContent = `${e.target.value}%`;
 });
 
-// 初期化
-updateTimerDisplay();
-renderTasks();
+// DOMが完全に読み込まれた後に初期化
+document.addEventListener('DOMContentLoaded', function() {
+  updateTimerDisplay();
+  renderTasks();
+  setupDragAndDropListeners();
+  
+  // デバッグ用のログ
+  console.log('TaskManager initialized');
+  console.log('Task lists found:', document.querySelectorAll('.task-list').length);
+});

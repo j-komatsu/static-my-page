@@ -1,6 +1,17 @@
 let currentSectionId = "";
 let currentEditingIndex = -1;
 
+// モバイルメニューの表示切替機能
+function toggleMobileMenu() {
+  const fixedGroup = document.querySelector('.fixed-buttons-group');
+  const dynamicGroup = document.querySelector('.dynamic-buttons-group');
+  
+  if (fixedGroup && dynamicGroup) {
+    fixedGroup.classList.toggle('show');
+    dynamicGroup.classList.toggle('show');
+  }
+}
+
 // ヘッダーリンクのデータ管理
 const headerLinksKey = 'headerLinks_global';
 let headerLinksData = JSON.parse(localStorage.getItem(headerLinksKey)) || [

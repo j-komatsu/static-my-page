@@ -89,6 +89,13 @@
         <label for="edit-task-due-date">期限</label>
         <input type="date" id="edit-task-due-date" class="task-due-date" />
         
+        <label for="edit-task-status">ステータス</label>
+        <select id="edit-task-status" class="task-status-select">
+          <option value="plan">計画</option>
+          <option value="progress">実行</option>
+          <option value="completed">完了</option>
+        </select>
+        
         <label for="edit-task-progress">進捗率 (%)</label>
         <input type="range" id="edit-task-progress" min="0" max="100" value="0" class="progress-slider" />
         <span id="progress-value">0%</span>

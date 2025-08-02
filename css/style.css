@@ -1289,8 +1289,39 @@ body {
     background-color: #da190b;
   }
 
-  /* レスポンシブ対応 - セクション改善 */
+  /* レスポンシブ対応 - 基本設定 */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  .App {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  /* レスポンシブ対応 - ナビゲーション */
+  .header-navigation {
+    position: relative;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    background: #666;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
   @media (max-width: 768px) {
+    .App {
+      padding: 5px;
+    }
+
     .main-header {
       gap: 6px;
       margin-bottom: 8px;
@@ -1300,16 +1331,64 @@ body {
       min-height: 35px;
       padding: 3px 0;
       margin-bottom: 6px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .title-left {
+      text-align: center;
     }
     
     .title-left h1 {
-      font-size: 20px;
+      font-size: 18px;
       letter-spacing: 0.8px;
+    }
+
+    .title-right {
+      justify-content: center;
+    }
+
+    #header-links-container {
+      max-width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .header-link {
+      font-size: 12px;
+      padding: 6px 10px;
+      min-width: 50px;
+    }
+
+    /* ナビゲーションメニューの改善 */
+    .mobile-menu-toggle {
+      display: block;
+    }
+
+    .fixed-buttons-group,
+    .dynamic-buttons-group {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 5px;
+    }
+
+    .fixed-buttons-group.show,
+    .dynamic-buttons-group.show {
+      display: flex;
     }
     
     .navigation-link {
-      font-size: 9px;
-      padding: 2px 8px;
+      font-size: 12px;
+      padding: 8px 12px;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
     }
     
     .enhanced-section {
@@ -1348,9 +1427,61 @@ body {
       padding: 4px;
       font-size: 12px;
     }
+
+    /* セクショングリッドの改善 */
+    .section-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    /* モーダルの改善 */
+    .modal-content {
+      width: 95%;
+      max-height: 85vh;
+      margin: 5% auto;
+    }
+
+    .modal-body {
+      padding: 15px;
+    }
+
+    /* フッターボタンの改善 */
+    .data-management {
+      position: relative;
+      bottom: auto;
+      right: auto;
+      margin-top: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .data-management button {
+      font-size: 12px;
+      padding: 8px 12px;
+    }
   }
 
   @media (max-width: 480px) {
+    .App {
+      padding: 2px;
+    }
+
+    .title-left h1 {
+      font-size: 16px;
+    }
+
+    .header-link {
+      font-size: 10px;
+      padding: 4px 8px;
+      min-width: 40px;
+    }
+
+    .navigation-link {
+      font-size: 10px;
+      padding: 6px 10px;
+    }
+
     .link-grid {
       grid-template-columns: 1fr;
       padding: 8px;
@@ -1381,6 +1512,31 @@ body {
     
     .link-title {
       font-size: 11px;
+    }
+
+    .modal-content {
+      width: 98%;
+      margin: 2% auto;
+    }
+
+    .data-management button {
+      font-size: 10px;
+      padding: 6px 10px;
+    }
+  }
+
+  /* タッチデバイス対応 */
+  @media (hover: none) and (pointer: coarse) {
+    .action-btn {
+      opacity: 1;
+    }
+
+    .link-actions {
+      opacity: 1;
+    }
+
+    .edit-button {
+      display: block;
     }
   }
 

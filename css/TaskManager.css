@@ -144,7 +144,9 @@
 
 .task-list.drag-over {
   background-color: #e8f4fd;
-  border: 2px dashed #666;
+  border: 2px dashed #4a90e2;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .task-item .drag-handle {

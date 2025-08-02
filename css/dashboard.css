@@ -829,10 +829,39 @@ body {
     
     .overview-cards {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .overview-card {
+        min-height: auto;
+    }
+    
+    .stat-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 5px;
+    }
+    
+    .card-content {
+        margin-bottom: 10px;
+    }
+    
+    .work-time-controls {
+        flex-direction: column;
+        gap: 8px;
     }
     
     .today-tasks-container {
         grid-template-columns: 1fr;
+    }
+    
+    .task-column {
+        padding: 12px;
+    }
+    
+    .memo-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
     }
     
     .stats-container {
@@ -842,6 +871,19 @@ body {
     
     .weekly-stats {
         grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+    }
+    
+    .day-stat {
+        padding: 8px 4px;
+    }
+    
+    .day-label {
+        font-size: 10px;
+    }
+    
+    .day-time {
+        font-size: 12px;
     }
     
     .calendar-controls {
@@ -849,12 +891,107 @@ body {
         gap: 10px;
     }
     
+    .calendar-navigation {
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .view-controls {
+        gap: 3px;
+    }
+    
+    .view-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
     .calendar-grid {
         grid-template-columns: repeat(7, 1fr);
+        min-height: 250px;
     }
     
     .calendar-day {
-        min-height: 60px;
+        min-height: 50px;
         padding: 4px;
+    }
+    
+    .day-number {
+        font-size: 12px;
+    }
+    
+    .event-item {
+        font-size: 9px;
+        padding: 1px 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-main {
+        gap: 15px;
+    }
+    
+    .overview-card h3 {
+        font-size: 16px;
+    }
+    
+    .stat-value {
+        font-size: 18px;
+    }
+    
+    .work-btn {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+    
+    .today-tasks-section h2,
+    .recent-memos-section h2,
+    .work-stats-section h2,
+    .calendar-section h2 {
+        font-size: 20px;
+    }
+    
+    .task-column h3 {
+        font-size: 14px;
+    }
+    
+    .task-list li {
+        font-size: 11px;
+        padding: 8px;
+    }
+    
+    .weekly-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .calendar-day {
+        min-height: 40px;
+        padding: 2px;
+    }
+    
+    .day-number {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+    
+    .event-item {
+        font-size: 8px;
+        padding: 1px 2px;
+        margin-bottom: 1px;
+    }
+    
+    .memo-list li {
+        padding: 12px;
+    }
+    
+    .memo-title {
+        font-size: 13px;
+    }
+    
+    .memo-preview {
+        font-size: 11px;
     }
 }
