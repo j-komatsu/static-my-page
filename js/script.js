@@ -60,8 +60,26 @@ const mainTitleKey = `mainTitle_${window.location.pathname.replace(/[^a-zA-Z0-9]
 let linksData = {};
 
 
+// レンダリング状態を管理
+let renderingInProgress = false;
+
 // 各セクションのリンクを描画
 function renderLinks() {
+  // 重複レンダリングを防止
+  if (renderingInProgress) return;
+  renderingInProgress = true;
+  
+  // 次のイベントループで実行してパフォーマンスを向上
+  requestAnimationFrame(() => {
+    try {
+      renderLinksInternal();
+    } finally {
+      renderingInProgress = false;
+    }
+  });
+}
+
+function renderLinksInternal() {
   console.log('Current linksData:', linksData);
   for (const [sectionId, links] of Object.entries(linksData)) {
     const linkGrid = document.querySelector(`#${sectionId} .link-grid`);
@@ -93,6 +111,9 @@ function renderLinks() {
         linkElement.href = processedUrl;
         linkElement.target = "_blank";
         linkElement.className = "link-card-content";
+        // data-url 属性を設定（ファビコン読み込み用）
+        linkCard.dataset.url = processedUrl;
+        
         linkElement.innerHTML = `
           <div class="link-info">
             <div class="link-title">${text}</div>
@@ -103,6 +124,11 @@ function renderLinks() {
         linkCard.appendChild(linkElement);
         
         linkGrid.appendChild(linkCard);
+        
+        // ファビコンを読み込み（将来の機能として一時的に無効化）
+        // setTimeout(() => {
+        //   loadFavicon(linkCard);
+        // }, 10);
       });
     }
     // 従来のリストスタイルのセクションの場合
@@ -122,6 +148,19 @@ function renderLinks() {
       });
     }
   }
+}
+
+// デバウンス処理ユーティリティ
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
 // サブタイトル編集機能
@@ -240,6 +279,14 @@ function saveEditedLink() {
   saveLinks();
   renderLinks();
   
+  // 更新されたリンクのファビコンを読み込み
+  setTimeout(() => {
+    const updatedLinkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+    updatedLinkCards.forEach(card => {
+      loadFavicon(card);
+    });
+  }, 50);
+  
   // モーダルを閉じる
   closeModal();
 }
@@ -281,6 +328,14 @@ function removeLinkItem(sectionId, index) {
     linksData[sectionId].splice(index, 1);
     saveLinks();
     renderLinks();
+    
+    // 削除後に残ったリンクのファビコンを読み込み
+    setTimeout(() => {
+      const remainingLinkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+      remainingLinkCards.forEach(card => {
+        loadFavicon(card);
+      });
+    }, 50);
   }
 }
 
@@ -392,6 +447,14 @@ function addLink() {
   renderLinks(); // セクションを再描画
   editLinks(currentSectionId); // モーダル内のリストも更新
   
+  // 新しく追加されたリンクのファビコンを読み込み
+  setTimeout(() => {
+    const newLinkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+    newLinkCards.forEach(card => {
+      loadFavicon(card);
+    });
+  }, 50);
+  
   // フォームをクリア
   document.getElementById("new-link-text").value = '';
   document.getElementById("new-link-url").value = '';
@@ -399,14 +462,120 @@ function addLink() {
 }
 
 
+// デバウンスされた保存関数
+const debouncedSaveLinks = debounce(() => {
+  saveLinksImmediate();
+}, 300);
+
 // ローカルストレージにリンクデータを保存
 function saveLinks() {
+  // デバウンス処理を使用して連続した保存操作を制限
+  debouncedSaveLinks();
+}
+
+// 即座に保存する関数
+function saveLinksImmediate() {
   try {
-    localStorage.setItem(pageKey, JSON.stringify(linksData));
+    if (window.storageManager) {
+      window.storageManager.set(pageKey, {
+        links: linksData,
+        lastModified: Date.now()
+      });
+    } else {
+      localStorage.setItem(pageKey, JSON.stringify(linksData));
+    }
   } catch (error) {
     console.error('リンクデータの保存に失敗しました:', error);
     alert('データの保存に失敗しました。ストレージの容量が不足している可能性があります。');
   }
+}
+
+// 遅延ファビコン読み込み用の変数
+let faviconObserver = null;
+let loadedFavicons = new Set();
+
+// Intersection Observer を使用したファビコン遅延読み込み
+function initLazyFaviconLoading() {
+  if (!('IntersectionObserver' in window)) {
+    // フォールバック: Intersection Observer がサポートされていない場合は即座に読み込み
+    loadAllFavicons();
+    return;
+  }
+
+  faviconObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.faviconLoaded) {
+        loadFavicon(entry.target);
+        faviconObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    rootMargin: '50px', // 50px 手前で読み込み開始
+    threshold: 0.1
+  });
+
+  // 初期表示されているリンクカードを監視対象に追加
+  observeVisibleLinkCards();
+}
+
+// 表示されているリンクカードを監視
+function observeVisibleLinkCards() {
+  const linkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+  linkCards.forEach(card => {
+    if (faviconObserver) {
+      faviconObserver.observe(card);
+    }
+  });
+}
+
+// 単一のファビコンを読み込み
+function loadFavicon(linkCard) {
+  const url = linkCard.dataset.url;
+  console.log('Loading favicon for URL:', url);
+  
+  if (!url || loadedFavicons.has(url)) {
+    console.log('Skipping favicon load:', !url ? 'no URL' : 'already loaded');
+    return;
+  }
+
+  const faviconImg = linkCard.querySelector('.favicon');
+  if (!faviconImg) {
+    console.log('No favicon img element found');
+    return;
+  }
+
+  try {
+    const urlObj = new URL(url);
+    const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(urlObj.hostname)}&sz=16`;
+    console.log('Favicon URL:', faviconUrl);
+    
+    // プリロード用の image オブジェクトを作成
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      console.log('Favicon loaded successfully for:', urlObj.hostname);
+      faviconImg.src = faviconUrl;
+      linkCard.dataset.faviconLoaded = 'true';
+      loadedFavicons.add(url);
+    };
+    tempImg.onerror = () => {
+      console.log('Favicon failed to load for:', urlObj.hostname);
+      // エラー時はデフォルトアイコンを設定
+      faviconImg.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23ddd"/><text x="8" y="12" text-anchor="middle" fill="%23666" font-size="10">🔗</text></svg>';
+      linkCard.dataset.faviconLoaded = 'true';
+    };
+    tempImg.src = faviconUrl;
+  } catch (error) {
+    console.warn('Invalid URL for favicon:', url, error);
+    // 無効なURLの場合はデフォルトアイコンを設定
+    faviconImg.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23ddd"/><text x="8" y="12" text-anchor="middle" fill="%23666" font-size="10">🔗</text></svg>';
+    linkCard.dataset.faviconLoaded = 'true';
+  }
+}
+
+// 全てのファビコンを即座に読み込み（フォールバック用）
+function loadAllFavicons() {
+  const linkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+  linkCards.forEach(loadFavicon);
 }
 
 // ページロード時にリンクデータを読み込む
@@ -445,13 +614,32 @@ window.onload = function () {
     }
 
     // リンクデータの読み込み
-    const storedLinks = localStorage.getItem(pageKey);
-    if (storedLinks) {
-      linksData = JSON.parse(storedLinks);
+    if (window.storageManager) {
+      const data = window.storageManager.get(pageKey);
+      if (data) {
+        linksData = data.links || data; // 新形式と旧形式の両方に対応
+      }
+    } else {
+      const storedLinks = localStorage.getItem(pageKey);
+      if (storedLinks) {
+        linksData = JSON.parse(storedLinks);
+      }
     }
 
     // リンクのレンダリング
     renderLinks();
+    
+    // ファビコン読み込みを初期化
+    setTimeout(() => {
+      // 既存のリンクカードのファビコンを読み込み
+      const linkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+      linkCards.forEach(card => {
+        loadFavicon(card);
+      });
+      
+      // 遅延読み込み機能も初期化
+      initLazyFaviconLoading();
+    }, 200);
     
     // URLハッシュに基づいてビューを切り替え
     const hash = window.location.hash.substring(1);
@@ -833,6 +1021,14 @@ function showProjectView(projectId) {
   
   // リンクを再描画してアクションボタンが正しく表示されるようにする
   renderLinks();
+  
+  // プロジェクトビューのファビコンを読み込み
+  setTimeout(() => {
+    const projectLinkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+    projectLinkCards.forEach(card => {
+      loadFavicon(card);
+    });
+  }, 100);
   
   // 新しく作成されたプロジェクトビューでもドラッグ&ドロップを有効にする
   setTimeout(() => {
@@ -1440,6 +1636,14 @@ function handleLinkDrop(e) {
     // 表示を更新
     renderLinks();
     editLinks(currentSectionId);
+    
+    // 並び替え後のファビコンを読み込み
+    setTimeout(() => {
+      const reorderedLinkCards = document.querySelectorAll('.link-card[data-url]:not([data-favicon-loaded])');
+      reorderedLinkCards.forEach(card => {
+        loadFavicon(card);
+      });
+    }, 50);
   }
   
   this.classList.remove('drag-over');

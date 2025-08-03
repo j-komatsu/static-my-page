@@ -4,12 +4,22 @@ let editingTaskId = null;
 
 // ローカルストレージからタスクを読み込み
 try {
-  const savedTasks = localStorage.getItem("tasks");
-  if (savedTasks) {
-    tasks = JSON.parse(savedTasks);
-    console.log('Loaded tasks from localStorage:', tasks.length, 'tasks');
+  if (window.storageManager) {
+    const data = window.storageManager.get('tasks');
+    if (data) {
+      tasks = data.tasks || data; // 新形式と旧形式の両方に対応
+      console.log('Loaded tasks from storageManager:', tasks.length, 'tasks');
+    } else {
+      console.log('No saved tasks found in storageManager');
+    }
   } else {
-    console.log('No saved tasks found in localStorage');
+    const savedTasks = localStorage.getItem("tasks");
+    if (savedTasks) {
+      tasks = JSON.parse(savedTasks);
+      console.log('Loaded tasks from localStorage:', tasks.length, 'tasks');
+    } else {
+      console.log('No saved tasks found in localStorage');
+    }
   }
 } catch (error) {
   console.error('Failed to load tasks from localStorage:', error);
@@ -285,7 +295,14 @@ function deleteTask() {
 // ローカルストレージを更新
 function updateLocalStorage() {
   try {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    if (window.storageManager) {
+      window.storageManager.set('tasks', {
+        tasks: tasks,
+        lastModified: Date.now()
+      });
+    } else {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
     console.log('Tasks saved to localStorage:', tasks.length, 'tasks');
   } catch (error) {
     console.error('Failed to save tasks to localStorage:', error);
