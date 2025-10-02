@@ -281,7 +281,7 @@ body {
 
   .section-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
 
@@ -1463,7 +1463,7 @@ body {
 
     /* セクショングリッドの改善 */
     .section-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
     }
 
@@ -1515,12 +1515,18 @@ body {
       padding: 6px 10px;
     }
 
+    /* スマホサイズでは1列表示 */
+    .section-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
     .link-grid {
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       padding: 6px;
       gap: 3px;
     }
-    
+
     .section-header {
       padding: 8px 10px;
     }

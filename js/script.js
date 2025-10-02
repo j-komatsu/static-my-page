@@ -802,20 +802,28 @@ function saveSectionName(sectionId) {
   input.style.display = "none";
   title.style.display = "block";
 
-  // ローカルストレージに保存
-  saveSectionNamesToStorage();
+  // ローカルストレージに保存（既存データを保持）
+  const existingSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
+  existingSectionNames[sectionId] = title.textContent;
+  localStorage.setItem(sectionNamesKey, JSON.stringify(existingSectionNames));
 }
 
 
 
 // ローカルストレージにセクション名を保存
 function saveSectionNamesToStorage() {
-  const sectionNames = {};
-  document.querySelectorAll(".section").forEach((section) => {
+  // 既存のセクション名データを読み込み
+  const sectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
+
+  // 現在表示されているセクションのデータで更新（.sectionと.enhanced-sectionの両方）
+  document.querySelectorAll(".section, .enhanced-section").forEach((section) => {
     const sectionId = section.id;
-    const title = section.querySelector("h2").textContent;
-    sectionNames[sectionId] = title;
+    const title = section.querySelector("h2");
+    if (title) {
+      sectionNames[sectionId] = title.textContent;
+    }
   });
+
   localStorage.setItem(sectionNamesKey, JSON.stringify(sectionNames));
 }
 
@@ -1038,6 +1046,9 @@ function showProjectView(projectId) {
     if (projectSectionGrid) {
       restoreSectionOrderForGrid(projectSectionGrid, projectId);
     }
+
+    // プロジェクトページのセクション名を復元
+    restoreSectionNamesForProject(projectId);
   }, 100);
 }
 
@@ -1826,6 +1837,23 @@ function restoreSectionOrderForGrid(sectionGrid, viewId) {
   });
   
   console.log('Restored section order for', viewId, ':', storedOrder);
+}
+
+// プロジェクトページのセクション名を復元
+function restoreSectionNamesForProject(projectId) {
+  const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
+
+  // プロジェクトの各セクション（1〜6）のセクション名を復元
+  for (let i = 1; i <= 6; i++) {
+    const sectionId = `${projectId}-section${i}`;
+    const title = document.querySelector(`#${sectionId} h2`);
+
+    if (title && storedSectionNames[sectionId]) {
+      title.textContent = storedSectionNames[sectionId];
+    }
+  }
+
+  console.log('Restored section names for project:', projectId);
 }
 
 // プロジェクト削除メニューの表示
