@@ -27,17 +27,10 @@
       <!-- ナビゲーションボタン群 -->
       <nav class="header-navigation">
         <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">メニュー ☰</button>
-        
+
         <!-- 固定ボタン群 -->
-        <div class="fixed-buttons-group">
-          <a href="pages/dashboard.html" class="navigation-link internal-link">ダッシュボード</a>
-          <a href="pages/calendar.html" class="navigation-link internal-link">カレンダー</a>
-          <a href="pages/task-manager.html" class="navigation-link internal-link">タスク管理</a>
-          <a href="pages/memo-page.html" class="navigation-link internal-link">メモ管理</a>
-          <a href="pages/todo.html" class="navigation-link internal-link">TODOリスト</a>
-          <a href="pages/dev-tools.html" class="navigation-link internal-link">効率化ツール</a>
-          <a href="pages/calculator.html" class="navigation-link internal-link">ビジネス計算</a>
-          <a href="pages/sql-templates.html" class="navigation-link internal-link">SQLテンプレート</a>
+        <div class="fixed-buttons-group" id="fixed-buttons-group">
+          <!-- ナビゲーションボタンは動的に生成されます -->
         </div>
         
         <!-- 動的プロジェクトボタン群 -->
@@ -216,6 +209,21 @@
               </div>
             </div>
           </div>
+
+          <!-- ナビゲーション設定モード -->
+          <div id="navigation-settings-mode" class="navigation-settings-container" style="display: none;">
+            <div class="settings-description">
+              <p>表示したいナビゲーションボタンにチェックを入れてください</p>
+            </div>
+            <div class="navigation-buttons-list">
+              <ul id="navigation-buttons-settings"></ul>
+            </div>
+            <div class="settings-buttons">
+              <button onclick="saveNavigationSettings()">設定を保存</button>
+              <button onclick="resetNavigationSettings()">デフォルトに戻す</button>
+              <button onclick="closeModal()">キャンセル</button>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button onclick="closeModal()">閉じる</button>
@@ -233,5 +241,6 @@
   <button onclick="document.getElementById('importFile').click()">インポート</button>
   <button onclick="addNewProject()" class="add-project-footer-btn">ページ追加</button>
   <button onclick="showDeleteProjectDialog()" class="delete-project-footer-btn">ページ削除</button>
+  <button onclick="openNavigationSettings()" class="navigation-settings-footer-btn">ナビゲーション設定</button>
 </footer>
 </html>

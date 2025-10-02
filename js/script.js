@@ -604,6 +604,9 @@ window.onload = function () {
     }
     renderHeaderLinks();
 
+    // ナビゲーションボタンの描画
+    renderNavigationButtons();
+
     // セクション名の読み込み
     const storedSectionNames = JSON.parse(localStorage.getItem(sectionNamesKey) || "{}");
     for (const [sectionId, name] of Object.entries(storedSectionNames)) {
@@ -1955,5 +1958,143 @@ function startMyPage() {
   hideWelcomeMessage();
   // MyPageタブをアクティブにする
   switchView('main');
+}
+
+// ナビゲーションボタン設定機能 --------------------------------------------------
+
+// デフォルトのナビゲーションボタン定義
+const defaultNavigationButtons = [
+  { id: 'dashboard', label: 'ダッシュボード', url: 'pages/dashboard.html' },
+  { id: 'calendar', label: 'カレンダー', url: 'pages/calendar.html' },
+  { id: 'task-manager', label: 'タスク管理', url: 'pages/task-manager.html' },
+  { id: 'memo', label: 'メモ管理', url: 'pages/memo-page.html' },
+  { id: 'todo', label: 'TODOリスト', url: 'pages/todo.html' },
+  { id: 'dev-tools', label: '効率化ツール', url: 'pages/dev-tools.html' },
+  { id: 'calculator', label: 'ビジネス計算', url: 'pages/calculator.html' },
+  { id: 'sql-templates', label: 'SQLテンプレート', url: 'pages/sql-templates.html' }
+];
+
+const navigationSettingsKey = 'navigationSettings_global';
+
+// ナビゲーションボタンの表示設定を取得
+function getNavigationSettings() {
+  const stored = localStorage.getItem(navigationSettingsKey);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+
+  // デフォルト設定: すべて表示
+  const defaultSettings = {};
+  defaultNavigationButtons.forEach(btn => {
+    defaultSettings[btn.id] = true;
+  });
+  return defaultSettings;
+}
+
+// ナビゲーションボタンの表示設定を保存
+function saveNavigationSettingsToStorage(settings) {
+  localStorage.setItem(navigationSettingsKey, JSON.stringify(settings));
+}
+
+// ナビゲーションボタンを描画
+function renderNavigationButtons() {
+  const container = document.getElementById('fixed-buttons-group');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  const settings = getNavigationSettings();
+
+  defaultNavigationButtons.forEach(btn => {
+    if (settings[btn.id]) {
+      const link = document.createElement('a');
+      link.href = btn.url;
+      link.className = 'navigation-link internal-link';
+      link.textContent = btn.label;
+      container.appendChild(link);
+    }
+  });
+}
+
+// ナビゲーション設定モーダルを開く
+function openNavigationSettings() {
+  // モーダルタイトルを変更
+  document.getElementById('modal-title').textContent = 'ナビゲーションボタン設定';
+
+  // 他のモードを非表示にして、ナビゲーション設定モードを表示
+  document.getElementById('single-edit-mode').style.display = 'none';
+  document.getElementById('list-edit-mode').style.display = 'none';
+  document.getElementById('header-links-edit-mode').style.display = 'none';
+  document.getElementById('navigation-settings-mode').style.display = 'block';
+
+  // 設定リストを描画
+  renderNavigationSettingsList();
+
+  // モーダルを表示
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// ナビゲーション設定リストを描画
+function renderNavigationSettingsList() {
+  const list = document.getElementById('navigation-buttons-settings');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  const settings = getNavigationSettings();
+
+  defaultNavigationButtons.forEach(btn => {
+    const listItem = document.createElement('li');
+    listItem.className = 'navigation-setting-item';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `nav-setting-${btn.id}`;
+    checkbox.checked = settings[btn.id] !== false;
+    checkbox.dataset.buttonId = btn.id;
+
+    const label = document.createElement('label');
+    label.htmlFor = `nav-setting-${btn.id}`;
+    label.textContent = btn.label;
+
+    listItem.appendChild(checkbox);
+    listItem.appendChild(label);
+    list.appendChild(listItem);
+  });
+}
+
+// ナビゲーション設定を保存
+function saveNavigationSettings() {
+  const checkboxes = document.querySelectorAll('#navigation-buttons-settings input[type="checkbox"]');
+  const newSettings = {};
+
+  checkboxes.forEach(checkbox => {
+    const buttonId = checkbox.dataset.buttonId;
+    newSettings[buttonId] = checkbox.checked;
+  });
+
+  saveNavigationSettingsToStorage(newSettings);
+  renderNavigationButtons();
+  closeModal();
+
+  alert('設定を保存しました');
+}
+
+// ナビゲーション設定をデフォルトに戻す
+function resetNavigationSettings() {
+  if (!confirm('ナビゲーション設定をデフォルトに戻しますか？')) {
+    return;
+  }
+
+  const defaultSettings = {};
+  defaultNavigationButtons.forEach(btn => {
+    defaultSettings[btn.id] = true;
+  });
+
+  saveNavigationSettingsToStorage(defaultSettings);
+  renderNavigationButtons();
+  renderNavigationSettingsList();
+
+  alert('デフォルト設定に戻しました');
 }
 
