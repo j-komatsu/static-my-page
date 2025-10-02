@@ -2071,6 +2071,7 @@ const defaultNavigationButtons = [
 ];
 
 const navigationSettingsKey = 'navigationSettings_global';
+const navigationOrderKey = 'navigationOrder_global';
 
 // ナビゲーションボタンの表示設定を取得
 function getNavigationSettings() {
@@ -2087,6 +2088,22 @@ function getNavigationSettings() {
   return defaultSettings;
 }
 
+// ナビゲーションボタンの並び順を取得
+function getNavigationOrder() {
+  const stored = localStorage.getItem(navigationOrderKey);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+
+  // デフォルト順序: defaultNavigationButtonsの順番
+  return defaultNavigationButtons.map(btn => btn.id);
+}
+
+// ナビゲーションボタンの並び順を保存
+function saveNavigationOrder(order) {
+  localStorage.setItem(navigationOrderKey, JSON.stringify(order));
+}
+
 // ナビゲーションボタンの表示設定を保存
 function saveNavigationSettingsToStorage(settings) {
   localStorage.setItem(navigationSettingsKey, JSON.stringify(settings));
@@ -2100,9 +2117,12 @@ function renderNavigationButtons() {
   container.innerHTML = '';
 
   const settings = getNavigationSettings();
+  const order = getNavigationOrder();
 
-  defaultNavigationButtons.forEach(btn => {
-    if (settings[btn.id]) {
+  // 並び順に従ってボタンを描画
+  order.forEach(btnId => {
+    const btn = defaultNavigationButtons.find(b => b.id === btnId);
+    if (btn && settings[btn.id]) {
       const link = document.createElement('a');
       link.href = btn.url;
       link.className = 'navigation-link internal-link';
@@ -2138,10 +2158,23 @@ function renderNavigationSettingsList() {
   list.innerHTML = '';
 
   const settings = getNavigationSettings();
+  const order = getNavigationOrder();
 
-  defaultNavigationButtons.forEach(btn => {
+  // 並び順に従ってリストを描画
+  order.forEach((btnId, index) => {
+    const btn = defaultNavigationButtons.find(b => b.id === btnId);
+    if (!btn) return;
+
     const listItem = document.createElement('li');
     listItem.className = 'navigation-setting-item';
+    listItem.draggable = true;
+    listItem.dataset.buttonId = btn.id;
+    listItem.dataset.index = index;
+
+    // ドラッグハンドル
+    const dragHandle = document.createElement('div');
+    dragHandle.className = 'drag-handle';
+    dragHandle.textContent = '⋮⋮';
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -2153,8 +2186,18 @@ function renderNavigationSettingsList() {
     label.htmlFor = `nav-setting-${btn.id}`;
     label.textContent = btn.label;
 
+    listItem.appendChild(dragHandle);
     listItem.appendChild(checkbox);
     listItem.appendChild(label);
+
+    // ドラッグ&ドロップイベントを追加
+    listItem.addEventListener('dragstart', handleNavButtonDragStart);
+    listItem.addEventListener('dragover', handleNavButtonDragOver);
+    listItem.addEventListener('drop', handleNavButtonDrop);
+    listItem.addEventListener('dragend', handleNavButtonDragEnd);
+    listItem.addEventListener('dragenter', handleNavButtonDragEnter);
+    listItem.addEventListener('dragleave', handleNavButtonDragLeave);
+
     list.appendChild(listItem);
   });
 }
@@ -2162,7 +2205,15 @@ function renderNavigationSettingsList() {
 // ナビゲーション設定を保存
 function saveNavigationSettings() {
   const checkboxes = document.querySelectorAll('#navigation-buttons-settings input[type="checkbox"]');
+  const listItems = document.querySelectorAll('#navigation-buttons-settings li');
   const newSettings = {};
+  const newOrder = [];
+
+  // 現在の並び順とチェック状態を取得
+  listItems.forEach(item => {
+    const buttonId = item.dataset.buttonId;
+    newOrder.push(buttonId);
+  });
 
   checkboxes.forEach(checkbox => {
     const buttonId = checkbox.dataset.buttonId;
@@ -2170,6 +2221,7 @@ function saveNavigationSettings() {
   });
 
   saveNavigationSettingsToStorage(newSettings);
+  saveNavigationOrder(newOrder);
   renderNavigationButtons();
   closeModal();
 
@@ -2187,10 +2239,84 @@ function resetNavigationSettings() {
     defaultSettings[btn.id] = true;
   });
 
+  const defaultOrder = defaultNavigationButtons.map(btn => btn.id);
+
   saveNavigationSettingsToStorage(defaultSettings);
+  saveNavigationOrder(defaultOrder);
   renderNavigationButtons();
   renderNavigationSettingsList();
 
   alert('デフォルト設定に戻しました');
+}
+
+// ナビゲーションボタンのドラッグ&ドロップハンドラー
+let draggedNavButton = null;
+let draggedNavButtonIndex = null;
+
+function handleNavButtonDragStart(e) {
+  draggedNavButton = this;
+  draggedNavButtonIndex = parseInt(this.dataset.index);
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleNavButtonDragEnd(e) {
+  this.classList.remove('dragging');
+
+  // 全てのドロップゾーンハイライトを削除
+  const allItems = document.querySelectorAll('#navigation-buttons-settings li');
+  allItems.forEach(item => {
+    item.classList.remove('drag-over');
+  });
+
+  draggedNavButton = null;
+  draggedNavButtonIndex = null;
+}
+
+function handleNavButtonDragOver(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+
+  if (draggedNavButton && draggedNavButton !== this) {
+    this.classList.add('drag-over');
+    e.dataTransfer.dropEffect = 'move';
+  }
+
+  return false;
+}
+
+function handleNavButtonDragEnter(e) {
+  if (draggedNavButton && draggedNavButton !== this) {
+    this.classList.add('drag-over');
+  }
+}
+
+function handleNavButtonDragLeave(e) {
+  this.classList.remove('drag-over');
+}
+
+function handleNavButtonDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+
+  if (draggedNavButton !== this && draggedNavButtonIndex !== null) {
+    const targetIndex = parseInt(this.dataset.index);
+    const order = getNavigationOrder();
+
+    // 並び順を変更
+    const draggedId = order[draggedNavButtonIndex];
+    order.splice(draggedNavButtonIndex, 1);
+    order.splice(targetIndex, 0, draggedId);
+
+    // 一時的に保存して再描画
+    saveNavigationOrder(order);
+    renderNavigationSettingsList();
+  }
+
+  this.classList.remove('drag-over');
+  return false;
 }
 

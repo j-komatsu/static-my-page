@@ -1805,10 +1805,33 @@ body {
   padding: 12px;
   border-bottom: 1px solid #eee;
   transition: background-color 0.2s;
+  cursor: move;
 }
 
 .navigation-setting-item:hover {
   background-color: #f8f9fa;
+}
+
+.navigation-setting-item.dragging {
+  opacity: 0.4;
+  background-color: #e0e0e0;
+}
+
+.navigation-setting-item.drag-over {
+  border-top: 3px solid #007bff;
+  background-color: #e3f2fd;
+}
+
+.navigation-setting-item .drag-handle {
+  margin-right: 12px;
+  cursor: grab;
+  color: #999;
+  font-size: 16px;
+  user-select: none;
+}
+
+.navigation-setting-item .drag-handle:active {
+  cursor: grabbing;
 }
 
 .navigation-setting-item input[type="checkbox"] {
@@ -1823,6 +1846,13 @@ body {
   cursor: pointer;
   font-size: 14px;
   user-select: none;
+}
+
+.drag-hint {
+  color: #666;
+  font-size: 13px;
+  margin-top: 5px;
+  font-style: italic;
 }
 
 .settings-buttons {
