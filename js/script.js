@@ -945,19 +945,115 @@ function saveProjects() {
 function updateProjectNavigation() {
   const projectLinks = document.getElementById('project-links');
   projectLinks.innerHTML = '';
-  
-  projects.forEach(project => {
+
+  projects.forEach((project, index) => {
     const link = document.createElement('a');
     link.href = `#${project.id}`;
     link.className = 'navigation-link nav-tab';
     link.setAttribute('data-view', project.id);
+    link.setAttribute('data-project-index', index);
     link.textContent = project.name;
+    link.draggable = true; // ドラッグ可能にする
+
+    // ドラッグ開始イベント
+    link.addEventListener('dragstart', handleTabDragStart);
+
+    // ドラッグオーバーイベント
+    link.addEventListener('dragover', handleTabDragOver);
+
+    // ドロップイベント
+    link.addEventListener('drop', handleTabDrop);
+
+    // ドラッグ終了イベント
+    link.addEventListener('dragend', handleTabDragEnd);
+
     link.addEventListener('contextmenu', (e) => showDeleteMenu(e, project.id));
     projectLinks.appendChild(link);
   });
-  
+
   // タブクリックイベントを追加
   addTabClickEvents();
+}
+
+// プロジェクトタブのドラッグ&ドロップ関連の変数
+let draggedTab = null;
+let draggedTabIndex = null;
+
+// プロジェクトタブのドラッグ開始
+function handleTabDragStart(e) {
+  const indexAttr = e.target.getAttribute('data-project-index');
+  if (indexAttr === null) return; // data-project-indexがない場合は無視
+
+  draggedTab = e.target;
+  draggedTabIndex = parseInt(indexAttr);
+  e.target.style.opacity = '0.4';
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+// プロジェクトタブのドラッグオーバー
+function handleTabDragOver(e) {
+  const indexAttr = e.currentTarget.getAttribute('data-project-index');
+  if (indexAttr === null) return; // data-project-indexがない場合は無視
+
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  e.dataTransfer.dropEffect = 'move';
+
+  // ドラッグ中の要素にホバー効果を追加
+  const target = e.currentTarget;
+  if (target !== draggedTab && target.classList.contains('nav-tab')) {
+    target.style.borderTop = '2px solid #007bff';
+  }
+
+  return false;
+}
+
+// プロジェクトタブのドロップ
+function handleTabDrop(e) {
+  if (e.stopPropagation) {
+    e.stopPropagation();
+  }
+  e.preventDefault();
+
+  const dropTarget = e.currentTarget;
+  const dropIndexAttr = dropTarget.getAttribute('data-project-index');
+
+  if (dropIndexAttr === null) {
+    dropTarget.style.borderTop = '';
+    return; // data-project-indexがない場合は無視
+  }
+
+  const dropIndex = parseInt(dropIndexAttr);
+
+  // ドラッグ元とドロップ先が異なる場合のみ並び替え
+  if (draggedTab !== dropTarget && draggedTabIndex !== null && draggedTabIndex !== dropIndex) {
+    // プロジェクト配列を並び替え
+    const draggedProject = projects[draggedTabIndex];
+    projects.splice(draggedTabIndex, 1);
+    projects.splice(dropIndex, 0, draggedProject);
+
+    // localStorageに保存
+    saveProjects();
+
+    // ナビゲーションを更新
+    updateProjectNavigation();
+  }
+
+  // ホバー効果を削除
+  dropTarget.style.borderTop = '';
+
+  return false;
+}
+
+// プロジェクトタブのドラッグ終了
+function handleTabDragEnd(e) {
+  e.target.style.opacity = '1';
+
+  // すべてのホバー効果を削除
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.style.borderTop = '';
+  });
 }
 
 // タブクリックイベントの追加
