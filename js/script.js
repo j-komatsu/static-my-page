@@ -581,6 +581,14 @@ function loadAllFavicons() {
 // ページロード時にリンクデータを読み込む
 window.onload = function () {
   try {
+    // ポモドーロタイマーの初期化
+    initializePomodoroTimer();
+
+    // 通知の許可をリクエスト
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
     // プロジェクトデータの読み込み
     loadProjects();
     
@@ -2319,4 +2327,735 @@ function handleNavButtonDrop(e) {
   this.classList.remove('drag-over');
   return false;
 }
+
+// ポモドーロタイマー機能 --------------------------------------------------
+
+// ポモドーロタイマーの状態管理
+const pomodoroState = {
+  isRunning: false,
+  isPaused: false,
+  currentMode: 'work', // 'work', 'break'
+  timeRemaining: 25 * 60, // 秒単位
+  sessionCount: 0,
+  timerId: null,
+  warningSoundPlayed: false // 警告音を鳴らしたかのフラグ
+};
+
+// ポモドーロタイマーの設定
+const pomodoroSettingsKey = 'pomodoroSettings_global';
+const pomodoroVisibilityKey = 'pomodoroVisibility_global';
+const pomodoroStateKey = 'pomodoroState_global';
+
+// デフォルト設定
+const defaultPomodoroSettings = {
+  workTime: 25,
+  breakTime: 5,
+  autoContinue: false,
+  timerVisible: true,
+  soundEnabled: true,
+  warningSoundEnabled: false,
+  notificationEnabled: true
+};
+
+// 設定を取得
+function getPomodoroSettings() {
+  const stored = localStorage.getItem(pomodoroSettingsKey);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return { ...defaultPomodoroSettings };
+}
+
+// 設定を保存
+function savePomodoroSettingsToStorage(settings) {
+  localStorage.setItem(pomodoroSettingsKey, JSON.stringify(settings));
+}
+
+// タイマー状態を保存
+function savePomodoroState() {
+  const stateToSave = {
+    isRunning: pomodoroState.isRunning,
+    currentMode: pomodoroState.currentMode,
+    timeRemaining: pomodoroState.timeRemaining,
+    sessionCount: pomodoroState.sessionCount,
+    lastSaveTime: Date.now()
+  };
+  localStorage.setItem(pomodoroStateKey, JSON.stringify(stateToSave));
+}
+
+// タイマー状態を復元
+function restorePomodoroState() {
+  const stored = localStorage.getItem(pomodoroStateKey);
+  if (!stored) return false;
+
+  try {
+    const savedState = JSON.parse(stored);
+    const now = Date.now();
+    const elapsedSeconds = Math.floor((now - savedState.lastSaveTime) / 1000);
+
+    pomodoroState.currentMode = savedState.currentMode;
+    pomodoroState.sessionCount = savedState.sessionCount;
+
+    // タイマーが動いていた場合、経過時間を考慮
+    if (savedState.isRunning) {
+      pomodoroState.timeRemaining = Math.max(0, savedState.timeRemaining - elapsedSeconds);
+
+      // 時間が残っている場合は自動的に再開
+      if (pomodoroState.timeRemaining > 0) {
+        pomodoroState.isRunning = true;
+        startPomodoroInterval();
+      } else {
+        // 時間切れの場合は次のモードに移行
+        pomodoroState.timeRemaining = 0;
+        handlePomodoroTimerComplete();
+      }
+    } else {
+      pomodoroState.timeRemaining = savedState.timeRemaining;
+    }
+
+    return true;
+  } catch (e) {
+    console.error('Failed to restore pomodoro state:', e);
+    return false;
+  }
+}
+
+// タイマー状態をクリア
+function clearPomodoroState() {
+  localStorage.removeItem(pomodoroStateKey);
+}
+
+// タイマーの初期化
+function initializePomodoroTimer() {
+  // 保存された状態を復元
+  const restored = restorePomodoroState();
+
+  // 復元できなかった場合はデフォルト値を設定
+  if (!restored) {
+    const settings = getPomodoroSettings();
+    pomodoroState.timeRemaining = settings.workTime * 60;
+    pomodoroState.currentMode = 'work';
+    pomodoroState.sessionCount = 0;
+  }
+
+  updatePomodoroDisplay();
+  updatePomodoroModeIndicator();
+  updatePomodoroSessionCount();
+  updatePomodoroTimerColor();
+
+  // タイマーの表示/非表示設定を適用
+  const settings = getPomodoroSettings();
+  updatePomodoroTimerVisibility(settings.timerVisible !== false);
+
+  // 表示/非表示の状態を復元（最小化）
+  const visibility = localStorage.getItem(pomodoroVisibilityKey);
+  const container = document.getElementById('pomodoro-timer-container');
+  const toggleBtn = document.querySelector('.pomodoro-toggle-btn');
+
+  if (visibility === 'minimized') {
+    if (container) container.classList.add('minimized');
+    if (toggleBtn) {
+      toggleBtn.textContent = '□';
+      toggleBtn.setAttribute('title', '展開');
+    }
+  } else {
+    if (container) container.classList.remove('minimized');
+    if (toggleBtn) {
+      toggleBtn.textContent = '−';
+      toggleBtn.setAttribute('title', '最小化');
+    }
+  }
+}
+
+// タイマー表示を更新
+function updatePomodoroDisplay() {
+  const minutes = Math.floor(pomodoroState.timeRemaining / 60);
+  const seconds = pomodoroState.timeRemaining % 60;
+  const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+  const displayElement = document.getElementById('pomodoro-timer-display');
+  if (displayElement) {
+    displayElement.textContent = display;
+  }
+}
+
+// モード表示を更新
+function updatePomodoroModeIndicator() {
+  const modeText = document.getElementById('pomodoro-mode-text');
+  if (!modeText) return;
+
+  const settings = getPomodoroSettings();
+
+  switch (pomodoroState.currentMode) {
+    case 'work':
+      modeText.textContent = '作業時間';
+      break;
+    case 'break':
+      modeText.textContent = '休憩時間';
+      break;
+  }
+}
+
+// セッションカウント表示を更新
+function updatePomodoroSessionCount() {
+  const countElement = document.getElementById('pomodoro-session-count');
+  if (countElement) {
+    countElement.textContent = `セッション: ${pomodoroState.sessionCount}`;
+  }
+}
+
+// タイマーの色を更新
+function updatePomodoroTimerColor() {
+  const timerElement = document.querySelector('.pomodoro-timer');
+  if (!timerElement) return;
+
+  // 全てのクラスを削除
+  timerElement.classList.remove('normal', 'warning', 'break');
+
+  // 休憩時間
+  if (pomodoroState.currentMode === 'break') {
+    timerElement.classList.add('break');
+  }
+  // 作業時間の残り20%以下で警告色
+  else if (pomodoroState.currentMode === 'work') {
+    const settings = getPomodoroSettings();
+    const totalWorkTime = settings.workTime * 60;
+    const warningThreshold = totalWorkTime * 0.2;
+
+    if (pomodoroState.timeRemaining <= warningThreshold) {
+      timerElement.classList.add('warning');
+
+      // 警告音と通知を出す（一度だけ）
+      if (!pomodoroState.warningSoundPlayed) {
+        if (settings.warningSoundEnabled) {
+          playWarningSound();
+        }
+        if (settings.notificationEnabled) {
+          showPomodoroWarningNotification();
+        }
+        pomodoroState.warningSoundPlayed = true;
+      }
+    } else {
+      timerElement.classList.add('normal');
+    }
+  }
+  // 平常時
+  else {
+    timerElement.classList.add('normal');
+  }
+}
+
+// タイマーのインターバルを開始
+function startPomodoroInterval() {
+  const startBtn = document.getElementById('pomodoro-start-btn');
+
+  if (startBtn) {
+    startBtn.textContent = '一時停止';
+    startBtn.classList.add('active');
+  }
+
+  // 既存のインターバルをクリア
+  if (pomodoroState.timerId) {
+    clearInterval(pomodoroState.timerId);
+  }
+
+  pomodoroState.timerId = setInterval(() => {
+    if (pomodoroState.timeRemaining > 0) {
+      pomodoroState.timeRemaining--;
+      updatePomodoroDisplay();
+      updatePomodoroTimerColor();
+
+      // 1秒ごとに状態を保存
+      savePomodoroState();
+    } else {
+      // タイマー終了
+      handlePomodoroTimerComplete();
+    }
+  }, 1000);
+}
+
+// タイマーの開始/一時停止
+function togglePomodoroTimer() {
+  const startBtn = document.getElementById('pomodoro-start-btn');
+
+  if (!pomodoroState.isRunning) {
+    // タイマー開始
+    pomodoroState.isRunning = true;
+    pomodoroState.isPaused = false;
+    startPomodoroInterval();
+    savePomodoroState();
+  } else {
+    // タイマー一時停止
+    pomodoroState.isRunning = false;
+    pomodoroState.isPaused = true;
+
+    if (startBtn) {
+      startBtn.textContent = '再開';
+      startBtn.classList.remove('active');
+    }
+
+    if (pomodoroState.timerId) {
+      clearInterval(pomodoroState.timerId);
+      pomodoroState.timerId = null;
+    }
+
+    savePomodoroState();
+  }
+}
+
+// タイマー完了時の処理
+function handlePomodoroTimerComplete() {
+  const settings = getPomodoroSettings();
+
+  // タイマーを停止
+  if (pomodoroState.timerId) {
+    clearInterval(pomodoroState.timerId);
+    pomodoroState.timerId = null;
+  }
+
+  pomodoroState.isRunning = false;
+
+  // 現在のモードを保存（通知用）
+  const completedMode = pomodoroState.currentMode;
+
+  // モードに応じた音声通知とブラウザ通知
+  if (settings.soundEnabled) {
+    if (completedMode === 'work') {
+      playWorkCompleteSound(); // 作業終了音
+    } else {
+      playBreakCompleteSound(); // 休憩終了音
+    }
+  }
+
+  // ブラウザ通知（モードを渡す）
+  showPomodoroNotification(completedMode);
+
+  // 次のモードに移行
+  if (completedMode === 'work') {
+    // 作業完了 → 休憩へ
+    pomodoroState.sessionCount++;
+    updatePomodoroSessionCount();
+    pomodoroState.currentMode = 'break';
+    pomodoroState.timeRemaining = settings.breakTime * 60;
+  } else {
+    // 休憩完了 → 作業へ
+    pomodoroState.currentMode = 'work';
+    pomodoroState.timeRemaining = settings.workTime * 60;
+  }
+
+  // 警告音フラグをリセット
+  pomodoroState.warningSoundPlayed = false;
+
+  // 表示を更新
+  updatePomodoroDisplay();
+  updatePomodoroModeIndicator();
+  updatePomodoroTimerColor();
+
+  // 状態を保存
+  savePomodoroState();
+
+  // 自動継続設定がある場合
+  if (settings.autoContinue) {
+    setTimeout(() => {
+      togglePomodoroTimer();
+    }, 1000);
+  } else {
+    resetPomodoroButton();
+  }
+}
+
+// ボタンをリセット
+function resetPomodoroButton() {
+  const startBtn = document.getElementById('pomodoro-start-btn');
+  if (startBtn) {
+    startBtn.textContent = '開始';
+    startBtn.classList.remove('active');
+  }
+}
+
+// タイマーをリセット
+function resetPomodoroTimer() {
+  // タイマーを停止
+  if (pomodoroState.timerId) {
+    clearInterval(pomodoroState.timerId);
+    pomodoroState.timerId = null;
+  }
+
+  pomodoroState.isRunning = false;
+  pomodoroState.isPaused = false;
+  pomodoroState.warningSoundPlayed = false;
+
+  const settings = getPomodoroSettings();
+
+  // 現在のモードに応じた時間に戻す
+  if (pomodoroState.currentMode === 'work') {
+    pomodoroState.timeRemaining = settings.workTime * 60;
+  } else if (pomodoroState.currentMode === 'break') {
+    pomodoroState.timeRemaining = settings.breakTime * 60;
+  }
+
+  updatePomodoroDisplay();
+  updatePomodoroTimerColor();
+  resetPomodoroButton();
+
+  // 状態を保存
+  savePomodoroState();
+}
+
+// 音声通知を再生
+// 作業終了時の音（明るく達成感のある音）
+function playWorkCompleteSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    const masterGain = audioContext.createGain();
+    masterGain.gain.value = 0.5;
+    masterGain.connect(audioContext.destination);
+
+    const now = audioContext.currentTime;
+
+    // C6 → E6 → G6 の上昇和音（達成感）
+    [1046.5, 1318.5, 1568].forEach((freq, i) => {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+
+      const startTime = now + i * 0.15;
+      gain.gain.setValueAtTime(0.2, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.5);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.5);
+    });
+  } catch (error) {
+    console.error('[Pomodoro] Audio エラー:', error);
+  }
+}
+
+// 残り20%警告音（注意を促す中音）
+function playWarningSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    const masterGain = audioContext.createGain();
+    masterGain.gain.value = 0.4;
+    masterGain.connect(audioContext.destination);
+
+    const now = audioContext.currentTime;
+
+    // A5音を2回（注意喚起）
+    [0, 0.25].forEach((delay) => {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.frequency.value = 880; // A5
+      osc.type = 'sine';
+
+      const startTime = now + delay;
+      gain.gain.setValueAtTime(0.15, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.2);
+    });
+  } catch (error) {
+    console.error('[Pomodoro] Audio エラー:', error);
+  }
+}
+
+// 休憩終了時の音（柔らかく優しい音）
+function playBreakCompleteSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    const masterGain = audioContext.createGain();
+    masterGain.gain.value = 0.4;
+    masterGain.connect(audioContext.destination);
+
+    const now = audioContext.currentTime;
+
+    // G6 → E6 の下降音（優しく穏やか）
+    [1568, 1318.5].forEach((freq, i) => {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+
+      const startTime = now + i * 0.2;
+      gain.gain.setValueAtTime(0.15, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.6);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.6);
+    });
+  } catch (error) {
+    console.error('[Pomodoro] Audio エラー:', error);
+  }
+}
+
+// 互換性のため残す（warningで使用）
+function playPomodoroSound() {
+  playWarningSound();
+}
+
+// タイマーの表示/非表示を切り替え
+function updatePomodoroTimerVisibility(visible) {
+  const container = document.getElementById('pomodoro-timer-container');
+  if (container) {
+    if (visible) {
+      container.style.display = 'flex';
+    } else {
+      container.style.display = 'none';
+    }
+  }
+}
+
+// 残り20%の警告通知を表示
+function showPomodoroWarningNotification() {
+  const settings = getPomodoroSettings();
+
+  // 通知設定が無効の場合は何もしない
+  if (!settings.notificationEnabled) {
+    return;
+  }
+
+  if (!('Notification' in window)) {
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    const remainingMinutes = Math.ceil(pomodoroState.timeRemaining / 60);
+
+    new Notification('⚠️ 残り時間少！', {
+      body: `作業時間の残りが${remainingMinutes}分を切りました。`,
+      tag: 'pomodoro-warning-' + Date.now(),
+      silent: !settings.warningSoundEnabled, // 警告サウンド設定に従う
+      requireInteraction: false
+    });
+  }
+}
+
+// ブラウザ通知を表示
+function showPomodoroNotification(completedMode) {
+  const settings = getPomodoroSettings();
+
+  if (!settings.notificationEnabled) {
+    return;
+  }
+
+  if (!('Notification' in window)) {
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    createPomodoroNotification(completedMode);
+  } else if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        createPomodoroNotification(completedMode);
+      }
+    });
+  }
+}
+
+function createPomodoroNotification(completedMode) {
+  const settings = getPomodoroSettings();
+  let title = '';
+  let message = '';
+
+  // 完了したモードに基づいてメッセージを決定
+  if (completedMode === 'work') {
+    title = '🍅 作業完了！';
+    message = '作業時間が終了しました。休憩しましょう。';
+  } else {
+    title = '☕ 休憩完了！';
+    message = '休憩時間が終了しました。作業を再開しましょう。';
+  }
+
+  try {
+    const notification = new Notification(title, {
+      body: message,
+      tag: 'pomodoro-complete-' + Date.now(),
+      requireInteraction: true,
+      silent: !settings.soundEnabled,
+      renotify: true
+    });
+
+    notification.onclick = function() {
+      window.focus();
+      this.close();
+    };
+
+    setTimeout(() => {
+      if (notification) {
+        notification.close();
+      }
+    }, 15000);
+
+  } catch (error) {
+    console.error('[Pomodoro] 通知作成エラー:', error);
+  }
+}
+
+// 表示/非表示の切り替え
+function togglePomodoroVisibility() {
+  const container = document.getElementById('pomodoro-timer-container');
+  const toggleBtn = document.querySelector('.pomodoro-toggle-btn');
+
+  if (container && toggleBtn) {
+    container.classList.toggle('minimized');
+
+    if (container.classList.contains('minimized')) {
+      toggleBtn.textContent = '□';
+      toggleBtn.setAttribute('title', '展開');
+      localStorage.setItem(pomodoroVisibilityKey, 'minimized');
+    } else {
+      toggleBtn.textContent = '−';
+      toggleBtn.setAttribute('title', '最小化');
+      localStorage.setItem(pomodoroVisibilityKey, 'visible');
+    }
+  }
+}
+
+// 設定モーダルを開く
+function openPomodoroSettings() {
+  // モーダルタイトルを変更
+  document.getElementById('modal-title').textContent = 'ポモドーロタイマー設定';
+
+  // 他のモードを非表示にして、ポモドーロ設定モードを表示
+  document.getElementById('single-edit-mode').style.display = 'none';
+  document.getElementById('list-edit-mode').style.display = 'none';
+  document.getElementById('header-links-edit-mode').style.display = 'none';
+  document.getElementById('navigation-settings-mode').style.display = 'none';
+  document.getElementById('pomodoro-settings-mode').style.display = 'block';
+
+  // 現在の設定を入力欄に反映
+  const settings = getPomodoroSettings();
+  document.getElementById('pomodoro-work-time').value = settings.workTime;
+  document.getElementById('pomodoro-break-time').value = settings.breakTime;
+  document.getElementById('pomodoro-auto-continue').checked = settings.autoContinue || false;
+  document.getElementById('pomodoro-timer-visible').checked = settings.timerVisible !== false;
+  document.getElementById('pomodoro-sound-enabled').checked = settings.soundEnabled !== false;
+  document.getElementById('pomodoro-warning-sound-enabled').checked = settings.warningSoundEnabled || false;
+  document.getElementById('pomodoro-notification-enabled').checked = settings.notificationEnabled !== false;
+
+  // モーダルを表示
+  document.getElementById('modal').style.display = 'flex';
+}
+
+// 設定を保存
+function savePomodoroSettings() {
+  const newSettings = {
+    workTime: parseInt(document.getElementById('pomodoro-work-time').value),
+    breakTime: parseInt(document.getElementById('pomodoro-break-time').value),
+    autoContinue: document.getElementById('pomodoro-auto-continue').checked,
+    timerVisible: document.getElementById('pomodoro-timer-visible').checked,
+    soundEnabled: document.getElementById('pomodoro-sound-enabled').checked,
+    warningSoundEnabled: document.getElementById('pomodoro-warning-sound-enabled').checked,
+    notificationEnabled: document.getElementById('pomodoro-notification-enabled').checked
+  };
+
+  // 入力値の検証
+  if (newSettings.workTime < 1 || newSettings.workTime > 60) {
+    alert('作業時間は1〜60分の範囲で設定してください。');
+    return;
+  }
+  if (newSettings.breakTime < 1 || newSettings.breakTime > 30) {
+    alert('休憩時間は1〜30分の範囲で設定してください。');
+    return;
+  }
+
+  savePomodoroSettingsToStorage(newSettings);
+
+  // 通知が有効な場合は許可をリクエスト
+  if (newSettings.notificationEnabled && 'Notification' in window) {
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('通知許可が付与されました');
+        } else {
+          alert('ブラウザ通知を使用するには、通知の許可が必要です。ブラウザの設定から通知を許可してください。');
+        }
+      });
+    } else if (Notification.permission === 'denied') {
+      alert('ブラウザ通知が拒否されています。ブラウザの設定から通知を許可してください。');
+    }
+  }
+
+  // タイマーの表示/非表示を切り替え
+  updatePomodoroTimerVisibility(newSettings.timerVisible);
+
+  // タイマーが動いていない場合は時間を更新
+  if (!pomodoroState.isRunning) {
+    if (pomodoroState.currentMode === 'work') {
+      pomodoroState.timeRemaining = newSettings.workTime * 60;
+    } else if (pomodoroState.currentMode === 'break') {
+      pomodoroState.timeRemaining = newSettings.breakTime * 60;
+    }
+    updatePomodoroDisplay();
+  }
+
+  closeModal();
+  alert('設定を保存しました');
+}
+
+// 設定をデフォルトに戻す
+function resetPomodoroSettings() {
+  if (!confirm('ポモドーロタイマー設定をデフォルトに戻しますか？')) {
+    return;
+  }
+
+  savePomodoroSettingsToStorage(defaultPomodoroSettings);
+
+  // 入力欄を更新
+  document.getElementById('pomodoro-work-time').value = defaultPomodoroSettings.workTime;
+  document.getElementById('pomodoro-break-time').value = defaultPomodoroSettings.breakTime;
+  document.getElementById('pomodoro-auto-continue').checked = defaultPomodoroSettings.autoContinue;
+  document.getElementById('pomodoro-sound-enabled').checked = defaultPomodoroSettings.soundEnabled;
+  document.getElementById('pomodoro-warning-sound-enabled').checked = defaultPomodoroSettings.warningSoundEnabled;
+
+  // タイマーが動いていない場合は初期化
+  if (!pomodoroState.isRunning) {
+    initializePomodoroTimer();
+  }
+
+  alert('デフォルト設定に戻しました');
+}
+
+// ページロード時にポモドーロタイマーを初期化
+document.addEventListener('DOMContentLoaded', () => {
+  initializePomodoroTimer();
+
+  // 通知の許可をリクエスト
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+
+  // ページを離れる前に状態を保存
+  window.addEventListener('beforeunload', () => {
+    savePomodoroState();
+  });
+
+  // ページの可視性が変わったときに状態を保存
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      savePomodoroState();
+    }
+  });
+});
 

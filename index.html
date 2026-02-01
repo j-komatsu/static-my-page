@@ -16,6 +16,38 @@
           <h1 id="main-title" onclick="editMainTitle()">My Page</h1>
           <input type="text" id="main-title-input" class="title-input" onblur="saveMainTitle()" onkeypress="handleMainTitleKeypress(event)" />
         </div>
+        <!-- Pomodoro Timer (in header) -->
+        <div id="pomodoro-timer-container" class="pomodoro-timer-container pomodoro-in-header">
+          <div class="pomodoro-timer">
+            <div class="pomodoro-header">
+              <h3 class="pomodoro-title">ポモドーロタイマー</h3>
+              <div class="pomodoro-controls-header">
+                <button class="pomodoro-settings-btn" onclick="openPomodoroSettings()" title="設定">⚙️</button>
+                <button class="pomodoro-toggle-btn" onclick="togglePomodoroVisibility()" title="最小化">−</button>
+              </div>
+            </div>
+
+            <div class="pomodoro-body">
+              <div class="pomodoro-mode-indicator">
+                <span id="pomodoro-mode-text">作業時間</span>
+                <span id="pomodoro-session-count">セッション: 0</span>
+              </div>
+
+              <div class="pomodoro-timer-display" id="pomodoro-timer-display">
+                25:00
+              </div>
+
+              <div class="pomodoro-controls">
+                <button class="pomodoro-btn pomodoro-start-btn" onclick="togglePomodoroTimer()" id="pomodoro-start-btn">
+                  開始
+                </button>
+                <button class="pomodoro-btn pomodoro-reset-btn" onclick="resetPomodoroTimer()">
+                  リセット
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="title-right">
           <div id="header-links-container">
             <!-- ヘッダーリンクは動的に生成されます -->
@@ -222,6 +254,61 @@
             <div class="settings-buttons">
               <button onclick="saveNavigationSettings()">設定を保存</button>
               <button onclick="resetNavigationSettings()">デフォルトに戻す</button>
+              <button onclick="closeModal()">キャンセル</button>
+            </div>
+          </div>
+
+          <!-- ポモドーロタイマー設定モード -->
+          <div id="pomodoro-settings-mode" class="pomodoro-settings-container" style="display: none;">
+            <div class="settings-description">
+              <p>ポモドーロタイマーの動作時間を設定できます</p>
+            </div>
+            <div class="pomodoro-settings-form">
+              <div class="setting-row">
+                <label for="pomodoro-work-time">作業時間 (分):</label>
+                <input type="number" id="pomodoro-work-time" min="1" max="60" value="25" />
+              </div>
+              <div class="setting-row">
+                <label for="pomodoro-break-time">休憩時間 (分):</label>
+                <input type="number" id="pomodoro-break-time" min="1" max="30" value="5" />
+              </div>
+              <div class="setting-row checkbox-row">
+                <label for="pomodoro-auto-continue">
+                  <input type="checkbox" id="pomodoro-auto-continue" />
+                  自動継続（作業→休憩→作業を自動で繰り返す）
+                </label>
+              </div>
+              <div class="setting-row checkbox-row">
+                <label for="pomodoro-sound-enabled">
+                  <input type="checkbox" id="pomodoro-sound-enabled" checked />
+                  サウンド通知（タイマー完了時）
+                </label>
+              </div>
+              <div class="setting-row checkbox-row">
+                <label for="pomodoro-warning-sound-enabled">
+                  <input type="checkbox" id="pomodoro-warning-sound-enabled" />
+                  サウンド通知（残り20%時）
+                </label>
+              </div>
+              <div class="setting-row checkbox-row">
+                <label for="pomodoro-notification-enabled">
+                  <input type="checkbox" id="pomodoro-notification-enabled" checked />
+                  ブラウザ通知（アラート）を表示
+                </label>
+              </div>
+              <div class="setting-row checkbox-row">
+                <label for="pomodoro-timer-visible">
+                  <input type="checkbox" id="pomodoro-timer-visible" checked />
+                  ポモドーロタイマーを表示する
+                </label>
+              </div>
+              <div class="settings-description" style="margin-top: 8px; padding: 8px; background-color: #e9ecef; border-radius: 4px;">
+                <p style="margin: 0; font-size: 12px; color: #6c757d;">※ タイマーを非表示にした場合、再表示するにはナビゲーション設定からこの設定画面を開いてチェックを入れてください</p>
+              </div>
+            </div>
+            <div class="settings-buttons">
+              <button onclick="savePomodoroSettings()">設定を保存</button>
+              <button onclick="resetPomodoroSettings()">デフォルトに戻す</button>
               <button onclick="closeModal()">キャンセル</button>
             </div>
           </div>
